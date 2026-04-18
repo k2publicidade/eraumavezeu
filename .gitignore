@@ -1,40 +1,43 @@
-# dependencies
+# deps
 node_modules/
 .pnp
 .pnp.js
 
-# testing
-/coverage
-
-# next.js
+# next
 .next/
 out/
-
-# production
 build/
-dist/
 
-# misc
-.DS_Store
-*.pem
-Thumbs.db
+# env — NUNCA COMMITAR
+.env
+.env.local
+.env.*.local
+.env.production
+.env.development
 
-# debug
+# logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# local env files
-.env
-.env*.local
-!.env.example
+# OS
+.DS_Store
+Thumbs.db
 
-# vercel
-.vercel
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+# test / coverage
+coverage/
+*.lcov
+.nyc_output/
+
+# turbo
+.turbo/
 
 # prisma
 prisma/*.db
@@ -43,15 +46,26 @@ prisma/*.db-journal
 # sentry
 .sentryclirc
 
-# IDE
-.vscode/
-.idea/
+# vercel
+.vercel/
 
-# claude-mem auto-generated stubs in vendored/nested paths
+# misc
+*.tsbuildinfo
+next-env.d.ts
+
+# GSD / Claude tooling — artefatos locais
 .claude/
+.gsd/
+.mcp.json
+
+# claude-mem auto-generated stubs em pastas vendored/aninhadas
 lib/CLAUDE.md
+types/CLAUDE.md
+prisma/CLAUDE.md
+app/**/CLAUDE.md
 .planning/CLAUDE.md
+.planning/phases/**/CLAUDE.md
 .planning/research/CLAUDE.md
 
-# Original brief (já foi absorvido em .planning/PROJECT.md)
+# Briefing original já absorvido em .planning/PROJECT.md
 prompt_claude_code_eraumavezeu*.md

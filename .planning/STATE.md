@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 00-04-PLAN.md (PII scrub extraído para lib/sentry-scrub.ts + tests WhatsApp FND-06 — 47/47 tests green, build OK)
-last_updated: "2026-04-18T20:26:53.789Z"
+status: verifying
+stopped_at: Phase 0 FECHADA — 5/5 plans complete, 9/9 REQs, 47 tests green, 1 deviation aberto (pooler URL → fechar antes de Phase 7). Pronto para /gsd-plan-phase 1
+last_updated: "2026-04-18T20:34:11.372Z"
 last_activity: 2026-04-18
 progress:
   total_phases: 8
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 5
-  completed_plans: 4
-  percent: 80
+  completed_plans: 5
+  percent: 100
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 
 Phase: 0 (Fundação & Guard-Rails) — EXECUTING
 Plan: 5 of 5
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-18
 
 Progress: [░░░░░░░░░░] 0% (0/72 requirements delivered)
@@ -56,6 +56,7 @@ Progress: [░░░░░░░░░░] 0% (0/72 requirements delivered)
 | Phase 00-funda-o-guard-rails P02 | 12 | 3 tasks | 3 files |
 | Phase 00-funda-o-guard-rails P03 | 3m50s | 2 tasks | 10 files |
 | Phase 00-funda-o-guard-rails P04 | 3m30s | 2 tasks | 6 files |
+| Phase 00-funda-o-guard-rails P05 | 2m15s | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -78,6 +79,8 @@ Recent decisions affecting current work:
 - [Phase 00-funda-o-guard-rails]: Plan 03: login com mensagem genérica ('Credenciais inválidas') mitiga T-00-10 (enumeração de e-mails); Google provider omite UI quando AUTH_GOOGLE_ID ausente (graceful degrade); promoção ADMIN é SQL manual no MVP
 - [Phase 00-funda-o-guard-rails]: Plan 04: scrubPII é pure function em lib/sentry-scrub.ts (edge-safe, regex-only), usada pelos 3 configs Sentry. beforeSend muta in-place e retorna event original — evita conflito com tipos internos do @sentry/nextjs.
 - [Phase 00-funda-o-guard-rails]: Plan 04: contrato WhatsAppClient selado via 5 tests (FND-06). Swap Evolution→Cloud API é uma chamada a setWhatsAppClient — tests provam não ser refactor.
+- [Phase 00-funda-o-guard-rails]: Plan 05: 9/9 REQs verificados e 47 tests green em 6 arquivos. VERIFICATION.md consolida evidência. Phase 0 APROVADA para fechamento.
+- [Phase 00-funda-o-guard-rails]: Plan 05: Human-verify checkpoint auto-aprovado em auto mode via análise estática DOM-less — contratos críticos (Google button gated, redirect de /admin, paleta) já cobertos por 17 tests auth. Live browser check deferido, não bloqueia Phase 1.
 
 ### Pending Todos
 
@@ -97,8 +100,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T20:26:53.784Z
-Stopped at: Completed 00-04-PLAN.md (PII scrub extraído para lib/sentry-scrub.ts + tests WhatsApp FND-06 — 47/47 tests green, build OK)
+Last session: 2026-04-18T20:34:11.367Z
+Stopped at: Phase 0 FECHADA — 5/5 plans complete, 9/9 REQs, 47 tests green, 1 deviation aberto (pooler URL → fechar antes de Phase 7). Pronto para /gsd-plan-phase 1
 Resume file: None
 
 **Next action:** `/gsd-plan-phase 0` para iniciar planning da fundação

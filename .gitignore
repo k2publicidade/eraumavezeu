@@ -1,0 +1,57 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# testing
+/coverage
+
+# next.js
+.next/
+out/
+
+# production
+build/
+dist/
+
+# misc
+.DS_Store
+*.pem
+Thumbs.db
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env
+.env*.local
+!.env.example
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# prisma
+prisma/*.db
+prisma/*.db-journal
+
+# sentry
+.sentryclirc
+
+# IDE
+.vscode/
+.idea/
+
+# claude-mem auto-generated stubs in vendored/nested paths
+.claude/
+lib/CLAUDE.md
+.planning/CLAUDE.md
+.planning/research/CLAUDE.md
+
+# Original brief (já foi absorvido em .planning/PROJECT.md)
+prompt_claude_code_eraumavezeu*.md

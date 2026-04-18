@@ -12,7 +12,7 @@ E-commerce BR premium de livros infantis personalizados com IA humano-in-the-loo
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 0: Fundação & Guard-Rails** - Next 14 + Prisma pooler + Auth.js v5 + middleware + guards + Sentry PII-scrub + seed dos 5 produtos
+- [x] **Phase 0: Fundação & Guard-Rails** - Next 14 + Prisma pooler + Auth.js v5 + middleware + guards + Sentry PII-scrub + seed dos 5 produtos (completed 2026-04-18)
 - [ ] **Phase 1: Site Institucional** - Home + Como Funciona + Produtos + Galeria + FAQ + Quem Somos + Contato + identidade visual (paralelo às Fases 2-5)
 - [ ] **Phase 2: Wizard + Upload + LGPD Estrutural** - Wizard 7 passos (Zustand+persist fileKey-only), Uploadthing privado, consent explícito, watermark server-side, gerarPromptIA testável
 - [ ] **Phase 3: Carrinho + Regras de Preço** - Cart store persistente + `applyComboDiscount` puro testado + página carrinho + cross-sell card
@@ -155,7 +155,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Fundação & Guard-Rails | 1/5 | In Progress|  |
+| 0. Fundação & Guard-Rails | 5/5 | Complete    | 2026-04-18 |
 | 1. Site Institucional | 0/TBD | Not started | - |
 | 2. Wizard + Upload + LGPD | 0/TBD | Not started | - |
 | 3. Carrinho + Preços | 0/TBD | Not started | - |

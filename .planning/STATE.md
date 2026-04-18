@@ -4,7 +4,7 @@ milestone: v1.0
 milestone_name: milestone
 status: verifying
 stopped_at: Phase 0 FECHADA — 5/5 plans complete, 9/9 REQs, 47 tests green, 1 deviation aberto (pooler URL → fechar antes de Phase 7). Pronto para /gsd-plan-phase 1
-last_updated: "2026-04-18T20:34:11.372Z"
+last_updated: "2026-04-18T20:35:04.326Z"
 last_activity: 2026-04-18
 progress:
   total_phases: 8
@@ -25,8 +25,8 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 
 ## Current Position
 
-Phase: 0 (Fundação & Guard-Rails) — EXECUTING
-Plan: 5 of 5
+Phase: 1
+Plan: Not started
 Status: Phase complete — ready for verification
 Last activity: 2026-04-18
 
@@ -36,7 +36,7 @@ Progress: [░░░░░░░░░░] 0% (0/72 requirements delivered)
 
 **Velocity:**
 
-- Total plans completed: 0
+- Total plans completed: 5
 - Average duration: —
 - Total execution time: —
 
@@ -45,6 +45,7 @@ Progress: [░░░░░░░░░░] 0% (0/72 requirements delivered)
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | — | — | — | — |
+| 0 | 5 | - | - |
 
 **Recent Trend:**
 

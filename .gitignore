@@ -62,6 +62,7 @@ next-env.d.ts
 lib/CLAUDE.md
 types/CLAUDE.md
 prisma/CLAUDE.md
+prisma/**/CLAUDE.md
 app/**/CLAUDE.md
 .planning/CLAUDE.md
 .planning/phases/**/CLAUDE.md

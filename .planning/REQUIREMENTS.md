@@ -12,8 +12,8 @@
 - [x] **FND-03**: Schema Prisma completo (User, Product, Order, OrderItem, Customization, Address, OrderStatusHistory) + migrations
 - [x] **FND-04**: Auth.js v5 configurado com email/senha + Google OAuth opcional
 - [x] **FND-05**: Middleware de auth + helpers `requireAuth()` / `requireAdmin()` disponíveis globalmente
-- [ ] **FND-06**: Interface abstrata `lib/whatsapp.ts` (`sendMessage`) para permitir swap Evolution → WhatsApp Cloud
-- [ ] **FND-07**: Sentry configurado com `beforeSend` limpando PII (fotos, telefones, CPF)
+- [x] **FND-06**: Interface abstrata `lib/whatsapp.ts` (`sendMessage`) para permitir swap Evolution → WhatsApp Cloud
+- [x] **FND-07**: Sentry configurado com `beforeSend` limpando PII (fotos, telefones, CPF)
 - [x] **FND-08**: Seed dos 5 produtos (livro principal, e-book, colorir, quebra-cabeça, adesivos) com preços do brief
 
 ### Site Institucional (SITE)
@@ -94,7 +94,7 @@
 - [ ] **LGPD-02**: Registro de consentimento no `Customization` (IP + timestamp + textVersion do termo)
 - [ ] **LGPD-03**: Cron Vercel diário deletando fotos de pedidos >90 dias pós-ENTREGUE (CRON_SECRET + idempotente)
 - [ ] **LGPD-04**: Política de privacidade específica sobre fotos de crianças + identificação do DPO
-- [ ] **LGPD-05**: Sentry scrub de PII (fotos, telefones, CPF) em `beforeSend`
+- [x] **LGPD-05**: Sentry scrub de PII (fotos, telefones, CPF) em `beforeSend`
 
 ### Deploy & Go-Live (OPS)
 
@@ -156,8 +156,8 @@ Populated by roadmapper agent on 2026-04-18. Every v1 requirement is mapped to e
 | FND-03 | Phase 0 | Complete |
 | FND-04 | Phase 0 | Complete |
 | FND-05 | Phase 0 | Complete |
-| FND-06 | Phase 0 | Pending |
-| FND-07 | Phase 0 | Pending |
+| FND-06 | Phase 0 | Complete |
+| FND-07 | Phase 0 | Complete |
 | FND-08 | Phase 0 | Complete |
 | SITE-01 | Phase 1 | Pending |
 | SITE-02 | Phase 1 | Pending |
@@ -214,7 +214,7 @@ Populated by roadmapper agent on 2026-04-18. Every v1 requirement is mapped to e
 | ADM-06 | Phase 6 | Pending |
 | LGPD-03 | Phase 7 | Pending |
 | LGPD-04 | Phase 7 | Pending |
-| LGPD-05 | Phase 0 | Pending |
+| LGPD-05 | Phase 0 | Complete |
 | OPS-01 | Phase 7 | Pending |
 | OPS-02 | Phase 7 | Pending |
 | OPS-03 | Phase 7 | Pending |

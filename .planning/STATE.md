@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 00-03-PLAN.md (Login/Cadastro UI + Server Actions + guards tests — 31/31 tests green, build OK com rotas /login e /cadastro)
-last_updated: "2026-04-18T20:19:57.118Z"
+stopped_at: Completed 00-04-PLAN.md (PII scrub extraído para lib/sentry-scrub.ts + tests WhatsApp FND-06 — 47/47 tests green, build OK)
+last_updated: "2026-04-18T20:26:53.789Z"
 last_activity: 2026-04-18
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
-  percent: 60
+  completed_plans: 4
+  percent: 80
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 ## Current Position
 
 Phase: 0 (Fundação & Guard-Rails) — EXECUTING
-Plan: 4 of 5
+Plan: 5 of 5
 Status: Ready to execute
 Last activity: 2026-04-18
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0% (0/72 requirements delivered)
 | Phase 00-funda-o-guard-rails P01 | 5 | 2 tasks | 12 files |
 | Phase 00-funda-o-guard-rails P02 | 12 | 3 tasks | 3 files |
 | Phase 00-funda-o-guard-rails P03 | 3m50s | 2 tasks | 10 files |
+| Phase 00-funda-o-guard-rails P04 | 3m30s | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -75,6 +76,8 @@ Recent decisions affecting current work:
 - [Phase 00-funda-o-guard-rails]: Plan 02: Migration + seed aplicados no Supabase real (5 produtos, total R$ 589,50). 14 testes verdes (5 smoke + 9 schema).
 - [Phase 00-funda-o-guard-rails]: Plan 02: dotenv-cli como devDep padrão para carregar .env.local em scripts (Prisma, Vitest)
 - [Phase 00-funda-o-guard-rails]: Plan 03: login com mensagem genérica ('Credenciais inválidas') mitiga T-00-10 (enumeração de e-mails); Google provider omite UI quando AUTH_GOOGLE_ID ausente (graceful degrade); promoção ADMIN é SQL manual no MVP
+- [Phase 00-funda-o-guard-rails]: Plan 04: scrubPII é pure function em lib/sentry-scrub.ts (edge-safe, regex-only), usada pelos 3 configs Sentry. beforeSend muta in-place e retorna event original — evita conflito com tipos internos do @sentry/nextjs.
+- [Phase 00-funda-o-guard-rails]: Plan 04: contrato WhatsAppClient selado via 5 tests (FND-06). Swap Evolution→Cloud API é uma chamada a setWhatsAppClient — tests provam não ser refactor.
 
 ### Pending Todos
 
@@ -94,8 +97,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18T20:19:57.112Z
-Stopped at: Completed 00-03-PLAN.md (Login/Cadastro UI + Server Actions + guards tests — 31/31 tests green, build OK com rotas /login e /cadastro)
+Last session: 2026-04-18T20:26:53.784Z
+Stopped at: Completed 00-04-PLAN.md (PII scrub extraído para lib/sentry-scrub.ts + tests WhatsApp FND-06 — 47/47 tests green, build OK)
 Resume file: None
 
 **Next action:** `/gsd-plan-phase 0` para iniciar planning da fundação

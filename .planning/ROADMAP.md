@@ -35,7 +35,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   5. `lib/whatsapp.ts` expõe `sendMessage()` mockado — swap Evolution → WhatsApp Cloud é configuração, não refactor
   6. Seed cria os 5 produtos (livro principal, e-book, colorir, quebra-cabeça, adesivos) com preços do brief
 **Plans**: 5 plans
-  - [ ] 00-01-PLAN.md — Stack Next 14 + TS strict + Tailwind 3 + Vitest (FND-01)
+  - [x] 00-01-PLAN.md — Stack Next 14 + TS strict + Tailwind 3 + Vitest (FND-01)
   - [ ] 00-02-PLAN.md — Prisma migrate contra Supabase pooler + seed dos 5 produtos (FND-02, FND-03, FND-08)
   - [ ] 00-03-PLAN.md — Páginas /login e /cadastro + tests das guardas em 3 camadas (FND-04, FND-05)
   - [ ] 00-04-PLAN.md — Sentry scrub PII compartilhado + tests do contrato WhatsApp (FND-06, FND-07, LGPD-05)
@@ -155,7 +155,7 @@ Phases execute in numeric order: 0 → 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 0. Fundação & Guard-Rails | 0/TBD | Not started | - |
+| 0. Fundação & Guard-Rails | 1/5 | In Progress|  |
 | 1. Site Institucional | 0/TBD | Not started | - |
 | 2. Wizard + Upload + LGPD | 0/TBD | Not started | - |
 | 3. Carrinho + Preços | 0/TBD | Not started | - |

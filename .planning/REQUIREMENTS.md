@@ -7,7 +7,7 @@
 
 ### Foundation (FND)
 
-- [ ] **FND-01**: Next.js 14 App Router + TypeScript estrito + Tailwind configurado
+- [x] **FND-01**: Next.js 14 App Router + TypeScript estrito + Tailwind configurado
 - [ ] **FND-02**: Prisma + Supabase Postgres via Supavisor pooler (DATABASE_URL 6543 + DIRECT_URL 5432)
 - [ ] **FND-03**: Schema Prisma completo (User, Product, Order, OrderItem, Customization, Address, OrderStatusHistory) + migrations
 - [ ] **FND-04**: Auth.js v5 configurado com email/senha + Google OAuth opcional
@@ -151,7 +151,7 @@ Populated by roadmapper agent on 2026-04-18. Every v1 requirement is mapped to e
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| FND-01 | Phase 0 | Pending |
+| FND-01 | Phase 0 | Complete |
 | FND-02 | Phase 0 | Pending |
 | FND-03 | Phase 0 | Pending |
 | FND-04 | Phase 0 | Pending |

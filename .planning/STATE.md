@@ -1,3 +1,19 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: executing
+stopped_at: Completed 00-01-PLAN.md (Vitest + .gitignore + scaffold validation)
+last_updated: "2026-04-18T20:06:11.461Z"
+last_activity: 2026-04-18
+progress:
+  total_phases: 8
+  completed_phases: 0
+  total_plans: 5
+  completed_plans: 1
+  percent: 20
+---
+
 # Project State
 
 ## Project Reference
@@ -9,16 +25,17 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 
 ## Current Position
 
-Phase: 0 of 7 (Fundação & Guard-Rails)
-Plan: Não iniciado
-Status: Ready to plan
-Last activity: 2026-04-18 — Roadmap created and approved
+Phase: 0 (Fundação & Guard-Rails) — EXECUTING
+Plan: 2 of 5
+Status: Ready to execute
+Last activity: 2026-04-18
 
 Progress: [░░░░░░░░░░] 0% (0/72 requirements delivered)
 
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0
 - Average duration: —
 - Total execution time: —
@@ -30,10 +47,12 @@ Progress: [░░░░░░░░░░] 0% (0/72 requirements delivered)
 | — | — | — | — |
 
 **Recent Trend:**
+
 - Last 5 plans: —
 - Trend: — (sem histórico)
 
 *Updated after each plan completion*
+| Phase 00-funda-o-guard-rails P01 | 5 | 2 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -48,6 +67,9 @@ Recent decisions affecting current work:
 - **Pagamento**: Mercado Pago SDK v2.12+ (PIX/Cartão/Boleto)
 - **WhatsApp**: Evolution API v2 com interface abstrata `lib/whatsapp.ts` (swap pronto para Cloud API)
 - **IA**: Humano-in-the-loop — sistema gera prompt, equipe usa em ferramenta externa
+- [Phase 00-funda-o-guard-rails]: Adotado pnpm como gerenciador de pacotes (lockfile reproducible, environment context)
+- [Phase 00-funda-o-guard-rails]: Auth.js v5 route handler pattern: const { GET, POST } = handlers (fix de bug no scaffold)
+- [Phase 00-funda-o-guard-rails]: Smoke test trava versoes pinned (Next 14.2.21 + React 18.3.1 + Tailwind ^3) para evitar upgrade acidental que quebraria react-pageflip
 
 ### Pending Todos
 
@@ -58,6 +80,7 @@ None yet.
 ### Blockers/Concerns
 
 **Open gaps surfaced durante research (endereçar nas fases indicadas):**
+
 - Dimensões+peso exatos do livro 20 pág capa dura — confirmar com gráfica antes da Fase 4
 - Retenção exata de fotos pós-ENTREGUE — 90d é padrão; validar com cliente na Fase 2
 - MP sandbox + ngrok setup — validar webhook flow antes da Fase 5
@@ -65,8 +88,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-18
-Stopped at: ROADMAP.md + STATE.md criados; 72/72 requisitos mapeados em 8 fases
+Last session: 2026-04-18T20:06:11.455Z
+Stopped at: Completed 00-01-PLAN.md (Vitest + .gitignore + scaffold validation)
 Resume file: None
 
 **Next action:** `/gsd-plan-phase 0` para iniciar planning da fundação

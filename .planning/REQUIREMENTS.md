@@ -147,17 +147,102 @@ Explicit exclusions with reasoning.
 
 ## Traceability
 
-Will be populated by the roadmapper agent in the next step.
+Populated by roadmapper agent on 2026-04-18. Every v1 requirement is mapped to exactly one phase.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| (pending roadmap) | - | Pending |
+| FND-01 | Phase 0 | Pending |
+| FND-02 | Phase 0 | Pending |
+| FND-03 | Phase 0 | Pending |
+| FND-04 | Phase 0 | Pending |
+| FND-05 | Phase 0 | Pending |
+| FND-06 | Phase 0 | Pending |
+| FND-07 | Phase 0 | Pending |
+| FND-08 | Phase 0 | Pending |
+| SITE-01 | Phase 1 | Pending |
+| SITE-02 | Phase 1 | Pending |
+| SITE-03 | Phase 1 | Pending |
+| SITE-04 | Phase 1 | Pending |
+| SITE-05 | Phase 1 | Pending |
+| SITE-06 | Phase 1 | Pending |
+| SITE-07 | Phase 1 | Pending |
+| SITE-08 | Phase 1 | Pending |
+| SITE-09 | Phase 1 | Pending |
+| WIZ-01 | Phase 2 | Pending |
+| WIZ-02 | Phase 2 | Pending |
+| WIZ-03 | Phase 2 | Pending |
+| WIZ-04 | Phase 2 | Pending |
+| WIZ-05 | Phase 2 | Pending |
+| WIZ-06 | Phase 2 | Pending |
+| WIZ-07 | Phase 2 | Pending |
+| WIZ-08 | Phase 2 | Pending |
+| WIZ-09 | Phase 2 | Pending |
+| WIZ-10 | Phase 2 | Pending |
+| LGPD-01 | Phase 2 | Pending |
+| LGPD-02 | Phase 2 | Pending |
+| CART-01 | Phase 3 | Pending |
+| CART-02 | Phase 3 | Pending |
+| CART-03 | Phase 3 | Pending |
+| CART-04 | Phase 3 | Pending |
+| PAY-01 | Phase 4 | Pending |
+| PAY-02 | Phase 4 | Pending |
+| PAY-03 | Phase 4 | Pending |
+| PAY-04 | Phase 4 | Pending |
+| PAY-05 | Phase 4 | Pending |
+| PAY-06 | Phase 4 | Pending |
+| PAY-07 | Phase 4 | Pending |
+| PAY-08 | Phase 4 | Pending |
+| PAY-09 | Phase 4 | Pending |
+| COMM-01 | Phase 5 | Pending |
+| COMM-02 | Phase 5 | Pending |
+| COMM-03 | Phase 5 | Pending |
+| COMM-04 | Phase 5 | Pending |
+| COMM-05 | Phase 5 | Pending |
+| COMM-06 | Phase 5 | Pending |
+| COMM-07 | Phase 5 | Pending |
+| CLI-01 | Phase 6 | Pending |
+| CLI-02 | Phase 6 | Pending |
+| CLI-03 | Phase 6 | Pending |
+| CLI-04 | Phase 6 | Pending |
+| CLI-05 | Phase 6 | Pending |
+| CLI-06 | Phase 6 | Pending |
+| ADM-01 | Phase 6 | Pending |
+| ADM-02 | Phase 6 | Pending |
+| ADM-03 | Phase 6 | Pending |
+| ADM-04 | Phase 6 | Pending |
+| ADM-05 | Phase 6 | Pending |
+| ADM-06 | Phase 6 | Pending |
+| LGPD-03 | Phase 7 | Pending |
+| LGPD-04 | Phase 7 | Pending |
+| LGPD-05 | Phase 0 | Pending |
+| OPS-01 | Phase 7 | Pending |
+| OPS-02 | Phase 7 | Pending |
+| OPS-03 | Phase 7 | Pending |
+| OPS-04 | Phase 7 | Pending |
+| OPS-05 | Phase 7 | Pending |
+| OPS-06 | Phase 7 | Pending |
+| OPS-07 | Phase 7 | Pending |
+| OPS-08 | Phase 7 | Pending |
 
 **Coverage:**
-- v1 requirements: 62 total
-- Mapped to phases: 0 (pending)
-- Unmapped: 62 ⚠️
+- v1 requirements: 72 total (FND 8 + SITE 9 + WIZ 10 + CART 4 + PAY 9 + COMM 7 + CLI 6 + ADM 6 + LGPD 5 + OPS 8)
+- Mapped to phases: 72 (100%)
+- Unmapped: 0
+
+**Distribution by phase:**
+
+| Phase | Name | Count |
+|-------|------|-------|
+| 0 | Fundação & Guard-Rails | 9 (FND 8 + LGPD-05) |
+| 1 | Site Institucional | 9 (SITE 9) |
+| 2 | Wizard + Upload + LGPD | 12 (WIZ 10 + LGPD-01 + LGPD-02) |
+| 3 | Carrinho + Preços | 4 (CART 4) |
+| 4 | Checkout + Frete + Pagamento | 9 (PAY 9) |
+| 5 | Comunicação | 7 (COMM 7) |
+| 6 | Cliente + Admin | 12 (CLI 6 + ADM 6) |
+| 7 | Polimento + LGPD Op + Go-Live | 10 (LGPD-03 + LGPD-04 + OPS 8) |
+| **Total** | | **72** |
 
 ---
 *Requirements defined: 2026-04-18*
-*Last updated: 2026-04-18 after initial definition*
+*Traceability populated: 2026-04-18 by roadmapper (8 phases, 100% coverage)*

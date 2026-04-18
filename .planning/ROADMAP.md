@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   6. Seed cria os 5 produtos (livro principal, e-book, colorir, quebra-cabeça, adesivos) com preços do brief
 **Plans**: 5 plans
   - [x] 00-01-PLAN.md — Stack Next 14 + TS strict + Tailwind 3 + Vitest (FND-01)
-  - [ ] 00-02-PLAN.md — Prisma migrate contra Supabase pooler + seed dos 5 produtos (FND-02, FND-03, FND-08)
+  - [x] 00-02-PLAN.md — Prisma migrate contra Supabase pooler + seed dos 5 produtos (FND-02, FND-03, FND-08)
   - [ ] 00-03-PLAN.md — Páginas /login e /cadastro + tests das guardas em 3 camadas (FND-04, FND-05)
   - [ ] 00-04-PLAN.md — Sentry scrub PII compartilhado + tests do contrato WhatsApp (FND-06, FND-07, LGPD-05)
   - [ ] 00-05-PLAN.md — Verificação consolidada da fase (produz 00-VERIFICATION.md)

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 00-01-PLAN.md (Vitest + .gitignore + scaffold validation)
-last_updated: "2026-04-18T20:06:11.461Z"
+stopped_at: Completed 00-02-PLAN.md (Migration + seed + schema tests — 14 tests green). Pooler URL deviation tracked as blocker.
+last_updated: "2026-04-18T20:11:40.453Z"
 last_activity: 2026-04-18
 progress:
   total_phases: 8
   completed_phases: 0
   total_plans: 5
-  completed_plans: 1
-  percent: 20
+  completed_plans: 2
+  percent: 40
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-18)
 ## Current Position
 
 Phase: 0 (Fundação & Guard-Rails) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Status: Ready to execute
 Last activity: 2026-04-18
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0% (0/72 requirements delivered)
 
 *Updated after each plan completion*
 | Phase 00-funda-o-guard-rails P01 | 5 | 2 tasks | 12 files |
+| Phase 00-funda-o-guard-rails P02 | 12 | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Recent decisions affecting current work:
 - [Phase 00-funda-o-guard-rails]: Adotado pnpm como gerenciador de pacotes (lockfile reproducible, environment context)
 - [Phase 00-funda-o-guard-rails]: Auth.js v5 route handler pattern: const { GET, POST } = handlers (fix de bug no scaffold)
 - [Phase 00-funda-o-guard-rails]: Smoke test trava versoes pinned (Next 14.2.21 + React 18.3.1 + Tailwind ^3) para evitar upgrade acidental que quebraria react-pageflip
+- [Phase 00-funda-o-guard-rails]: Plan 02: Migration + seed aplicados no Supabase real (5 produtos, total R$ 589,50). 14 testes verdes (5 smoke + 9 schema).
+- [Phase 00-funda-o-guard-rails]: Plan 02: dotenv-cli como devDep padrão para carregar .env.local em scripts (Prisma, Vitest)
 
 ### Pending Todos
 
@@ -85,11 +88,12 @@ None yet.
 - Retenção exata de fotos pós-ENTREGUE — 90d é padrão; validar com cliente na Fase 2
 - MP sandbox + ngrok setup — validar webhook flow antes da Fase 5
 - A11y FlipBook — `react-pageflip` visual-first; planejar galeria linear alternativa na Fase 7
+- DATABASE_URL na porta 5432 (direct) em vez do pooler Supavisor 6543 — OBRIGATÓRIO trocar antes de Phase 7 (deploy Vercel). Pitfall #6. Ver 00-02-SUMMARY.md.
 
 ## Session Continuity
 
-Last session: 2026-04-18T20:06:11.455Z
-Stopped at: Completed 00-01-PLAN.md (Vitest + .gitignore + scaffold validation)
+Last session: 2026-04-18T20:11:40.447Z
+Stopped at: Completed 00-02-PLAN.md (Migration + seed + schema tests — 14 tests green). Pooler URL deviation tracked as blocker.
 Resume file: None
 
 **Next action:** `/gsd-plan-phase 0` para iniciar planning da fundação

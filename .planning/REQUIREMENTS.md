@@ -10,8 +10,8 @@
 - [x] **FND-01**: Next.js 14 App Router + TypeScript estrito + Tailwind configurado
 - [x] **FND-02**: Prisma + Supabase Postgres via Supavisor pooler (DATABASE_URL 6543 + DIRECT_URL 5432)
 - [x] **FND-03**: Schema Prisma completo (User, Product, Order, OrderItem, Customization, Address, OrderStatusHistory) + migrations
-- [ ] **FND-04**: Auth.js v5 configurado com email/senha + Google OAuth opcional
-- [ ] **FND-05**: Middleware de auth + helpers `requireAuth()` / `requireAdmin()` disponíveis globalmente
+- [x] **FND-04**: Auth.js v5 configurado com email/senha + Google OAuth opcional
+- [x] **FND-05**: Middleware de auth + helpers `requireAuth()` / `requireAdmin()` disponíveis globalmente
 - [ ] **FND-06**: Interface abstrata `lib/whatsapp.ts` (`sendMessage`) para permitir swap Evolution → WhatsApp Cloud
 - [ ] **FND-07**: Sentry configurado com `beforeSend` limpando PII (fotos, telefones, CPF)
 - [x] **FND-08**: Seed dos 5 produtos (livro principal, e-book, colorir, quebra-cabeça, adesivos) com preços do brief
@@ -154,8 +154,8 @@ Populated by roadmapper agent on 2026-04-18. Every v1 requirement is mapped to e
 | FND-01 | Phase 0 | Complete |
 | FND-02 | Phase 0 | Complete |
 | FND-03 | Phase 0 | Complete |
-| FND-04 | Phase 0 | Pending |
-| FND-05 | Phase 0 | Pending |
+| FND-04 | Phase 0 | Complete |
+| FND-05 | Phase 0 | Complete |
 | FND-06 | Phase 0 | Pending |
 | FND-07 | Phase 0 | Pending |
 | FND-08 | Phase 0 | Complete |

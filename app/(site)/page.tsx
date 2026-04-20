@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PRIMARY_CTA } from "@/lib/site-config";
+import FlipBookSection from "@/components/flipbook/FlipBookSection";
 
 export const metadata: Metadata = {
   title: "Livros infantis personalizados com IA",
@@ -96,6 +97,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <FlipBookSection />
 
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">

@@ -36,41 +36,44 @@ export default async function ProdutosPage() {
 
   return (
     <>
-      <section className="py-16 md:py-24 bg-gradient-to-b from-light to-primary/5">
+      <section className="py-16 md:py-24 bg-hero-warm">
         <div className="container mx-auto px-4 max-w-3xl text-center">
-          <h1 className="font-serif text-4xl md:text-5xl text-dark">
+          <h1 className="font-serif text-4xl md:text-5xl text-primary">
             Nossos produtos
           </h1>
-          <p className="mt-4 text-lg text-dark/70">
+          <p className="mt-4 text-lg text-dark/60">
             Monte o combo perfeito. Adicionais ganham{" "}
-            <strong className="text-primary">R$ 20 de desconto</strong> quando
-            comprados junto do livro principal.
+            <span className="text-fox font-semibold">R$ 20 de desconto</span>{" "}
+            quando comprados junto do livro principal.
           </p>
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-16 bg-cream-warm">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {products.map((p) => (
               <div
                 key={p.id}
-                className="bg-white rounded-2xl p-8 border border-primary/10 shadow-sm flex flex-col"
+                className="card-premium p-8 flex flex-col group"
               >
-                <div className="text-6xl" aria-hidden>
+                <div
+                  className="text-6xl group-hover:scale-110 transition-transform duration-250 inline-block"
+                  aria-hidden
+                >
                   {PRODUCT_TYPE_EMOJI[p.type] ?? "🎁"}
                 </div>
-                <h2 className="mt-4 font-serif text-2xl text-dark">{p.name}</h2>
-                <p className="mt-2 text-dark/70 text-sm flex-1">
+                <h2 className="mt-4 font-serif text-2xl text-primary">{p.name}</h2>
+                <p className="mt-2 text-dark/60 text-sm flex-1 leading-relaxed">
                   {p.description}
                 </p>
-                <div className="mt-4 flex items-baseline gap-3">
+                <div className="mt-5 flex items-baseline gap-3">
                   {p.priceOld && (
-                    <span className="text-dark/40 line-through text-sm">
+                    <span className="text-dark/35 line-through text-sm">
                       {formatBRL(Number(p.priceOld))}
                     </span>
                   )}
-                  <span className="text-primary font-serif text-2xl">
+                  <span className="text-fox font-serif text-2xl font-bold">
                     {formatBRL(Number(p.price))}
                   </span>
                 </div>
@@ -79,7 +82,7 @@ export default async function ProdutosPage() {
                   {p.type === "LIVRO_PRINCIPAL" ? (
                     <Link
                       href="/personalizar"
-                      className="inline-block bg-primary text-white px-5 py-2.5 rounded-full hover:bg-primary-dark transition text-sm font-medium"
+                      className="btn-primary"
                     >
                       Personalizar este livro →
                     </Link>
@@ -100,10 +103,7 @@ export default async function ProdutosPage() {
           </div>
 
           <div className="mt-16 text-center">
-            <Link
-              href={PRIMARY_CTA.href}
-              className="inline-block bg-primary text-white px-8 py-4 rounded-full hover:bg-primary-dark transition text-lg font-medium shadow-lg"
-            >
+            <Link href={PRIMARY_CTA.href} className="btn-primary-lg">
               {PRIMARY_CTA.label}
             </Link>
           </div>

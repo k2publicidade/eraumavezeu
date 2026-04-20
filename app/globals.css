@@ -2,16 +2,209 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================================
+   Era Uma Vez Eu — Global Styles v2.0
+   Paleta storybook premium extraída do selo circular da marca
+   ============================================================ */
+
 :root {
-  --text: #2c2c2c;
-  --text-muted: #6b7280;
+  --text: #1E2A3A;
+  --text-muted: #5a6a7e;
+  /* Texture sutil de papel — aplicada no body */
+  --paper-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
 }
 
+/* ── Base ─────────────────────────────────────────────────── */
 @layer base {
   html {
     scroll-behavior: smooth;
   }
+
   body {
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--text);
+    background-color: #FAF3DC;
+  }
+
+  /* Focus visível em todos os interativos — contraste AA */
+  :focus-visible {
+    outline: 3px solid #1E3A5F;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Seleção de texto com cor da marca */
+  ::selection {
+    background-color: rgba(232, 201, 74, 0.35);
+    color: #142845;
+  }
+
+  /* Scrollbar discreta */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #FAF3DC;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(30, 58, 95, 0.25);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(30, 58, 95, 0.45);
+  }
+}
+
+/* ── Components ──────────────────────────────────────────── */
+@layer components {
+  /* Botão primário — navy com shimmer dourado no hover */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-primary text-white
+           px-6 py-3 rounded-full
+           font-sans font-medium text-sm
+           shadow-md
+           transition-all duration-250
+           hover:bg-primary-light hover:shadow-lg
+           active:scale-95
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2;
+  }
+
+  /* Botão primário grande — hero/CTA section */
+  .btn-primary-lg {
+    @apply btn-primary px-8 py-4 text-base;
+  }
+
+  /* Botão secundário — forest */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2
+           bg-forest text-white
+           px-6 py-3 rounded-full
+           font-sans font-medium text-sm
+           shadow-sm
+           transition-all duration-250
+           hover:bg-forest-light hover:shadow-md
+           active:scale-95
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2;
+  }
+
+  /* Botão ghost — borda navy */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           bg-transparent text-primary
+           border-2 border-primary/25
+           px-6 py-3 rounded-full
+           font-sans font-medium text-sm
+           transition-all duration-250
+           hover:border-primary hover:bg-primary/5
+           active:scale-95
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+
+  /* Card premium — borda gold sutil */
+  .card-premium {
+    @apply bg-cream-light rounded-2xl
+           border border-gold/30
+           shadow-sm
+           transition-shadow duration-250
+           hover:shadow-md hover:border-gold/50;
+  }
+
+  /* Badge dourado */
+  .badge-gold {
+    @apply inline-flex items-center gap-1.5
+           bg-gold/15 text-primary
+           border border-gold/40
+           px-3 py-1 rounded-full
+           text-xs font-medium;
+  }
+
+  /* Badge forest */
+  .badge-forest {
+    @apply inline-flex items-center gap-1.5
+           bg-forest/10 text-forest-dark
+           border border-forest/25
+           px-3 py-1 rounded-full
+           text-xs font-medium;
+  }
+
+  /* Heading editorial */
+  .heading-display {
+    @apply font-serif text-primary leading-tight;
+  }
+
+  /* Seção com fundo cream e borda dourada no topo */
+  .section-warm {
+    @apply bg-cream-warm border-t border-gold/20;
+  }
+
+  /* Divisor decorativo dourado */
+  .divider-gold {
+    @apply h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent my-8;
+  }
+
+  /* Estrela decorativa SVG inline */
+  .star-deco {
+    @apply inline-block text-gold opacity-70 select-none;
+  }
+
+  /* Input field estilo premium */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl
+           border-2 border-primary/15 bg-cream-light
+           text-dark placeholder:text-dark/40
+           focus:border-primary focus:outline-none focus:bg-white
+           transition-colors duration-200;
+  }
+}
+
+/* ── Utilities ───────────────────────────────────────────── */
+@layer utilities {
+  /* Redução de animações para acessibilidade */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Gradient text navy */
+  .text-gradient-navy {
+    background: linear-gradient(135deg, #1E3A5F 0%, #2D548A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Gradient text gold */
+  .text-gradient-gold {
+    background: linear-gradient(135deg, #C4A832 0%, #E8C94A 50%, #F5D87E 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Paper texture overlay sutil */
+  .texture-paper::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: var(--paper-noise);
+    pointer-events: none;
+    border-radius: inherit;
+  }
+
+  /* Linha decorativa dourada sob headings */
+  .underline-gold {
+    text-decoration: underline;
+    text-decoration-color: rgba(232, 201, 74, 0.6);
+    text-underline-offset: 6px;
+    text-decoration-thickness: 2px;
   }
 }

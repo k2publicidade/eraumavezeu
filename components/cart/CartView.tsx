@@ -44,14 +44,14 @@ export default function CartView({ crossSellProducts }: Props) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-2xl p-10 text-center border border-primary/10">
-        <h2 className="font-serif text-2xl text-dark">Seu carrinho está vazio</h2>
-        <p className="mt-2 text-dark/60">
+      <div className="bg-cream-light rounded-2xl p-10 text-center border border-gold/25 shadow-sm">
+        <h2 className="font-serif text-2xl text-primary">Seu carrinho está vazio</h2>
+        <p className="mt-2 text-dark/55">
           Comece personalizando o livro principal.
         </p>
         <Link
           href="/personalizar"
-          className="inline-block mt-6 bg-primary text-white px-8 py-3 rounded-full hover:bg-primary-dark transition font-medium"
+          className="btn-primary-lg mt-6 inline-flex"
         >
           Criar meu livro
         </Link>
@@ -65,39 +65,39 @@ export default function CartView({ crossSellProducts }: Props) {
         {items.map((item) => (
           <article
             key={item.id}
-            className="bg-white rounded-2xl p-5 border border-primary/10 flex items-center gap-4"
+            className="bg-cream-light rounded-2xl p-5 border border-gold/25 flex items-center gap-4 shadow-xs"
           >
             <div className="flex-1">
-              <h3 className="font-serif text-lg text-dark">{item.name}</h3>
-              <p className="text-sm text-dark/60">{formatBRL(item.price)} cada</p>
+              <h3 className="font-serif text-lg text-primary">{item.name}</h3>
+              <p className="text-sm text-dark/55">{formatBRL(item.price)} cada</p>
             </div>
-            <div className="flex items-center border border-primary/20 rounded-full overflow-hidden">
+            <div className="flex items-center border border-gold/30 rounded-full overflow-hidden bg-cream">
               <button
                 type="button"
                 aria-label="Diminuir"
-                className="w-9 h-9 hover:bg-primary/10"
+                className="w-9 h-9 hover:bg-gold/20 transition-colors duration-150 text-primary font-medium"
                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
               >
                 −
               </button>
-              <span className="w-8 text-center text-sm">{item.quantity}</span>
+              <span className="w-8 text-center text-sm font-medium text-primary">{item.quantity}</span>
               <button
                 type="button"
                 aria-label="Aumentar"
-                className="w-9 h-9 hover:bg-primary/10"
+                className="w-9 h-9 hover:bg-gold/20 transition-colors duration-150 text-primary font-medium"
                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
               >
                 +
               </button>
             </div>
-            <div className="w-24 text-right font-medium text-dark">
+            <div className="w-24 text-right font-semibold text-primary">
               {formatBRL(item.price * item.quantity)}
             </div>
             <button
               type="button"
               aria-label={`Remover ${item.name}`}
               onClick={() => removeItem(item.id)}
-              className="text-dark/40 hover:text-red-600 transition text-xl leading-none px-2"
+              className="text-dark/35 hover:text-fox-dark transition-colors duration-150 text-xl leading-none px-2"
             >
               ×
             </button>
@@ -105,11 +105,11 @@ export default function CartView({ crossSellProducts }: Props) {
         ))}
 
         {hasMainBook && crossSellCandidates.length > 0 && (
-          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
-            <h3 className="font-serif text-lg text-dark">
-              💡 Economize R$ 20 adicionando
+          <div className="bg-gold/10 border border-gold/35 rounded-2xl p-6">
+            <h3 className="font-serif text-lg text-primary">
+              Economize R$ 20 adicionando
             </h3>
-            <p className="text-sm text-dark/60 mt-1 mb-4">
+            <p className="text-sm text-dark/55 mt-1 mb-4">
               Cada adicional entra com desconto combo.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -118,18 +118,18 @@ export default function CartView({ crossSellProducts }: Props) {
                   key={p.id}
                   type="button"
                   onClick={() => addItem(p)}
-                  className="text-left bg-white rounded-xl p-4 border border-primary/10 hover:border-primary transition"
+                  className="text-left bg-cream-light rounded-xl p-4 border border-gold/25 hover:border-gold/60 hover:shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
                 >
                   <div className="text-sm text-dark/60">{p.name}</div>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-dark/40 line-through text-xs">
+                    <span className="text-dark/35 line-through text-xs">
                       {formatBRL(p.price)}
                     </span>
-                    <span className="text-primary font-medium">
+                    <span className="text-fox font-semibold">
                       {formatBRL(Math.max(p.price - 20, 0))}
                     </span>
                   </div>
-                  <span className="mt-2 inline-block text-xs text-primary">
+                  <span className="mt-2 inline-block text-xs text-primary font-medium">
                     + Adicionar
                   </span>
                 </button>
@@ -139,30 +139,30 @@ export default function CartView({ crossSellProducts }: Props) {
         )}
       </section>
 
-      <aside className="bg-white rounded-2xl p-6 border border-primary/10 h-fit sticky top-24">
-        <h3 className="font-serif text-xl text-dark">Resumo</h3>
+      <aside className="bg-cream-light rounded-2xl p-6 border border-gold/25 shadow-sm h-fit sticky top-24">
+        <h3 className="font-serif text-xl text-primary">Resumo</h3>
 
         <dl className="mt-4 space-y-2 text-sm">
           <div className="flex justify-between">
-            <dt className="text-dark/70">Subtotal</dt>
+            <dt className="text-dark/60">Subtotal</dt>
             <dd className="text-dark">{formatBRL(totals.subtotal)}</dd>
           </div>
           {totals.discount > 0 && (
-            <div className="flex justify-between text-primary">
+            <div className="flex justify-between text-forest">
               <dt>Desconto combo ({totals.discountedUnits}x)</dt>
               <dd>− {formatBRL(totals.discount)}</dd>
             </div>
           )}
-          <div className="flex justify-between border-t border-primary/10 pt-3 mt-3 text-lg">
-            <dt className="font-medium text-dark">Total</dt>
-            <dd className="font-serif text-primary">
+          <div className="flex justify-between border-t border-gold/25 pt-3 mt-3 text-lg">
+            <dt className="font-semibold text-primary">Total</dt>
+            <dd className="font-serif text-fox font-bold">
               {formatBRL(totals.total)}
             </dd>
           </div>
         </dl>
 
         <div className="mt-6">
-          <label htmlFor="cep" className="text-sm text-dark/70">
+          <label htmlFor="cep" className="text-sm text-dark/60 font-medium">
             Calcular frete
           </label>
           <div className="mt-1 flex gap-2">
@@ -173,7 +173,7 @@ export default function CartView({ crossSellProducts }: Props) {
               placeholder="00000-000"
               value={cep}
               onChange={(e) => setCep(e.target.value.replace(/\D/g, "").slice(0, 8))}
-              className="flex-1 px-3 py-2 rounded-lg border-2 border-primary/15 focus:border-primary focus:outline-none text-sm"
+              className="flex-1 px-3 py-2 rounded-lg border-2 border-gold/25 bg-cream focus:border-primary focus:outline-none text-sm"
             />
             <button
               type="button"
@@ -184,25 +184,25 @@ export default function CartView({ crossSellProducts }: Props) {
                     : "Digite um CEP válido (8 dígitos).",
                 )
               }
-              className="px-4 py-2 rounded-lg border-2 border-primary/20 text-sm hover:border-primary"
+              className="px-4 py-2 rounded-lg border-2 border-gold/30 text-sm text-primary hover:border-primary hover:bg-gold/10 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               OK
             </button>
           </div>
           {shippingHint && (
-            <p className="mt-2 text-xs text-dark/60">{shippingHint}</p>
+            <p className="mt-2 text-xs text-dark/55">{shippingHint}</p>
           )}
         </div>
 
         <Link
           href="/checkout"
-          className="mt-6 block text-center bg-primary text-white px-6 py-3 rounded-full font-medium hover:bg-primary-dark transition"
+          className="btn-primary mt-6 w-full justify-center"
         >
           Ir para o checkout →
         </Link>
         <Link
           href="/produtos"
-          className="mt-3 block text-center text-sm text-dark/70 hover:text-primary"
+          className="mt-3 block text-center text-sm text-dark/55 hover:text-primary transition-colors duration-200"
         >
           Continuar comprando
         </Link>

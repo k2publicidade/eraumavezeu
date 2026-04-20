@@ -48,7 +48,7 @@ export default function RootLayout({
       lang="pt-BR"
       className={`${inter.variable} ${playfair.variable} ${dancing.variable}`}
     >
-      <body className="font-sans bg-light text-dark antialiased">
+      <body className="font-sans bg-cream text-dark antialiased">
         {children}
       </body>
     </html>

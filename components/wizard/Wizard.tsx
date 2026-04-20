@@ -44,7 +44,7 @@ export default function Wizard() {
     <div className="max-w-2xl mx-auto">
       <WizardProgress current={state.step} />
 
-      <div className="bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-primary/10">
+      <div className="bg-cream-light rounded-3xl p-6 md:p-10 shadow-sm border border-gold/25">
         {state.step === 1 && (
           <StepShell
             title="Qual o tema da história?"
@@ -135,9 +135,9 @@ export default function Wizard() {
             type="button"
             onClick={() => state.prev()}
             disabled={state.step === 1}
-            className="px-6 py-3 rounded-full border-2 border-primary/20 text-dark/70 hover:border-primary disabled:opacity-30 disabled:cursor-not-allowed transition"
+            className="btn-ghost disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            Voltar
+            ← Voltar
           </button>
 
           {state.step < 7 ? (
@@ -145,7 +145,7 @@ export default function Wizard() {
               type="button"
               onClick={() => state.next()}
               disabled={!canNext}
-              className="px-8 py-3 rounded-full bg-primary text-white font-medium hover:bg-primary-dark disabled:bg-primary/30 disabled:cursor-not-allowed transition"
+              className="btn-primary disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
             >
               Próximo →
             </button>
@@ -169,8 +169,8 @@ function StepShell({
 }) {
   return (
     <div>
-      <h2 className="font-serif text-2xl md:text-3xl text-dark">{title}</h2>
-      <p className="mt-2 text-dark/60 mb-8">{subtitle}</p>
+      <h2 className="font-serif text-2xl md:text-3xl text-primary">{title}</h2>
+      <p className="mt-2 text-dark/55 mb-8 leading-relaxed">{subtitle}</p>
       {children}
     </div>
   );
@@ -209,9 +209,10 @@ function DedicationReview() {
       <div>
         <label
           htmlFor="dedication"
-          className="block font-medium text-dark mb-2"
+          className="block font-medium text-primary mb-2"
         >
-          Dedicatória (opcional, máx. 300 caracteres)
+          Dedicatória{" "}
+          <span className="font-normal text-dark/50 text-sm">(opcional, máx. 300 caracteres)</span>
         </label>
         <textarea
           id="dedication"
@@ -219,28 +220,30 @@ function DedicationReview() {
           onChange={(e) => state.setDedication(e.target.value.slice(0, 300))}
           rows={4}
           placeholder="Para a minha filha Sofia, que transforma todo dia em aventura…"
-          className="w-full px-4 py-3 rounded-xl border-2 border-primary/20 bg-white focus:border-primary focus:outline-none"
+          className="input-field font-script text-lg placeholder:font-sans placeholder:text-sm"
         />
-        <p className="text-xs text-dark/50 mt-1">
+        <p className="text-xs text-dark/45 mt-1 text-right">
           {state.dedication.length}/300
         </p>
       </div>
 
       {state.dedication && (
-        <div className="bg-light rounded-2xl p-6 border border-primary/10">
-          <p className="text-xs text-dark/60 mb-2">Preview da página de rosto</p>
-          <p className="font-script text-2xl text-secondary leading-snug">
+        <div className="bg-cream rounded-2xl p-6 border border-gold/30 shadow-xs">
+          <p className="text-xs text-dark/50 mb-3 uppercase tracking-wide font-medium">
+            Preview da página de rosto
+          </p>
+          <p className="font-script text-2xl text-primary leading-snug">
             {state.dedication}
           </p>
         </div>
       )}
 
-      <details className="bg-light rounded-2xl border border-primary/10 overflow-hidden">
-        <summary className="cursor-pointer px-6 py-4 font-medium text-dark">
+      <details className="bg-cream rounded-2xl border border-gold/25 overflow-hidden">
+        <summary className="cursor-pointer px-6 py-4 font-medium text-primary hover:bg-gold/10 transition-colors duration-200">
           Ver resumo da personalização
         </summary>
-        <div className="px-6 pb-5 text-sm text-dark/80 space-y-1">
-          <p>Nome: <strong>{state.childName || "(vazio)"}</strong></p>
+        <div className="px-6 pb-5 text-sm text-dark/75 space-y-2 border-t border-gold/15 pt-4">
+          <p>Nome: <strong className="text-primary">{state.childName || "(vazio)"}</strong></p>
           <p>Tema: {state.theme ?? "—"}</p>
           <p>Gênero: {state.genre ?? "—"}</p>
           <p>Estilo: {state.artStyle ?? "—"}</p>
@@ -251,11 +254,11 @@ function DedicationReview() {
       </details>
 
       {promptPreview && (
-        <details className="bg-dark text-light/90 rounded-2xl overflow-hidden">
-          <summary className="cursor-pointer px-6 py-4 font-medium">
+        <details className="bg-primary text-cream/90 rounded-2xl overflow-hidden">
+          <summary className="cursor-pointer px-6 py-4 font-medium hover:bg-primary-light transition-colors duration-200">
             Prévia do prompt IA (equipe)
           </summary>
-          <pre className="px-6 pb-5 text-xs whitespace-pre-wrap font-mono">
+          <pre className="px-6 pb-5 text-xs whitespace-pre-wrap font-mono border-t border-cream/10 pt-4">
             {promptPreview}
           </pre>
         </details>
@@ -272,7 +275,7 @@ function FinishButton() {
     <button
       type="button"
       disabled={!complete}
-      className="px-8 py-3 rounded-full bg-secondary text-white font-medium hover:opacity-90 disabled:bg-secondary/30 disabled:cursor-not-allowed transition"
+      className="btn-secondary disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
       onClick={() => {
         // Phase 3 vai implementar: persistir customization + adicionar ao carrinho.
         // Por ora, só sinaliza pro usuário que o wizard está completo.

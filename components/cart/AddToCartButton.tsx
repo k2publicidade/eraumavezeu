@@ -28,7 +28,7 @@ export default function AddToCartButton({
       }}
       className={
         className ??
-        "bg-primary text-white px-5 py-2.5 rounded-full hover:bg-primary-dark transition text-sm font-medium"
+        "btn-primary"
       }
     >
       {justAdded ? "✓ Adicionado" : label}

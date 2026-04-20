@@ -17,26 +17,38 @@ function whatsappHref() {
 
 export default function Footer() {
   return (
-    <footer className="bg-dark text-light mt-auto">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div>
-            <h3 className="font-serif text-2xl text-primary mb-3">
+    <footer className="bg-primary text-cream mt-auto">
+      {/* Faixa dourada decorativa no topo do footer */}
+      <div className="h-1 bg-gradient-to-r from-gold-dark via-gold to-gold-warm" aria-hidden="true" />
+
+      <div className="container mx-auto px-4 py-14">
+        {/* Grid principal */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+          {/* Coluna da marca */}
+          <div className="md:col-span-1">
+            <h3 className="font-serif text-2xl text-gold-warm mb-1">
               {SITE_NAME}
             </h3>
-            <p className="text-light/70 text-sm leading-relaxed">
+            <p className="text-cream/65 text-sm leading-relaxed mt-3">
               {SITE_TAGLINE}
             </p>
+            {/* Estrelinhas decorativas */}
+            <div className="mt-5 flex gap-1 text-gold/50 text-xs select-none" aria-hidden="true">
+              ✦ ✦ ✦
+            </div>
           </div>
 
+          {/* Navegação */}
           <div>
-            <h4 className="font-serif text-lg mb-3">Navegação</h4>
-            <ul className="space-y-2">
+            <h4 className="font-serif text-base text-gold-warm mb-4 uppercase tracking-wide text-xs">
+              Navegação
+            </h4>
+            <ul className="space-y-2.5">
               {NAV_ITEMS.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-light/70 hover:text-primary transition text-sm"
+                    className="text-cream/65 hover:text-gold-warm transition-colors duration-200 text-sm"
                   >
                     {item.label}
                   </Link>
@@ -45,15 +57,18 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Atendimento */}
           <div>
-            <h4 className="font-serif text-lg mb-3">Atendimento</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="font-serif text-base text-gold-warm mb-4 uppercase tracking-wide text-xs">
+              Atendimento
+            </h4>
+            <ul className="space-y-2.5 text-sm">
               <li>
                 <a
                   href={whatsappHref()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-light/70 hover:text-primary transition"
+                  className="text-cream/65 hover:text-gold-warm transition-colors duration-200"
                 >
                   WhatsApp
                 </a>
@@ -61,7 +76,7 @@ export default function Footer() {
               <li>
                 <a
                   href={`mailto:${CONTACT_EMAIL}`}
-                  className="text-light/70 hover:text-primary transition"
+                  className="text-cream/65 hover:text-gold-warm transition-colors duration-200"
                 >
                   {CONTACT_EMAIL}
                 </a>
@@ -69,16 +84,19 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Redes sociais */}
           <div>
-            <h4 className="font-serif text-lg mb-3">Redes</h4>
-            <ul className="space-y-2 text-sm">
+            <h4 className="font-serif text-base text-gold-warm mb-4 uppercase tracking-wide text-xs">
+              Redes
+            </h4>
+            <ul className="space-y-2.5 text-sm">
               {SOCIAL_LINKS.map((social) => (
                 <li key={social.platform}>
                   <a
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-light/70 hover:text-primary transition"
+                    className="text-cream/65 hover:text-gold-warm transition-colors duration-200"
                   >
                     {social.label}
                   </a>
@@ -88,14 +106,14 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-light/10 mt-8 pt-6 flex flex-col md:flex-row justify-between gap-2 text-xs text-light/60">
+        {/* Rodapé inferior */}
+        <div className="border-t border-cream/10 mt-10 pt-6 flex flex-col md:flex-row justify-between gap-2 text-xs text-cream/45">
           <span>
-            © {new Date().getFullYear()} {SITE_NAME}. Todos os direitos
-            reservados.
+            © {new Date().getFullYear()} {SITE_NAME}. Todos os direitos reservados.
           </span>
           <Link
             href="/privacidade"
-            className="hover:text-primary transition"
+            className="hover:text-gold-warm transition-colors duration-200"
           >
             Política de Privacidade
           </Link>

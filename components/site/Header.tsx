@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { NAV_ITEMS, PRIMARY_CTA, SITE_NAME } from "@/lib/site-config";
+import CartBadge from "./CartBadge";
 import MobileNav from "./MobileNav";
 
 export default function Header() {
@@ -29,9 +30,13 @@ export default function Header() {
           >
             {PRIMARY_CTA.label}
           </Link>
+          <CartBadge />
         </nav>
 
-        <MobileNav />
+        <div className="flex items-center gap-2 md:hidden">
+          <CartBadge />
+          <MobileNav />
+        </div>
       </div>
     </header>
   );

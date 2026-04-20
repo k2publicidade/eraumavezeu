@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { PRIMARY_CTA } from "@/lib/site-config";
+import AddToCartButton from "@/components/cart/AddToCartButton";
+import type { ProductType } from "@/lib/cart/types";
 
 export const metadata: Metadata = {
   title: "Produtos",
@@ -71,6 +73,27 @@ export default async function ProdutosPage() {
                   <span className="text-primary font-serif text-2xl">
                     {formatBRL(Number(p.price))}
                   </span>
+                </div>
+
+                <div className="mt-6">
+                  {p.type === "LIVRO_PRINCIPAL" ? (
+                    <Link
+                      href="/personalizar"
+                      className="inline-block bg-primary text-white px-5 py-2.5 rounded-full hover:bg-primary-dark transition text-sm font-medium"
+                    >
+                      Personalizar este livro →
+                    </Link>
+                  ) : (
+                    <AddToCartButton
+                      product={{
+                        id: p.id,
+                        slug: p.slug,
+                        name: p.name,
+                        type: p.type as ProductType,
+                        price: Number(p.price),
+                      }}
+                    />
+                  )}
                 </div>
               </div>
             ))}

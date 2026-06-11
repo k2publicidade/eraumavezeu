@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { formatBRL } from "@/lib/format";
 import { orderCodeOf } from "@/lib/orders/build-order";
+import { statusLabelOf } from "@/lib/orders/status";
 
 // lê o banco a cada request — nunca prerender (id é cuid não-enumerável)
 export const dynamic = "force-dynamic";
@@ -11,16 +12,6 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Pedido recebido",
   robots: { index: false, follow: false },
-};
-
-const STATUS_LABELS: Record<string, string> = {
-  AGUARDANDO_PAGAMENTO: "Aguardando pagamento",
-  PAGAMENTO_CONFIRMADO: "Pagamento confirmado",
-  EM_PRODUCAO: "Em produção",
-  AGUARDANDO_ENVIO: "Aguardando envio",
-  ENVIADO: "Enviado",
-  ENTREGUE: "Entregue",
-  CANCELADO: "Cancelado",
 };
 
 export default async function PedidoPage({ params }: { params: { id: string } }) {
@@ -53,8 +44,13 @@ export default async function PedidoPage({ params }: { params: { id: string } })
             confirmar as fotos e enviar o link de pagamento.
           </p>
           <p className="mt-4 inline-block rounded-full border border-gold/30 bg-cream px-4 py-1.5 text-sm font-medium text-primary">
-            Status: {STATUS_LABELS[order.status] ?? order.status}
+            Status: {statusLabelOf(order.status)}
           </p>
+          {order.trackingCode && (
+            <p className="mt-3 text-sm text-dark/70">
+              Código de rastreio: <strong>{order.trackingCode}</strong>
+            </p>
+          )}
         </div>
 
         <div className="card-premium mt-6 p-6 md:p-8">
@@ -115,9 +111,15 @@ export default async function PedidoPage({ params }: { params: { id: string } })
           </div>
         )}
 
-        <div className="mt-8 text-center">
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
           <Link href="/" className="btn-primary inline-flex">
             Voltar para a página inicial
+          </Link>
+          <Link
+            href="/pedidos"
+            className="inline-flex items-center text-sm text-dark/60 hover:text-primary"
+          >
+            Acompanhar meus pedidos →
           </Link>
         </div>
       </div>

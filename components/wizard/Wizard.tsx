@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCartStore } from "@/lib/cart/store";
 import { useWizardStore } from "@/lib/wizard/store";
 import {
   AGE_RANGES,
@@ -12,6 +14,7 @@ import {
 import ChoiceGrid from "./ChoiceGrid";
 import PhotoStep from "./PhotoStep";
 import WizardProgress from "./WizardProgress";
+import BookPreview3D from "@/components/preview3d/BookPreview3D";
 import { gerarPromptIA } from "@/lib/wizard/prompt";
 
 function useHydrated() {
@@ -20,8 +23,22 @@ function useHydrated() {
   return hydrated;
 }
 
+// evita montar dois contextos WebGL (prévia desktop + mobile) ao mesmo tempo
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setIsDesktop(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isDesktop;
+}
+
 export default function Wizard() {
   const hydrated = useHydrated();
+  const isDesktop = useIsDesktop();
   const state = useWizardStore();
 
   useEffect(() => {
@@ -41,8 +58,12 @@ export default function Wizard() {
   const canNext = computeCanNext(state);
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="mx-auto max-w-6xl lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:items-start lg:gap-10">
+      <div className="mx-auto w-full max-w-2xl">
       <WizardProgress current={state.step} />
+
+      {/* prévia 3D no mobile — sob demanda em qualquer passo, aberta no final */}
+      {!isDesktop && <MobilePreview step={state.step} />}
 
       <div className="bg-cream-light rounded-3xl p-6 md:p-10 shadow-sm border border-gold/25">
         {state.step === 1 && (
@@ -154,6 +175,51 @@ export default function Wizard() {
           )}
         </div>
       </div>
+      </div>
+
+      {/* prévia 3D fixa no desktop — atualiza ao vivo a cada escolha */}
+      {isDesktop && (
+        <aside className="lg:sticky lg:top-24">
+          <BookPreview3D />
+        </aside>
+      )}
+    </div>
+  );
+}
+
+// Monta o Canvas WebGL só quando o usuário pede (ou no passo 7),
+// evitando custo de GPU durante os passos iniciais no mobile.
+function MobilePreview({ step }: { step: number }) {
+  const [requested, setRequested] = useState(false);
+  const visible = requested || step === 7;
+
+  if (!visible) {
+    return (
+      <button
+        type="button"
+        onClick={() => setRequested(true)}
+        className="mb-8 w-full rounded-2xl border border-gold/30 bg-cream-light px-5 py-4 text-left shadow-sm transition-colors duration-200 hover:bg-gold/10"
+      >
+        <span className="font-medium text-primary">📖 Ver prévia 3D do seu livro</span>
+        <span className="mt-1 block text-xs text-dark/50">
+          A capa muda ao vivo conforme você personaliza.
+        </span>
+      </button>
+    );
+  }
+
+  return (
+    <div className="mb-8">
+      <BookPreview3D />
+      {step !== 7 && (
+        <button
+          type="button"
+          onClick={() => setRequested(false)}
+          className="mt-2 w-full text-center text-xs text-dark/50 hover:text-primary"
+        >
+          Ocultar prévia
+        </button>
+      )}
     </div>
   );
 }
@@ -268,7 +334,9 @@ function DedicationReview() {
 }
 
 function FinishButton() {
+  const router = useRouter();
   const state = useWizardStore();
+  const addItem = useCartStore((s) => s.addItem);
   const complete = computeCanNext({ ...state, step: 7 });
 
   return (
@@ -277,11 +345,14 @@ function FinishButton() {
       disabled={!complete}
       className="btn-secondary disabled:opacity-30 disabled:cursor-not-allowed disabled:pointer-events-none"
       onClick={() => {
-        // Phase 3 vai implementar: persistir customization + adicionar ao carrinho.
-        // Por ora, só sinaliza pro usuário que o wizard está completo.
-        alert(
-          "Personalização completa! O carrinho será habilitado na próxima fase.",
-        );
+        addItem({
+          id: `livro-personalizado-${state.childName.trim().toLowerCase().replace(/\s+/g, "-")}`,
+          slug: "livro-principal-capa-dura",
+          name: `Livro personalizado — ${state.childName.trim()}`,
+          type: "LIVRO_PRINCIPAL",
+          price: 249.9,
+        });
+        router.push("/carrinho");
       }}
     >
       Finalizar →

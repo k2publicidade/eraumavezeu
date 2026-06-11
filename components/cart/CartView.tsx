@@ -65,16 +65,16 @@ export default function CartView({ crossSellProducts }: Props) {
         {items.map((item) => (
           <article
             key={item.id}
-            className="bg-cream-light rounded-2xl p-5 border border-gold/25 flex items-center gap-4 shadow-xs"
+            className="bg-cream-light rounded-2xl p-5 border border-gold/25 flex flex-col sm:flex-row sm:items-center gap-4 shadow-xs"
           >
             <div className="flex-1">
               <h3 className="font-serif text-lg text-primary">{item.name}</h3>
               <p className="text-sm text-dark/55">{formatBRL(item.price)} cada</p>
             </div>
-            <div className="flex items-center border border-gold/30 rounded-full overflow-hidden bg-cream">
+            <div className="flex items-center border border-gold/30 rounded-full overflow-hidden bg-cream self-start sm:self-auto">
               <button
                 type="button"
-                aria-label="Diminuir"
+                aria-label={`Diminuir quantidade de ${item.name}`}
                 className="w-9 h-9 hover:bg-gold/20 transition-colors duration-150 text-primary font-medium"
                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
               >
@@ -83,14 +83,14 @@ export default function CartView({ crossSellProducts }: Props) {
               <span className="w-8 text-center text-sm font-medium text-primary">{item.quantity}</span>
               <button
                 type="button"
-                aria-label="Aumentar"
+                aria-label={`Aumentar quantidade de ${item.name}`}
                 className="w-9 h-9 hover:bg-gold/20 transition-colors duration-150 text-primary font-medium"
                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
               >
                 +
               </button>
             </div>
-            <div className="w-24 text-right font-semibold text-primary">
+            <div className="w-full sm:w-24 sm:text-right font-semibold text-primary">
               {formatBRL(item.price * item.quantity)}
             </div>
             <button

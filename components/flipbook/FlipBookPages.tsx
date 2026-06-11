@@ -89,8 +89,8 @@ export const SAMPLE_PAGES = [
         </div>
         <p className="font-serif text-lg text-primary/85 leading-relaxed">
           Numa manhã de sol, <strong>Sofia</strong> encontrou uma borboleta
-          dourada na janela do seu quarto. "Venha, Sofia", disse a borboleta,
-          "a floresta está esperando por você."
+          dourada na janela do seu quarto. &ldquo;Venha, Sofia&rdquo;, disse a borboleta,
+          &ldquo;a floresta está esperando por você.&rdquo;
         </p>
         <p className="text-right text-dark/35 text-xs mt-auto">— 1 —</p>
       </>
@@ -122,9 +122,9 @@ export const SAMPLE_PAGES = [
           🦊
         </div>
         <p className="font-serif text-lg text-primary/85 leading-relaxed">
-          No coração da floresta, uma raposa ruiva apareceu. "Preciso da sua
-          coragem, Sofia", disse ela. "A árvore mais antiga da floresta está
-          triste — e só você pode fazer ela sorrir de novo."
+          No coração da floresta, uma raposa ruiva apareceu. &ldquo;Preciso da sua
+          coragem, Sofia&rdquo;, disse ela. &ldquo;A árvore mais antiga da floresta está
+          triste — e só você pode fazer ela sorrir de novo.&rdquo;
         </p>
         <p className="text-right text-dark/35 text-xs mt-auto">— 3 —</p>
       </>

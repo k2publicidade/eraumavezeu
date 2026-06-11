@@ -174,20 +174,14 @@
     }
   }
 
-  /* Gradient text navy */
+  /* Texto navy premium — sólido para leitura mais editorial */
   .text-gradient-navy {
-    background: linear-gradient(135deg, #1E3A5F 0%, #2D548A 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #1E3A5F;
   }
 
-  /* Gradient text gold */
+  /* Texto dourado premium — sólido para evitar efeito decorativo excessivo */
   .text-gradient-gold {
-    background: linear-gradient(135deg, #C4A832 0%, #E8C94A 50%, #F5D87E 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #C4A832;
   }
 
   /* Paper texture overlay sutil */

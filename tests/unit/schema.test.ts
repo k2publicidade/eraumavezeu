@@ -9,10 +9,11 @@ import { PrismaClient, ProductType } from "@prisma/client";
 //   - `pnpm db:seed` já executado (Task 2)
 //   - DATABASE_URL válida exportada (via `dotenv -e .env.local` ou shell do CI)
 //
-// Rodar: `npx dotenv -e .env.local -- pnpm test tests/unit/schema.test.ts`
-const prisma = new PrismaClient();
+// Rodar: `RUN_DB_TESTS=true npx dotenv -e .env.local -- pnpm test tests/unit/schema.test.ts`
+const shouldRunDbTests = process.env.RUN_DB_TESTS === "true";
+const prisma = shouldRunDbTests ? new PrismaClient() : null;
 
-describe("seed products (FND-08)", () => {
+describe.skipIf(!shouldRunDbTests)("seed products (FND-08)", () => {
   beforeAll(() => {
     // sanity: se DATABASE_URL não estiver setado, falha explícito em vez de
     // travar numa conexão default do Prisma que confunde o relatório.
@@ -24,16 +25,16 @@ describe("seed products (FND-08)", () => {
   });
 
   afterAll(async () => {
-    await prisma.$disconnect();
+    await prisma?.$disconnect();
   });
 
   it("gravou exatamente 5 produtos", async () => {
-    const count = await prisma.product.count();
+    const count = await prisma!.product.count();
     expect(count).toBe(5);
   });
 
   it("livro principal: slug, nome, preço, tipo, active", async () => {
-    const p = await prisma.product.findUnique({
+    const p = await prisma!.product.findUnique({
       where: { slug: "livro-principal-capa-dura" },
     });
     expect(p).not.toBeNull();
@@ -51,7 +52,7 @@ describe("seed products (FND-08)", () => {
   ] as const)(
     "adicional %s com preço %s e type %s",
     async (slug, preco, tipo) => {
-      const p = await prisma.product.findUnique({ where: { slug } });
+      const p = await prisma!.product.findUnique({ where: { slug } });
       expect(p).not.toBeNull();
       expect(Number(p!.price)).toBeCloseTo(preco, 2);
       expect(p!.type).toBe(tipo);
@@ -60,7 +61,7 @@ describe("seed products (FND-08)", () => {
   );
 
   it("soma dos 4 adicionais = 339.60 (base pro combo da Fase 3)", async () => {
-    const adicionais = await prisma.product.findMany({
+    const adicionais = await prisma!.product.findMany({
       where: {
         slug: {
           in: ["ebook", "livro-colorir", "quebra-cabeca", "cartela-adesivos"],
@@ -72,12 +73,12 @@ describe("seed products (FND-08)", () => {
   });
 
   it("todos os 5 produtos estão ativos", async () => {
-    const inativos = await prisma.product.count({ where: { active: false } });
+    const inativos = await prisma!.product.count({ where: { active: false } });
     expect(inativos).toBe(0);
   });
 
   it("soma total dos 5 produtos = 589.50", async () => {
-    const todos = await prisma.product.findMany();
+    const todos = await prisma!.product.findMany();
     const soma = todos.reduce((acc, p) => acc + Number(p.price), 0);
     expect(soma).toBeCloseTo(589.5, 2);
   });

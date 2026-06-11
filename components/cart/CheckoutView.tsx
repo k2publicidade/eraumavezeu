@@ -1,9 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { WHATSAPP_MESSAGE_DEFAULT, WHATSAPP_NUMBER } from "@/lib/site-config";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { z } from "zod";
+import { createOrder } from "@/app/actions/create-order";
+import { lookupCep } from "@/lib/cep";
 import { useCartStore } from "@/lib/cart/store";
+import { checkoutSchema } from "@/lib/validators/order";
+
+// buyer + address vêm do form; items entram programaticamente do carrinho
+const formSchema = checkoutSchema.pick({ buyer: true, address: true });
+type FormValues = z.output<typeof formSchema>;
 
 function formatBRL(value: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -20,22 +30,68 @@ function useHydrated() {
 
 export default function CheckoutView() {
   const hydrated = useHydrated();
+  const router = useRouter();
   const items = useCartStore((s) => s.items);
+  const clear = useCartStore((s) => s.clear);
   const getTotals = useCartStore((s) => s.getTotals);
   const totals = hydrated ? getTotals() : { subtotal: 0, discount: 0, total: 0, discountedUnits: 0 };
 
-  const whatsappHref = useMemo(() => {
-    const lines = [
-      WHATSAPP_MESSAGE_DEFAULT,
-      "",
-      "Resumo do carrinho:",
-      ...items.map((item) => `- ${item.quantity}x ${item.name}: ${formatBRL(item.price * item.quantity)}`),
-      totals.discount > 0 ? `Desconto combo: -${formatBRL(totals.discount)}` : null,
-      `Total: ${formatBRL(totals.total)}`,
-    ].filter(Boolean);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [cepLoading, setCepLoading] = useState(false);
 
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(lines.join("\n"))}`;
-  }, [items, totals.discount, totals.total]);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      buyer: { name: "", email: "", phone: "", whatsappOptIn: true },
+      address: {
+        zipCode: "",
+        street: "",
+        number: "",
+        complement: "",
+        district: "",
+        city: "",
+        state: "",
+      },
+    },
+  });
+
+  async function handleCepBlur(e: React.FocusEvent<HTMLInputElement>) {
+    const cep = e.target.value.replace(/\D/g, "");
+    if (cep.length !== 8) return;
+    setCepLoading(true);
+    const found = await lookupCep(cep);
+    setCepLoading(false);
+    if (!found) return;
+    // só preenche o que veio — CEPs gerais não trazem logradouro
+    if (found.street) setValue("address.street", found.street);
+    if (found.district) setValue("address.district", found.district);
+    if (found.city) setValue("address.city", found.city);
+    if (found.state) setValue("address.state", found.state);
+  }
+
+  const onSubmit = handleSubmit(async (data) => {
+    setServerError(null);
+    const res = await createOrder({
+      buyer: data.buyer,
+      address: data.address,
+      items: items.map((it) => ({
+        slug: it.slug,
+        quantity: it.quantity,
+        customization: it.customization,
+      })),
+    });
+    if (res.ok) {
+      clear();
+      router.push(`/pedido/${res.orderId}`);
+    } else {
+      setServerError(res.error);
+    }
+  });
 
   if (!hydrated) {
     return <div className="text-center py-20 text-dark/60">Carregando checkout…</div>;
@@ -56,52 +112,185 @@ export default function CheckoutView() {
   return (
     <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8">
       <section className="card-premium p-6 md:p-8">
-        <p className="badge-gold">Checkout assistido</p>
+        <p className="badge-gold">Quase lá!</p>
         <h1 className="mt-4 font-serif text-3xl md:text-4xl text-primary">
           Dados para finalizar o pedido
         </h1>
         <p className="mt-3 text-dark/70 leading-relaxed">
-          Para a apresentação, este checkout já mostra o fluxo final: dados do comprador,
-          endereço, escolha de pagamento e fechamento assistido pelo WhatsApp. A integração
-          automática com Mercado Pago e Melhor Envio entra na próxima entrega técnica.
+          Confirme seus dados e o endereço de entrega. Depois do registro do pedido,
+          nossa equipe envia o link de pagamento e acompanha tudo com você pelo WhatsApp.
         </p>
 
-        <div className="mt-8 grid md:grid-cols-2 gap-4">
-          <label className="block">
-            <span className="text-sm font-medium text-primary">Nome completo</span>
-            <input className="input-field mt-1" placeholder="Ex.: Mariana Souza" />
-          </label>
-          <label className="block">
-            <span className="text-sm font-medium text-primary">E-mail</span>
-            <input className="input-field mt-1" type="email" placeholder="voce@email.com" />
-          </label>
-          <label className="block">
-            <span className="text-sm font-medium text-primary">WhatsApp</span>
-            <input className="input-field mt-1" inputMode="tel" placeholder="(11) 99999-9999" />
-          </label>
-          <label className="block">
-            <span className="text-sm font-medium text-primary">CEP</span>
-            <input className="input-field mt-1" inputMode="numeric" placeholder="00000-000" />
-          </label>
-          <label className="block md:col-span-2">
-            <span className="text-sm font-medium text-primary">Endereço de entrega</span>
-            <input className="input-field mt-1" placeholder="Rua, número, complemento, bairro, cidade/UF" />
-          </label>
-        </div>
+        <form onSubmit={onSubmit} noValidate>
+          <fieldset className="mt-8 grid md:grid-cols-2 gap-4" disabled={isSubmitting}>
+            <legend className="sr-only">Dados do comprador</legend>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">Nome completo</span>
+              <input
+                {...register("buyer.name")}
+                className="input-field mt-1"
+                autoComplete="name"
+                placeholder="Ex.: Mariana Souza"
+                aria-invalid={!!errors.buyer?.name}
+              />
+              {errors.buyer?.name && (
+                <span className="mt-1 block text-xs text-red-600">Informe seu nome completo.</span>
+              )}
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">E-mail</span>
+              <input
+                {...register("buyer.email")}
+                className="input-field mt-1"
+                type="email"
+                autoComplete="email"
+                placeholder="voce@email.com"
+                aria-invalid={!!errors.buyer?.email}
+              />
+              {errors.buyer?.email && (
+                <span className="mt-1 block text-xs text-red-600">E-mail inválido.</span>
+              )}
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">WhatsApp / Telefone</span>
+              <input
+                {...register("buyer.phone")}
+                className="input-field mt-1"
+                inputMode="tel"
+                autoComplete="tel-national"
+                placeholder="(11) 99999-9999"
+                aria-invalid={!!errors.buyer?.phone}
+              />
+              {errors.buyer?.phone && (
+                <span className="mt-1 block text-xs text-red-600">
+                  Telefone inválido — use DDD + número.
+                </span>
+              )}
+            </label>
+            <label className="flex items-end gap-2 pb-2">
+              <input
+                {...register("buyer.whatsappOptIn")}
+                type="checkbox"
+                className="h-4 w-4 accent-primary"
+              />
+              <span className="text-sm text-dark/70">
+                Quero receber atualizações do pedido pelo WhatsApp
+              </span>
+            </label>
+          </fieldset>
 
-        <div className="mt-8 rounded-2xl border border-gold/30 bg-cream p-5">
-          <h2 className="font-serif text-xl text-primary">Pagamento</h2>
-          <div className="mt-3 grid sm:grid-cols-3 gap-3 text-sm">
-            {['PIX', 'Cartão', 'Boleto'].map((method) => (
-              <div key={method} className="rounded-xl border border-gold/25 bg-cream-light px-4 py-3 text-primary font-medium">
-                {method}
-              </div>
-            ))}
-          </div>
-          <p className="mt-3 text-xs text-dark/60">
-            Mercado Pago: PIX/cartão/boleto preparado no escopo; webhook e preferência ficam como pendência técnica.
+          <fieldset className="mt-8 grid md:grid-cols-2 gap-4" disabled={isSubmitting}>
+            <legend className="font-serif text-xl text-primary md:col-span-2">
+              Endereço de entrega
+            </legend>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">
+                CEP{cepLoading && <span className="ml-2 text-xs text-dark/50">buscando…</span>}
+              </span>
+              <input
+                {...register("address.zipCode")}
+                className="input-field mt-1"
+                inputMode="numeric"
+                autoComplete="postal-code"
+                placeholder="00000-000"
+                onBlur={handleCepBlur}
+                aria-invalid={!!errors.address?.zipCode}
+              />
+              {errors.address?.zipCode && (
+                <span className="mt-1 block text-xs text-red-600">CEP inválido.</span>
+              )}
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">Rua / Avenida</span>
+              <input
+                {...register("address.street")}
+                className="input-field mt-1"
+                autoComplete="address-line1"
+                placeholder="Rua das Histórias"
+                aria-invalid={!!errors.address?.street}
+              />
+              {errors.address?.street && (
+                <span className="mt-1 block text-xs text-red-600">Informe a rua.</span>
+              )}
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">Número</span>
+              <input
+                {...register("address.number")}
+                className="input-field mt-1"
+                placeholder="123"
+                aria-invalid={!!errors.address?.number}
+              />
+              {errors.address?.number && (
+                <span className="mt-1 block text-xs text-red-600">Informe o número.</span>
+              )}
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">Complemento (opcional)</span>
+              <input
+                {...register("address.complement")}
+                className="input-field mt-1"
+                placeholder="Apto 42"
+              />
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">Bairro</span>
+              <input
+                {...register("address.district")}
+                className="input-field mt-1"
+                placeholder="Jardim Encantado"
+                aria-invalid={!!errors.address?.district}
+              />
+              {errors.address?.district && (
+                <span className="mt-1 block text-xs text-red-600">Informe o bairro.</span>
+              )}
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">Cidade</span>
+              <input
+                {...register("address.city")}
+                className="input-field mt-1"
+                autoComplete="address-level2"
+                placeholder="São Paulo"
+                aria-invalid={!!errors.address?.city}
+              />
+              {errors.address?.city && (
+                <span className="mt-1 block text-xs text-red-600">Informe a cidade.</span>
+              )}
+            </label>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">UF</span>
+              <input
+                {...register("address.state")}
+                className="input-field mt-1 uppercase"
+                maxLength={2}
+                placeholder="SP"
+                aria-invalid={!!errors.address?.state}
+              />
+              {errors.address?.state && (
+                <span className="mt-1 block text-xs text-red-600">UF inválida — ex.: SP.</span>
+              )}
+            </label>
+          </fieldset>
+
+          {serverError && (
+            <p className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+              {serverError}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="btn-primary-lg mt-8 w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isSubmitting ? "Registrando pedido…" : "Confirmar pedido →"}
+          </button>
+          <p className="mt-3 text-center text-xs text-dark/55">
+            Nenhuma cobrança é feita agora — o link de pagamento chega pelo WhatsApp
+            junto da confirmação das fotos.
           </p>
-        </div>
+        </form>
       </section>
 
       <aside className="card-premium p-6 h-fit sticky top-24">
@@ -135,10 +324,7 @@ export default function CheckoutView() {
           </div>
         </dl>
 
-        <a href={whatsappHref} target="_blank" rel="noreferrer" className="btn-primary mt-6 w-full justify-center">
-          Finalizar pelo WhatsApp →
-        </a>
-        <Link href="/carrinho" className="mt-3 block text-center text-sm text-dark/60 hover:text-primary">
+        <Link href="/carrinho" className="mt-6 block text-center text-sm text-dark/60 hover:text-primary">
           Voltar ao carrinho
         </Link>
       </aside>

@@ -351,6 +351,19 @@ function FinishButton() {
           name: `Livro personalizado — ${state.childName.trim()}`,
           type: "LIVRO_PRINCIPAL",
           price: 249.9,
+          // snapshot completo viaja com o item; createOrder revalida e persiste
+          customization: {
+            theme: state.theme!,
+            genre: state.genre!,
+            artStyle: state.artStyle!,
+            favoriteColor: state.favoriteColor!,
+            ageRange: state.ageRange!,
+            childName: state.childName.trim(),
+            dedication: state.dedication,
+            photoKeys: state.photos.map((p) => p.fileKey),
+            consentAcceptedAt: state.consentAcceptedAt!,
+            consentTextVersion: state.consentTextVersion,
+          },
         });
         router.push("/carrinho");
       }}

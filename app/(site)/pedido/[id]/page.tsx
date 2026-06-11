@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
+import { formatBRL } from "@/lib/format";
 import { orderCodeOf } from "@/lib/orders/build-order";
 
 // lê o banco a cada request — nunca prerender (id é cuid não-enumerável)
@@ -21,13 +22,6 @@ const STATUS_LABELS: Record<string, string> = {
   ENTREGUE: "Entregue",
   CANCELADO: "Cancelado",
 };
-
-function formatBRL(value: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value);
-}
 
 export default async function PedidoPage({ params }: { params: { id: string } }) {
   const order = await db.order

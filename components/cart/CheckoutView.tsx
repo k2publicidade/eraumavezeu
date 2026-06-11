@@ -9,18 +9,12 @@ import type { z } from "zod";
 import { createOrder } from "@/app/actions/create-order";
 import { lookupCep } from "@/lib/cep";
 import { useCartStore } from "@/lib/cart/store";
+import { formatBRL } from "@/lib/format";
 import { checkoutSchema } from "@/lib/validators/order";
 
 // buyer + address vêm do form; items entram programaticamente do carrinho
 const formSchema = checkoutSchema.pick({ buyer: true, address: true });
 type FormValues = z.output<typeof formSchema>;
-
-function formatBRL(value: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(value);
-}
 
 function useHydrated() {
   const [hydrated, setHydrated] = useState(false);

@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { notifyOrderCreated } from "@/lib/notifications/order-created";
 import { buildOrderDraft, orderCodeOf, type DbProduct } from "@/lib/orders/build-order";
 import { checkoutSchema } from "@/lib/validators/order";
 import { gerarPromptIA } from "@/lib/wizard/prompt";
@@ -119,6 +120,28 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
       },
       select: { id: true },
     });
+
+    // comunicação é melhor-esforço — nunca falha um pedido já persistido
+    const productById = new Map(dbProducts.map((p) => [p.id, p]));
+    await notifyOrderCreated({
+      orderId: order.id,
+      orderCode: orderCodeOf(order.id),
+      buyerName: buyer.name,
+      buyerEmail: buyer.email,
+      buyerPhone: buyer.phone,
+      whatsappOptIn: buyer.whatsappOptIn,
+      items: draft.items.map((it) => {
+        const product = productById.get(it.productId);
+        return {
+          name: product?.name ?? it.productId,
+          quantity: it.quantity,
+          lineTotal: it.price * it.quantity - it.discount,
+        };
+      }),
+      subtotal: draft.totals.subtotal,
+      discount: draft.totals.discount,
+      total: draft.totals.total,
+    }).catch((err) => console.error("notifyOrderCreated failed", err));
 
     return { ok: true, orderId: order.id, orderCode: orderCodeOf(order.id) };
   } catch (err) {

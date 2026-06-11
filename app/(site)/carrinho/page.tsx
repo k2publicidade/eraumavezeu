@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { db } from "@/lib/db";
 import CartView from "@/components/cart/CartView";
-import type { CartProduct, ProductType } from "@/lib/cart/types";
+import { getAddonProducts } from "@/lib/products";
+import type { CartProduct } from "@/lib/cart/types";
 
 export const metadata: Metadata = {
   title: "Carrinho",
@@ -16,21 +16,14 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function CarrinhoPage() {
-  const addons = await db.product.findMany({
-    where: {
-      active: true,
-      type: {
-        in: ["EBOOK", "LIVRO_COLORIR", "QUEBRA_CABECA", "CARTELA_ADESIVOS"],
-      },
-    },
-  });
+  const addons = await getAddonProducts();
 
   const crossSellProducts: CartProduct[] = addons.map((p) => ({
     id: p.id,
     slug: p.slug,
     name: p.name,
-    type: p.type as ProductType,
-    price: Number(p.price),
+    type: p.type,
+    price: p.price,
   }));
 
   return (

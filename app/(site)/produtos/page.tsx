@@ -1,9 +1,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { db } from "@/lib/db";
+import { getActiveProducts } from "@/lib/products";
 import { PRIMARY_CTA } from "@/lib/site-config";
 import AddToCartButton from "@/components/cart/AddToCartButton";
-import type { ProductType } from "@/lib/cart/types";
 
 export const metadata: Metadata = {
   title: "Produtos",
@@ -29,10 +28,7 @@ const PRODUCT_TYPE_EMOJI: Record<string, string> = {
 };
 
 export default async function ProdutosPage() {
-  const products = await db.product.findMany({
-    where: { active: true },
-    orderBy: { price: "desc" },
-  });
+  const products = await getActiveProducts();
 
   return (
     <>
@@ -70,11 +66,11 @@ export default async function ProdutosPage() {
                 <div className="mt-5 flex items-baseline gap-3">
                   {p.priceOld && (
                     <span className="text-dark/35 line-through text-sm">
-                      {formatBRL(Number(p.priceOld))}
+                      {formatBRL(p.priceOld)}
                     </span>
                   )}
                   <span className="text-fox font-serif text-2xl font-bold">
-                    {formatBRL(Number(p.price))}
+                    {formatBRL(p.price)}
                   </span>
                 </div>
 
@@ -92,8 +88,8 @@ export default async function ProdutosPage() {
                         id: p.id,
                         slug: p.slug,
                         name: p.name,
-                        type: p.type as ProductType,
-                        price: Number(p.price),
+                        type: p.type,
+                        price: p.price,
                       }}
                     />
                   )}

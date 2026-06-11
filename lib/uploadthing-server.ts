@@ -20,6 +20,12 @@ export type SignedPhoto = {
   url: string | null;
 };
 
+/** Exclusão definitiva no storage — usada pelo cron de retenção LGPD. */
+export async function deletePhotoFiles(keys: string[]): Promise<void> {
+  if (keys.length === 0) return;
+  await getUtApi().deleteFiles(keys);
+}
+
 export async function getSignedPhotoUrls(
   keys: string[],
 ): Promise<SignedPhoto[]> {

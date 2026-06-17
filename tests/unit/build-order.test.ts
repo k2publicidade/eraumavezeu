@@ -42,7 +42,7 @@ describe("buildOrderDraft", () => {
     expect(draft.totals.total).toBe(249.9);
   });
 
-  it("aplica R$ 20 de desconto por unidade de adicional quando há livro principal", () => {
+  it("aplica R$ 15 de desconto por unidade de adicional quando há livro principal", () => {
     const draft = buildOrderDraft(
       [
         { slug: "livro-principal-capa-dura", quantity: 1 },
@@ -52,8 +52,8 @@ describe("buildOrderDraft", () => {
     );
     const qc = draft.items.find((i) => i.productId === "p-qc");
     expect(qc?.discount).toBe(COMBO_DISCOUNT * 2);
-    expect(draft.totals.discount).toBe(40);
-    expect(draft.totals.total).toBeCloseTo(249.9 + 79.9 * 2 - 40, 2);
+    expect(draft.totals.discount).toBe(COMBO_DISCOUNT * 2);
+    expect(draft.totals.total).toBeCloseTo(249.9 + 79.9 * 2 - COMBO_DISCOUNT * 2, 2);
   });
 
   it("NÃO desconta adicionais sem livro principal no pedido", () => {

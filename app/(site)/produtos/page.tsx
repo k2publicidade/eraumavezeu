@@ -7,7 +7,7 @@ import AddToCartButton from "@/components/cart/AddToCartButton";
 export const metadata: Metadata = {
   title: "Produtos",
   description:
-    "Livro principal capa dura, e-book, livro de colorir, quebra-cabeça e adesivos. Combo com R$ 20 de desconto por adicional.",
+    "Livro capa dura, e-book, livro de colorir, quebra-cabeça e adesivos. Combo com R$ 15 de desconto por adicional.",
 };
 
 export const revalidate = 300;
@@ -39,8 +39,8 @@ export default async function ProdutosPage() {
           </h1>
           <p className="mt-4 text-lg text-dark/60">
             Monte o combo perfeito. Adicionais ganham{" "}
-            <span className="text-fox font-semibold">R$ 20 de desconto</span>{" "}
-            quando comprados junto do livro principal.
+            <span className="text-fox font-semibold">R$ 15 de desconto</span>{" "}
+            quando comprados junto do livro capa dura.
           </p>
         </div>
       </section>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { PRIMARY_CTA } from "@/lib/site-config";
+import { getActiveProducts } from "@/lib/products";
 import FlipBookSection from "@/components/flipbook/FlipBookSection";
 
 export const metadata: Metadata = {
@@ -30,12 +31,12 @@ const HOW_STEPS = [
   {
     n: 2,
     title: "Personalize",
-    text: "Nome, idade, estilo, foto e dedicat\u00F3ria da crian\u00E7a.",
+    text: "G\u00EAnero, estilo, cor favorita, faixa et\u00E1ria e fotos da crian\u00E7a.",
   },
   {
     n: 3,
-    title: "Aprovamos juntos",
-    text: "Geramos o prompt, nossa equipe ilustra e voc\u00EA revisa.",
+    title: "Escreva sua dedicat\u00F3ria",
+    text: "Palavras de carinho que ficar\u00E3o guardadas para a vida toda.",
   },
   {
     n: 4,
@@ -44,12 +45,38 @@ const HOW_STEPS = [
   },
 ];
 
-const PRODUCTS_PREVIEW = [
-  { emoji: "\uD83D\uDCD5", name: "Livro personalizado", price: "R$ 189,90" },
-  { emoji: "\uD83D\uDCBB", name: "E-book digital", price: "R$ 39,90" },
-  { emoji: "\uD83D\uDD8D\uFE0F", name: "Livro de colorir", price: "R$ 49,90" },
-  { emoji: "\uD83E\uDDE9", name: "Quebra-cabe\u00E7a", price: "R$ 69,90" },
+const HOME_HIGHLIGHTS = [
+  {
+    emoji: "\uD83C\uDFAF",
+    title: "100% Personalizado",
+    text: "O rosto da crian\u00E7a em todas as aventuras.",
+  },
+  {
+    emoji: "\u221E",
+    title: "Temas Infinitos",
+    text: "Voc\u00EA escolhe o universo onde a hist\u00F3ria vai acontecer!",
+  },
+  {
+    emoji: "\uD83D\uDC41\uFE0F",
+    title: "Pr\u00E9-visualiza\u00E7\u00E3o",
+    text: "Veja como o livro fica antes de finalizar o pedido.",
+  },
 ];
+
+const PRODUCT_TYPE_EMOJI: Record<string, string> = {
+  LIVRO_PRINCIPAL: "\uD83D\uDCD5",
+  EBOOK: "\uD83D\uDCBB",
+  LIVRO_COLORIR: "\uD83D\uDD8D\uFE0F",
+  QUEBRA_CABECA: "\uD83E\uDDE9",
+  CARTELA_ADESIVOS: "\u2728",
+};
+
+function formatBRL(value: number) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
+}
 
 const TESTIMONIALS = [
   {
@@ -79,7 +106,9 @@ function StarDeco({ className = "" }: { className?: string }) {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await getActiveProducts();
+
   return (
     <>
       {/* HERO */}
@@ -139,7 +168,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FLIPBOOK */}
+      {/* DIFERENCIAIS */}
+      <section className="py-12 md:py-16 bg-cream-light">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
+            {HOME_HIGHLIGHTS.map((h) => (
+              <div key={h.title} className="card-premium p-6 text-center">
+                <div className="text-4xl" aria-hidden="true">
+                  {h.emoji}
+                </div>
+                <h3 className="mt-3 font-serif text-xl text-primary">
+                  {h.title}
+                </h3>
+                <p className="mt-2 text-sm text-dark/65 leading-relaxed">
+                  {h.text}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FLIPBOOK / PRE-VISUALIZACAO */}
       <FlipBookSection />
 
       {/* COMO FUNCIONA */}
@@ -153,9 +203,6 @@ export default function HomePage() {
           <h2 className="font-serif text-3xl md:text-4xl text-center text-primary">
             Como funciona
           </h2>
-          <p className="mt-2 text-center text-dark/55 text-base">
-            Do clique ao presente em at&eacute; 12 dias &uacute;teis.
-          </p>
 
           <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-5">
             {HOW_STEPS.map((s) => (
@@ -201,25 +248,34 @@ export default function HomePage() {
             Nossos produtos
           </h2>
           <p className="mt-2 text-center text-dark/55">
-            Monte o combo perfeito.{" "}
-            <span className="text-fox font-medium">R$ 20 de desconto</span> em cada
-            adicional quando comprado com o livro.
+            Monte o combo perfeito. Adicionais ganham{" "}
+            <span className="text-fox font-medium">R$ 15 de desconto</span> quando
+            comprados junto do livro capa dura.
           </p>
 
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
-            {PRODUCTS_PREVIEW.map((p) => (
+          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5">
+            {products.map((p) => (
               <div
-                key={p.name}
+                key={p.id}
                 className="card-premium p-6 text-center group cursor-default"
               >
                 <div
                   className="text-5xl group-hover:scale-110 transition-transform duration-250 inline-block"
                   aria-hidden="true"
                 >
-                  {p.emoji}
+                  {PRODUCT_TYPE_EMOJI[p.type] ?? "🎁"}
                 </div>
                 <h3 className="mt-4 font-serif text-lg text-primary">{p.name}</h3>
-                <p className="mt-2 text-fox font-semibold">{p.price}</p>
+                <p className="mt-2 flex items-baseline justify-center gap-2">
+                  {p.priceOld && (
+                    <span className="text-dark/35 line-through text-xs">
+                      {formatBRL(p.priceOld)}
+                    </span>
+                  )}
+                  <span className="text-fox font-semibold">
+                    {formatBRL(p.price)}
+                  </span>
+                </p>
               </div>
             ))}
           </div>
@@ -286,8 +342,8 @@ export default function HomePage() {
             Pronto para criar o livro da sua fam&iacute;lia?
           </h2>
           <p className="mt-5 text-cream/75 text-lg leading-relaxed">
-            Em 7 passos simples voc&ecirc; monta a hist&oacute;ria completa. Come&ccedil;amos a
-            produzir s&oacute; depois da sua aprova&ccedil;&atilde;o.
+            Em poucos passos voc&ecirc; monta a hist&oacute;ria completa. Come&ccedil;amos a
+            produzir assim que o pagamento &eacute; confirmado.
           </p>
           <Link
             href={PRIMARY_CTA.href}

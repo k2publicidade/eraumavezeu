@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 const FAQ = [
   {
     q: "Quanto tempo demora para receber o livro?",
-    a: "De 10 a 12 dias úteis após a aprovação da prévia: 3-5 dias de produção + 5-7 dias de envio via Correios. Capitais tendem a chegar em até 3 dias com SEDEX.",
+    a: "Após a confirmação do pagamento e envio da foto, levamos de 10 a 15 dias úteis para gerar as imagens, revisar, imprimir e despachar. O prazo dos correios/transportadora varia conforme o seu CEP.",
   },
   {
     q: "As ilustrações são feitas 100% por IA?",
@@ -25,11 +25,7 @@ const FAQ = [
   },
   {
     q: "Quais formas de pagamento vocês aceitam?",
-    a: "PIX (com desconto à vista), cartão de crédito em até 12x sem juros e boleto bancário via Mercado Pago.",
-  },
-  {
-    q: "Posso trocar de tema depois de comprar?",
-    a: "Sim, antes da aprovação da prévia. Depois que você aprovar, a produção começa e não dá mais pra alterar.",
+    a: "PIX (com desconto à vista), cartão de crédito com parcelamento sem juros em parcelas de 100 reais e boleto bancário via Mercado Pago.",
   },
   {
     q: "Qual a faixa etária recomendada?",
@@ -37,19 +33,15 @@ const FAQ = [
   },
   {
     q: "O livro é impresso como?",
-    a: "Capa dura, 20 páginas internas em papel couché fosco 150g, encadernação costurada. Tamanho 21x21cm.",
+    a: "Livro no formato 21x30 cm com capa dura de laminação premium e impressão profissional com cores fiéis. Contém 20 páginas em papel couché brilho (170 g/m²) e excelente acabamento, com lombada firme e miolo colado, sem uso de costuras ou grampos.",
+  },
+  {
+    q: "Como devem ser as fotos que vou enviar?",
+    a: "A foto ideal deve ter boa iluminação (de preferência luz natural), mostrar o rosto da criança de frente, sem óculos escuros ou chapéus, com uma expressão neutra (e também uma sorrindo).",
   },
   {
     q: "Vocês enviam pra todo o Brasil?",
     a: "Sim, para todos os CEPs atendidos pelos Correios e transportadoras parceiras da Melhor Envio.",
-  },
-  {
-    q: "E se eu não gostar do resultado?",
-    a: "Você aprova a prévia digital antes da impressão. Se não gostar, ajustamos até ficar do jeito que você quer.",
-  },
-  {
-    q: "Qual a política de reembolso?",
-    a: "Até a aprovação da prévia, reembolso integral. Após a impressão, trocas são analisadas caso a caso conforme o Código de Defesa do Consumidor.",
   },
   {
     q: "Posso acompanhar o pedido?",

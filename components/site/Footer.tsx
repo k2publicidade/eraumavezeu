@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  CNPJ,
   CONTACT_EMAIL,
   NAV_ITEMS,
   SITE_NAME,
@@ -109,7 +110,8 @@ export default function Footer() {
         {/* Rodapé inferior */}
         <div className="border-t border-cream/10 mt-10 pt-6 flex flex-col md:flex-row justify-between gap-2 text-xs text-cream/45">
           <span>
-            © {new Date().getFullYear()} {SITE_NAME}. Todos os direitos reservados.
+            © {new Date().getFullYear()} {SITE_NAME}. Todos os direitos
+            reservados. CNPJ {CNPJ}.
           </span>
           <Link
             href="/privacidade"

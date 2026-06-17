@@ -38,14 +38,14 @@ describe.skipIf(!shouldRunDbTests)("seed products (FND-08)", () => {
       where: { slug: "livro-principal-capa-dura" },
     });
     expect(p).not.toBeNull();
-    expect(p!.name).toMatch(/Livro Principal/);
+    expect(p!.name).toMatch(/Livro Capa Dura/);
     expect(Number(p!.price)).toBeCloseTo(249.9, 2);
     expect(p!.type).toBe(ProductType.LIVRO_PRINCIPAL);
     expect(p!.active).toBe(true);
   });
 
   it.each([
-    ["ebook", 89.9, ProductType.EBOOK],
+    ["ebook", 79.9, ProductType.EBOOK],
     ["livro-colorir", 99.9, ProductType.LIVRO_COLORIR],
     ["quebra-cabeca", 79.9, ProductType.QUEBRA_CABECA],
     ["cartela-adesivos", 69.9, ProductType.CARTELA_ADESIVOS],

@@ -45,4 +45,4 @@ export const ADDON_TYPES: ProductType[] = [
   "CARTELA_ADESIVOS",
 ];
 
-export const COMBO_DISCOUNT = 20;
+export const COMBO_DISCOUNT = 15;

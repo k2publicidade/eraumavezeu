@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import {
+  CNPJ,
   CONTACT_EMAIL,
+  SOCIAL_LINKS,
+  WHATSAPP_DISPLAY,
   WHATSAPP_MESSAGE_DEFAULT,
   WHATSAPP_NUMBER,
 } from "@/lib/site-config";
@@ -51,7 +54,8 @@ export default function ContatoPage() {
                 <path d="M20.52 3.48A11.88 11.88 0 0 0 12.06 0C5.52 0 .2 5.32.2 11.86c0 2.09.55 4.13 1.59 5.93L0 24l6.39-1.68a11.83 11.83 0 0 0 5.67 1.45h.01c6.54 0 11.86-5.32 11.86-11.86 0-3.17-1.23-6.15-3.41-8.43z" />
               </svg>
               <h2 className="mt-4 font-serif text-2xl">WhatsApp</h2>
-              <p className="mt-2 text-white/90 text-sm">
+              <p className="mt-2 text-white/90 text-sm">{WHATSAPP_DISPLAY}</p>
+              <p className="mt-1 text-white/80 text-xs">
                 Resposta rápida, tira dúvida e acompanha pedido
               </p>
             </a>
@@ -81,6 +85,25 @@ export default function ContatoPage() {
           </div>
 
           <div className="mt-12 bg-white rounded-2xl p-8 border border-primary/10">
+            <h2 className="font-serif text-xl text-dark">Redes sociais</h2>
+            <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+              {SOCIAL_LINKS.map((social) => (
+                <li key={social.platform}>
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary-dark underline"
+                  >
+                    {social.platform === "instagram" ? "Instagram" : "TikTok"}:{" "}
+                    {social.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="mt-6 bg-white rounded-2xl p-8 border border-primary/10">
             <h2 className="font-serif text-xl text-dark">
               Dúvida frequente antes de comprar?
             </h2>
@@ -95,6 +118,7 @@ export default function ContatoPage() {
               </a>
               .
             </p>
+            <p className="mt-4 text-dark/50 text-sm">CNPJ {CNPJ}</p>
           </div>
         </div>
       </section>

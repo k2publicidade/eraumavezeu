@@ -17,7 +17,12 @@ export default function GaleriaPage() {
             Galeria
           </h1>
           <p className="mt-4 text-lg text-dark/70">
-            Histórias reais de crianças que viraram protagonistas.
+            Veja o &ldquo;Antes&rdquo; e o &ldquo;Depois&rdquo;, separados por
+            tema: a foto real da criança e a ilustração pronta.
+          </p>
+          <p className="mt-3 text-base text-dark/60">
+            Veja como nossas ilustrações capturam os traços, o sorriso e a
+            essência de cada pequeno protagonista.
           </p>
         </div>
       </section>

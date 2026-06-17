@@ -11,12 +11,13 @@ import {
 const repoRoot = path.resolve(__dirname, "../..");
 
 describe("site-config", () => {
-  it("NAV_ITEMS contains the 6 expected public routes in order", () => {
-    expect(NAV_ITEMS).toHaveLength(6);
+  it("NAV_ITEMS contains the 7 expected public routes in order", () => {
+    expect(NAV_ITEMS).toHaveLength(7);
     expect(NAV_ITEMS.map((n) => n.href)).toEqual([
       "/",
       "/como-funciona",
       "/produtos",
+      "/para-todas-ocasioes",
       "/galeria",
       "/faq",
       "/contato",

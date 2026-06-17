@@ -11,43 +11,43 @@ export const metadata: Metadata = {
 const STEPS = [
   {
     n: 1,
-    title: "Escolha o tema",
-    text: "Aventura, mundo mágico, super-herói, princesa, animais. Cada tema guia toda a história.",
+    title: "Escolha o Tema",
+    text: "Qual é a paixão da criança? Uma aventura com dinossauros, uma jornada mágica na floresta encantada, uma viagem de trem, um conto de princesas, uma grande ação de super-herói ou comédia com robôs? A escolha é sua! Cada tema guia toda a história.",
   },
   {
     n: 2,
-    title: "Personalize a criança",
-    text: "Nome, idade, gênero, cor de pele, cabelo, olhos e traços especiais.",
+    title: "Escolha o Gênero",
+    text: "Qual é o ritmo dessa jornada? O gênero define o tom da narrativa: Ação (para pequenos heróis que amam movimentos rápidos e superação), Comédia (boas gargalhadas com situações engraçadas), Aventura (explorar novos mundos e fazer grandes descobertas), Mistério (pequenos detetives que amam desvendar pistas) e Conto de Fadas (onde a magia e o encantamento guiam cada página).",
   },
   {
     n: 3,
-    title: "Envie fotos com segurança",
-    text: "Até 4 fotos em ambiente privado. Usamos só como referência e deletamos 90 dias após a entrega.",
+    title: "Escolha o estilo de ilustração",
+    text: "Realista (parece uma foto de filme!), Desenho a Lápis (clássico e artístico) ou Computadorizado (estilo animação digital).",
   },
   {
     n: 4,
-    title: "Escreva a dedicatória",
-    text: "Uma mensagem única de quem presenteia para a criança, impressa na primeira página em caligrafia.",
+    title: "Escolha a Cor Favorita",
+    text: "Qual é o tom que faz os olhos da criança brilharem? A cor preferida do pequeno herói ou heroína vira protagonista nos detalhes da capa, nas molduras das páginas e em elementos mágicos da arte. Isso garante a identidade visual que ele(a) mais ama!",
   },
   {
     n: 5,
-    title: "Revisão da equipe",
-    text: "Geramos o prompt de IA e nossa equipe produz as ilustrações com revisão humana a cada página.",
+    title: "Escolha a Faixa Etária",
+    text: "Adaptamos a linguagem, o vocabulário e o ritmo da narrativa para cada fase: 0 a 3 anos (textos curtos, rimas e muita sonoridade), 4 a 6 anos (histórias envolventes e diálogos simples) e 7 a 10 anos (narrativas mais elaboradas e vocabulário enriquecedor).",
   },
   {
     n: 6,
-    title: "Aprovação do livro",
-    text: "Você recebe a prévia digital e aprova antes da impressão.",
+    title: "Envie 4 fotos",
+    text: "Faça o upload de 4 fotos, de rosto e corpo inteiro, bem iluminadas da criança em diferentes ângulos e expressões. Nossa Inteligência Artificial cuida do resto para criar imagens realistas impressionantes.",
   },
   {
     n: 7,
-    title: "Impressão premium",
-    text: "Capa dura, 20 páginas, papel couché fosco, encadernação de alta qualidade.",
+    title: "Escreva a Dedicatória",
+    text: "Torne o presente inesquecível. Digite uma mensagem de amor que será impressa logo no início das 20 páginas do livro.",
   },
   {
     n: 8,
-    title: "Entrega em casa",
-    text: "Enviamos via Correios ou transportadora com código de rastreio.",
+    title: "Receba em Casa",
+    text: "Nossa equipe finaliza a edição, imprime com qualidade fotográfica e envia a aventura direto para o seu endereço.",
   },
 ];
 

@@ -7,6 +7,7 @@ const PUBLIC_ROUTES = [
   "",
   "como-funciona",
   "produtos",
+  "para-todas-ocasioes",
   "galeria",
   "faq",
   "quem-somos",

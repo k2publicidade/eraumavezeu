@@ -15,9 +15,9 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
   {
     id: "fallback-livro-principal-capa-dura",
     slug: "livro-principal-capa-dura",
-    name: "Livro Principal Capa Dura",
+    name: "Livro Capa Dura",
     description:
-      "Livro infantil personalizado em capa dura, 20 páginas com ilustrações únicas geradas por IA. O herói da história é a criança que você ama.",
+      "Livro infantil personalizado em capa dura, 20 páginas com ilustrações únicas geradas por IA. O herói da história é a criança que você ama. Cada livro tem um design e roteiro único, nenhum exemplar é igual ao outro. Inclui também a sua dedicatória personalizada. Tamanho 21x30 cm.",
     price: 249.9,
     priceOld: 299.9,
     type: "LIVRO_PRINCIPAL",
@@ -27,8 +27,8 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     slug: "ebook",
     name: "E-book",
     description:
-      "Versão digital do livro personalizado em PDF de alta qualidade, enviado por e-mail.",
-    price: 89.9,
+      "Versão digital do livro personalizado em PDF de alta qualidade, enviado por e-mail. Na compra do livro capa dura, o e-book está incluso de presente!",
+    price: 79.9,
     priceOld: null,
     type: "EBOOK",
   },
@@ -37,7 +37,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     slug: "livro-colorir",
     name: "Livro de Colorir",
     description:
-      "Versão para colorir com as ilustrações do livro principal em preto e branco. Horas de diversão criativa.",
+      "Imagine a alegria da criança ao poder colorir a própria imagem. São 20 páginas repletas de cenas da aventura escolhida, onde ela é a verdadeira protagonista. Você define o estilo da arte e nós entregamos um livro no tamanho perfeito (22x15cm) para levar a criatividade a qualquer lugar!",
     price: 99.9,
     priceOld: null,
     type: "LIVRO_COLORIR",
@@ -47,7 +47,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     slug: "quebra-cabeca",
     name: "Quebra-Cabeça",
     description:
-      "Quebra-cabeça personalizado com uma das ilustrações do livro. 48 peças em MDF premium.",
+      "Monte essa magia junto com a criança! Transforme uma imagem personalizada do seu filho — ou uma foto especial escolhida por você — em um quebra-cabeça de 60 peças (21x29 cm). A alegria de ver o próprio rosto se formando a cada encaixe!",
     price: 79.9,
     priceOld: null,
     type: "QUEBRA_CABECA",
@@ -57,7 +57,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     slug: "cartela-adesivos",
     name: "Cartela de Adesivos",
     description:
-      "Cartela com adesivos dos personagens do livro para personalizar cadernos, fichários e mochilas.",
+      "Uma super cartela (28x40 cm) repleta de ilustrações personalizadas do protagonista e elementos do tema. Perfeita para a criança soltar a imaginação e personalizar o que quiser!",
     price: 69.9,
     priceOld: null,
     type: "CARTELA_ADESIVOS",

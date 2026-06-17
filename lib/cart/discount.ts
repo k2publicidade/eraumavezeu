@@ -28,9 +28,9 @@ function isAddon(type: ProductType): boolean {
  * que o preço nunca diverge entre UI e banco.
  *
  * Regra do cliente (brief):
- *   "Cada adicional ganha R$ 20 de desconto QUANDO comprado junto com o
- *    livro principal. Se houver N adicionais (mesmo tipo ou não), o desconto
- *    é N * R$ 20 — limitado a 1 desconto por unidade de adicional, e nunca
+ *   "Cada adicional ganha R$ 15 de desconto QUANDO comprado junto com o
+ *    livro capa dura. Se houver N adicionais (mesmo tipo ou não), o desconto
+ *    é N * R$ 15 — limitado a 1 desconto por unidade de adicional, e nunca
  *    excedendo o número de livros principais * X adicionais (combos
  *    proporcionais)."
  *

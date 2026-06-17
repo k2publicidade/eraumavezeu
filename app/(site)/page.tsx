@@ -18,6 +18,14 @@ export const metadata: Metadata = {
 
 const BADGES = [
   { icon: "\uD83C\uDFA8", label: "Ilustra\u00E7\u00F5es \u00FAnicas com IA" },
+  {
+    icon: "\uD83C\uDFAF",
+    label: "100% Personalizado: O rosto da crian\u00E7a em todas as aventuras.",
+  },
+  {
+    icon: "\u221E",
+    label: "Temas Infinitos: Voc\u00EA escolhe o universo onde a hist\u00F3ria vai acontecer!",
+  },
   { icon: "\uD83D\uDCD6", label: "Capa dura 20 p\u00E1ginas" },
   { icon: "\uD83C\uDDE7\uD83C\uDDF7", label: "Entrega para todo Brasil" },
 ];

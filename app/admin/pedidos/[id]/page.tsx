@@ -57,7 +57,7 @@ export default async function AdminOrderDetailPage({
 
   return (
     <div>
-      <Link href="/admin" className="text-sm text-dark/60 hover:text-primary">
+      <Link href="/admin/pedidos" className="text-sm text-dark/60 hover:text-primary">
         ← Voltar para pedidos
       </Link>
 

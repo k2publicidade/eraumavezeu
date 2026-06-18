@@ -24,24 +24,35 @@ function StatCard({ label, value, hint }: { label: string; value: string; hint: 
   );
 }
 
+async function getAdminDashboardData() {
+  try {
+    const [orders, productsCount, customersCount] = await Promise.all([
+      db.order.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 500,
+        select: {
+          id: true,
+          guestName: true,
+          guestEmail: true,
+          status: true,
+          paymentStatus: true,
+          total: true,
+          createdAt: true,
+        },
+      }),
+      db.product.count({ where: { active: true } }),
+      db.user.count(),
+    ]);
+
+    return { orders, productsCount, customersCount, hasDashboardDataError: false };
+  } catch (error) {
+    console.error("Failed to load admin dashboard data", error);
+    return { orders: [], productsCount: 0, customersCount: 0, hasDashboardDataError: true };
+  }
+}
+
 export default async function AdminDashboardPage() {
-  const [orders, productsCount, customersCount] = await Promise.all([
-    db.order.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 500,
-      select: {
-        id: true,
-        guestName: true,
-        guestEmail: true,
-        status: true,
-        paymentStatus: true,
-        total: true,
-        createdAt: true,
-      },
-    }),
-    db.product.count({ where: { active: true } }),
-    db.user.count(),
-  ]);
+  const { orders, productsCount, customersCount, hasDashboardDataError } = await getAdminDashboardData();
 
   const metricOrders = orders.map((order) => ({
     id: order.id,
@@ -63,10 +74,19 @@ export default async function AdminDashboardPage() {
           <p className="mt-2 text-dark/60">Visão geral de vendas, produção e operação.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Link href="/admin/pedidos" className="btn-primary">Ver pedidos</Link>
+          <Link href="/admin/conteudo" className="btn-primary">Editar site</Link>
+          <Link href="/admin/pedidos" className="btn-ghost">Ver pedidos</Link>
           <Link href="/admin/produtos" className="btn-ghost">Gerenciar catálogo</Link>
         </div>
       </div>
+
+      {hasDashboardDataError && (
+        <div className="rounded-3xl border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900">
+          O painel carregou, mas não foi possível buscar os indicadores agora. Você ainda pode acessar
+          <Link href="/admin/conteudo" className="font-semibold underline underline-offset-2"> Conteúdo do site</Link>
+          {" "}para atualizar as informações do front-end.
+        </div>
+      )}
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores principais">
         <StatCard label="Receita total" value={formatBRL(metrics.totalRevenue)} hint={`${metrics.totalOrders} pedidos registrados`} />

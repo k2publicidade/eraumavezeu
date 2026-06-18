@@ -17,7 +17,7 @@ export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
     startTransition(async () => {
       const res = await loginWithCredentials(fd);
       if (res.ok) {
-        router.push("/");
+        router.push(res.redirectTo);
         router.refresh();
       } else {
         setError(res.error);

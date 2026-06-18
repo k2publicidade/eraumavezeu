@@ -2,10 +2,12 @@
 
 import { AuthError } from "next-auth";
 import { signIn } from "@/lib/auth";
+import { getPostLoginRedirect } from "@/lib/auth-redirect";
+import { db } from "@/lib/db";
 import { loginSchema } from "@/lib/validators/auth";
 
 export type LoginActionResult =
-  | { ok: true }
+  | { ok: true; redirectTo: string }
   | { ok: false; error: string };
 
 /**
@@ -30,7 +32,13 @@ export async function loginWithCredentials(
       ...parsed.data,
       redirect: false,
     });
-    return { ok: true };
+
+    const user = await db.user.findUnique({
+      where: { email: parsed.data.email },
+      select: { role: true },
+    });
+
+    return { ok: true, redirectTo: getPostLoginRedirect(user?.role) };
   } catch (e) {
     if (e instanceof AuthError) {
       return { ok: false, error: "Credenciais inválidas" };

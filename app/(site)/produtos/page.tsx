@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getActiveProducts } from "@/lib/products";
-import { PRIMARY_CTA } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/site-content";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 
 export const metadata: Metadata = {
@@ -28,7 +28,7 @@ const PRODUCT_TYPE_EMOJI: Record<string, string> = {
 };
 
 export default async function ProdutosPage() {
-  const products = await getActiveProducts();
+  const [products, settings] = await Promise.all([getActiveProducts(), getSiteSettings()]);
 
   return (
     <>
@@ -99,8 +99,8 @@ export default async function ProdutosPage() {
           </div>
 
           <div className="mt-16 text-center">
-            <Link href={PRIMARY_CTA.href} className="btn-primary-lg">
-              {PRIMARY_CTA.label}
+            <Link href={settings.primaryCtaHref} className="btn-primary-lg">
+              {settings.primaryCtaLabel}
             </Link>
           </div>
         </div>

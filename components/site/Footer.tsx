@@ -1,22 +1,14 @@
 import Link from "next/link";
 import {
-  CNPJ,
-  CONTACT_EMAIL,
-  NAV_ITEMS,
-  SITE_NAME,
-  SITE_TAGLINE,
-  SOCIAL_LINKS,
-  WHATSAPP_MESSAGE_DEFAULT,
-  WHATSAPP_NUMBER,
-} from "@/lib/site-config";
+  buildWhatsappHref,
+  getSiteSettings,
+  socialLinksFromSettings,
+} from "@/lib/site-content";
 
-function whatsappHref() {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    WHATSAPP_MESSAGE_DEFAULT,
-  )}`;
-}
+export default async function Footer() {
+  const settings = await getSiteSettings();
+  const socialLinks = socialLinksFromSettings(settings);
 
-export default function Footer() {
   return (
     <footer className="bg-primary text-cream mt-auto">
       {/* Faixa dourada decorativa no topo do footer */}
@@ -28,10 +20,10 @@ export default function Footer() {
           {/* Coluna da marca */}
           <div className="md:col-span-1">
             <h3 className="font-serif text-2xl text-gold-warm mb-1">
-              {SITE_NAME}
+              {settings.siteName}
             </h3>
             <p className="text-cream/65 text-sm leading-relaxed mt-3">
-              {SITE_TAGLINE}
+              {settings.siteTagline}
             </p>
             {/* Estrelinhas decorativas */}
             <div className="mt-5 flex gap-1 text-gold/50 text-xs select-none" aria-hidden="true">
@@ -45,7 +37,15 @@ export default function Footer() {
               Navegação
             </h4>
             <ul className="space-y-2.5">
-              {NAV_ITEMS.map((item) => (
+              {[
+                { label: "Início", href: "/" },
+                { label: "Como Funciona", href: "/como-funciona" },
+                { label: "Produtos", href: "/produtos" },
+                { label: "Para Todas Ocasiões", href: "/para-todas-ocasioes" },
+                { label: "Galeria", href: "/galeria" },
+                { label: "FAQ", href: "/faq" },
+                { label: "Contato", href: "/contato" },
+              ].map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
@@ -66,7 +66,7 @@ export default function Footer() {
             <ul className="space-y-2.5 text-sm">
               <li>
                 <a
-                  href={whatsappHref()}
+                  href={buildWhatsappHref(settings)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-cream/65 hover:text-gold-warm transition-colors duration-200"
@@ -76,10 +76,10 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href={`mailto:${CONTACT_EMAIL}`}
+                  href={`mailto:${settings.contactEmail}`}
                   className="text-cream/65 hover:text-gold-warm transition-colors duration-200"
                 >
-                  {CONTACT_EMAIL}
+                  {settings.contactEmail}
                 </a>
               </li>
             </ul>
@@ -91,7 +91,7 @@ export default function Footer() {
               Redes
             </h4>
             <ul className="space-y-2.5 text-sm">
-              {SOCIAL_LINKS.map((social) => (
+              {socialLinks.map((social) => (
                 <li key={social.platform}>
                   <a
                     href={social.href}
@@ -110,8 +110,8 @@ export default function Footer() {
         {/* Rodapé inferior */}
         <div className="border-t border-cream/10 mt-10 pt-6 flex flex-col md:flex-row justify-between gap-2 text-xs text-cream/45">
           <span>
-            © {new Date().getFullYear()} {SITE_NAME}. Todos os direitos
-            reservados. CNPJ {CNPJ}.
+            © {new Date().getFullYear()} {settings.siteName}. Todos os direitos
+            reservados. CNPJ {settings.cnpj}.
           </span>
           <Link
             href="/privacidade"

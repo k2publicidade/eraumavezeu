@@ -1,16 +1,11 @@
-import {
-  WHATSAPP_MESSAGE_DEFAULT,
-  WHATSAPP_NUMBER,
-} from "@/lib/site-config";
+import { buildWhatsappHref, getSiteSettings } from "@/lib/site-content";
 
-export default function WhatsAppFloatingButton() {
-  const href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    WHATSAPP_MESSAGE_DEFAULT,
-  )}`;
+export default async function WhatsAppFloatingButton() {
+  const settings = await getSiteSettings();
 
   return (
     <a
-      href={href}
+      href={buildWhatsappHref(settings)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Falar no WhatsApp"

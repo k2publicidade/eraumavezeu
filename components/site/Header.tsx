@@ -1,10 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { NAV_ITEMS, PRIMARY_CTA } from "@/lib/site-config";
+import { NAV_ITEMS } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/site-content";
 import CartBadge from "./CartBadge";
 import MobileNav from "./MobileNav";
 
-export default function Header() {
+export default async function Header() {
+  const settings = await getSiteSettings();
+
   return (
     <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-sm border-b border-gold/25 shadow-xs">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
@@ -12,11 +15,11 @@ export default function Header() {
         <Link
           href="/"
           className="flex items-center gap-3 flex-shrink-0 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-lg"
-          aria-label="Era Uma Vez Eu — página inicial"
+          aria-label={`${settings.siteName} — página inicial`}
         >
           <Image
             src="/logo.jpeg"
-            alt="Selo circular Era Uma Vez Eu"
+            alt={`Selo circular ${settings.siteName}`}
             width={44}
             height={44}
             className="rounded-full ring-2 ring-gold/40 group-hover:ring-gold/70 transition-all duration-250 shadow-sm"
@@ -39,11 +42,8 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
-          <Link
-            href={PRIMARY_CTA.href}
-            className="btn-primary text-sm"
-          >
-            {PRIMARY_CTA.label}
+          <Link href={settings.primaryCtaHref} className="btn-primary text-sm">
+            {settings.primaryCtaLabel}
           </Link>
           <CartBadge />
         </nav>
@@ -51,7 +51,11 @@ export default function Header() {
         {/* Mobile: carrinho + hambúrguer */}
         <div className="flex items-center gap-2 md:hidden">
           <CartBadge />
-          <MobileNav />
+          <MobileNav
+            siteName={settings.siteName}
+            primaryCtaHref={settings.primaryCtaHref}
+            primaryCtaLabel={settings.primaryCtaLabel}
+          />
         </div>
       </div>
     </header>

@@ -46,12 +46,12 @@ describe("WhatsAppFloatingButton config", () => {
 });
 
 describe("Footer component source", () => {
-  it("imports brand name from site-config and links to privacy policy", () => {
+  it("loads editable site settings and links to privacy policy", () => {
     const footer = readFileSync(
       path.join(repoRoot, "components/site/Footer.tsx"),
       "utf8",
     );
-    expect(footer).toMatch(/SITE_NAME/);
+    expect(footer).toMatch(/getSiteSettings/);
     expect(footer).toContain("Política de Privacidade");
     expect(footer).toContain("/privacidade");
   });

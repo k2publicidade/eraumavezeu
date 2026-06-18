@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PRIMARY_CTA } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Como Funciona",
@@ -51,7 +51,9 @@ const STEPS = [
   },
 ];
 
-export default function ComoFuncionaPage() {
+export default async function ComoFuncionaPage() {
+  const settings = await getSiteSettings();
+
   return (
     <>
       <section className="py-16 md:py-24 bg-gradient-to-b from-light to-primary/5">
@@ -84,10 +86,10 @@ export default function ComoFuncionaPage() {
 
           <div className="mt-16 text-center">
             <Link
-              href={PRIMARY_CTA.href}
+              href={settings.primaryCtaHref}
               className="inline-block bg-primary text-white px-8 py-4 rounded-full hover:bg-primary-dark transition text-lg font-medium shadow-lg"
             >
-              {PRIMARY_CTA.label}
+              {settings.primaryCtaLabel}
             </Link>
           </div>
         </div>

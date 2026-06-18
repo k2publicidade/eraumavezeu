@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PRIMARY_CTA } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Quem Somos",
@@ -8,7 +8,9 @@ export const metadata: Metadata = {
     "A história por trás do Era Uma Vez Eu: tecnologia, carinho e respeito por cada criança.",
 };
 
-export default function QuemSomosPage() {
+export default async function QuemSomosPage() {
+  const settings = await getSiteSettings();
+
   return (
     <>
       <section className="py-16 md:py-24 bg-gradient-to-b from-light to-primary/5">
@@ -67,10 +69,10 @@ export default function QuemSomosPage() {
 
           <div className="pt-8 text-center">
             <Link
-              href={PRIMARY_CTA.href}
+              href={settings.primaryCtaHref}
               className="inline-block bg-primary text-white px-8 py-4 rounded-full hover:bg-primary-dark transition text-lg font-medium shadow-lg"
             >
-              {PRIMARY_CTA.label}
+              {settings.primaryCtaLabel}
             </Link>
           </div>
         </div>

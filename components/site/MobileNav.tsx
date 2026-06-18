@@ -2,9 +2,19 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { NAV_ITEMS, PRIMARY_CTA, SITE_NAME } from "@/lib/site-config";
+import { NAV_ITEMS } from "@/lib/site-config";
 
-export default function MobileNav() {
+type MobileNavProps = {
+  siteName: string;
+  primaryCtaHref: string;
+  primaryCtaLabel: string;
+};
+
+export default function MobileNav({
+  siteName,
+  primaryCtaHref,
+  primaryCtaLabel,
+}: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -51,7 +61,7 @@ export default function MobileNav() {
         >
           {/* Header do menu mobile */}
           <div className="flex items-center justify-between px-4 h-16 border-b border-gold/25">
-            <span className="font-serif text-xl text-primary">{SITE_NAME}</span>
+            <span className="font-serif text-xl text-primary">{siteName}</span>
             <button
               type="button"
               aria-label="Fechar menu"
@@ -88,19 +98,17 @@ export default function MobileNav() {
               </Link>
             ))}
             <Link
-              href={PRIMARY_CTA.href}
+              href={primaryCtaHref}
               onClick={() => setIsOpen(false)}
               className="btn-primary-lg mt-6 text-center"
             >
-              {PRIMARY_CTA.label}
+              {primaryCtaLabel}
             </Link>
           </nav>
 
           {/* Rodapé decorativo */}
           <div className="px-6 py-4 text-center">
-            <p className="font-script text-lg text-primary/50">
-              Era Uma Vez Eu
-            </p>
+            <p className="font-script text-lg text-primary/50">{siteName}</p>
           </div>
         </div>
       )}

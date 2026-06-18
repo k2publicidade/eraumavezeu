@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PRIMARY_CTA } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/site-content";
 import { getActiveProducts } from "@/lib/products";
 import FlipBookSection from "@/components/flipbook/FlipBookSection";
 
@@ -115,7 +115,7 @@ function StarDeco({ className = "" }: { className?: string }) {
 }
 
 export default async function HomePage() {
-  const products = await getActiveProducts();
+  const [products, settings] = await Promise.all([getActiveProducts(), getSiteSettings()]);
 
   return (
     <>
@@ -144,24 +144,23 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <p className="font-script text-xl text-fox mb-3">Era uma vez&hellip;</p>
+          <p className="font-script text-xl text-fox mb-3">{settings.heroEyebrow}</p>
 
           <h1 className="font-serif text-4xl md:text-6xl text-primary leading-tight">
-            Transforme a crian&ccedil;a que voc&ecirc; ama no{" "}
-            <span className="underline-gold">her&oacute;i da pr&oacute;pria hist&oacute;ria</span>
+            {settings.heroTitlePrefix}{" "}
+            <span className="underline-gold">{settings.heroTitleHighlight}</span>
           </h1>
 
           <p className="mt-6 text-lg md:text-xl text-dark/65 max-w-2xl mx-auto leading-relaxed">
-            Livros infantis personalizados com ilustra&ccedil;&otilde;es &uacute;nicas criadas por IA
-            e revis&atilde;o humana. Capa dura, impress&atilde;o premium, entrega em todo Brasil.
+            {settings.heroDescription}
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href={PRIMARY_CTA.href} className="btn-primary-lg">
-              {PRIMARY_CTA.label}
+            <Link href={settings.primaryCtaHref} className="btn-primary-lg">
+              {settings.primaryCtaLabel}
             </Link>
-            <Link href="/como-funciona" className="btn-ghost">
-              Como funciona
+            <Link href={settings.secondaryCtaHref} className="btn-ghost">
+              {settings.secondaryCtaLabel}
             </Link>
           </div>
 
@@ -354,10 +353,10 @@ export default async function HomePage() {
             produzir assim que o pagamento &eacute; confirmado.
           </p>
           <Link
-            href={PRIMARY_CTA.href}
+            href={settings.primaryCtaHref}
             className="inline-flex items-center gap-2 mt-8 bg-gold text-primary-dark px-8 py-4 rounded-full hover:bg-gold-light transition-all duration-250 text-lg font-semibold shadow-gold-lg hover:shadow-gold hover:scale-105 active:scale-95"
           >
-            {PRIMARY_CTA.label}
+            {settings.primaryCtaLabel}
           </Link>
           <div
             className="mt-8 flex justify-center gap-3 text-gold/50 text-lg"

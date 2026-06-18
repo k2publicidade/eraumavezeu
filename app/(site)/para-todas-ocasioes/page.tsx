@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { PRIMARY_CTA } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/site-content";
 
 export const metadata: Metadata = {
   title: "Para Todas as Ocasiões",
@@ -36,7 +36,9 @@ const OCCASIONS = [
   },
 ];
 
-export default function ParaTodasOcasioesPage() {
+export default async function ParaTodasOcasioesPage() {
+  const settings = await getSiteSettings();
+
   return (
     <>
       <section className="py-16 md:py-24 bg-gradient-to-b from-light to-primary/5">
@@ -96,8 +98,8 @@ export default function ParaTodasOcasioesPage() {
               preparar algo extraordinário para você!
             </p>
             <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href={PRIMARY_CTA.href} className="btn-primary-lg">
-                {PRIMARY_CTA.label}
+              <Link href={settings.primaryCtaHref} className="btn-primary-lg">
+                {settings.primaryCtaLabel}
               </Link>
               <Link href="/contato" className="btn-ghost">
                 Falar com a equipe

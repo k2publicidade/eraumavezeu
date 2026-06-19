@@ -1,8 +1,26 @@
 import { PrismaClient, ProductType } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // Seed default admin account for panel testing
+  const adminEmail = "admin@eraumavezeu.com.br";
+  const adminPassword = "adminpassword123";
+  const hashedAdminPassword = await bcrypt.hash(adminPassword, 10);
+
+  await prisma.user.upsert({
+    where: { email: adminEmail },
+    update: {},
+    create: {
+      email: adminEmail,
+      name: "Administrador",
+      password: hashedAdminPassword,
+      role: "ADMIN",
+    },
+  });
+  console.log(`✓ Admin user upserted: ${adminEmail} (password: ${adminPassword})`);
+
   const produtos = [
     {
       slug: "livro-principal-capa-dura",

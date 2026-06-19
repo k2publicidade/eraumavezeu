@@ -2,11 +2,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { NAV_ITEMS } from "@/lib/site-config";
 import { getSiteSettings } from "@/lib/site-content";
+import { auth } from "@/lib/auth";
 import CartBadge from "./CartBadge";
 import MobileNav from "./MobileNav";
+import UserMenu from "./UserMenu";
 
 export default async function Header() {
   const settings = await getSiteSettings();
+  const session = await auth().catch(() => null);
+  const isLoggedIn = !!session?.user;
+  const isAdmin = session?.user?.role === "ADMIN";
+  const userName = session?.user?.name || "";
+  const userEmail = session?.user?.email || "";
 
   return (
     <header className="sticky top-0 z-40 bg-cream/90 backdrop-blur-md border-b border-cream-deep/30 shadow-sm transition-all duration-300">
@@ -49,6 +56,12 @@ export default async function Header() {
             <span aria-hidden="true" className="text-gold">→</span>
           </Link>
           <CartBadge />
+          <UserMenu
+            isLoggedIn={isLoggedIn}
+            isAdmin={isAdmin}
+            userName={userName}
+            userEmail={userEmail}
+          />
         </nav>
 
         {/* Mobile: carrinho + hambúrguer */}
@@ -58,6 +71,10 @@ export default async function Header() {
             siteName={settings.siteName}
             primaryCtaHref={settings.primaryCtaHref}
             primaryCtaLabel={settings.primaryCtaLabel}
+            isLoggedIn={isLoggedIn}
+            isAdmin={isAdmin}
+            userName={userName}
+            userEmail={userEmail}
           />
         </div>
       </div>

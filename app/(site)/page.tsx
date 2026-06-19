@@ -8,6 +8,7 @@ import ScrollRevealTrigger from "@/components/effects/ScrollRevealTrigger";
 import InteractiveBook from "@/components/site/InteractiveBook";
 import FloatingMagicElements from "@/components/effects/FloatingMagicElements";
 import AddToCartButton from "@/components/cart/AddToCartButton";
+import HeroScrollVideo from "@/components/site/HeroScrollVideo";
 
 export const metadata: Metadata = {
   title: "Livros infantis personalizados com IA",
@@ -23,19 +24,50 @@ export const metadata: Metadata = {
 
 const BENEFITS = [
   {
-    icon: "💖",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#E63956]">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="currentColor" />
+      </svg>
+    ),
     title: "Um presente cheio de amor",
     text: "Surpreenda com um presente inesquecível e com alto apelo emocional.",
   },
   {
-    icon: "📖",
+    icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#3CA0D8]">
+        <path d="M12 21c-1.1-1.1-2.78-1.5-4.5-1.5S4.1 19.9 3 21V6c1.1-1.1 2.78-1.5 4.5-1.5S10.9 4.9 12 6c1.1-1.1 2.78-1.5 4.5-1.5S19.9 4.1 21 6v15c-1.1-1.1-2.78-1.5-4.5-1.5S13.1 19.9 12 21z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        <path d="M12 6v15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
     title: "Sua história, do seu jeito",
     text: "Personalize cada detalhe para criar uma história única e especial.",
   },
   {
-    icon: "🎈",
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-[#FF6B6B]">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 3.07 1.97 5.67 4.74 6.6L8 22h8l-1.74-6.4C17.03 14.67 19 12.07 19 9c0-3.87-3.13-7-7-7z" fill="currentColor" />
+      </svg>
+    ),
     title: "Feito para durar gerações",
     text: "Um livro físico de altíssima qualidade que passa de geração em geração.",
+  },
+];
+
+const MOBILE_BENEFITS = [
+  {
+    icon: "🎯",
+    title: "100% Personalizado",
+    text: "O rosto da criança em todas as aventuras.",
+  },
+  {
+    icon: "∞",
+    title: "Temas Infinitos",
+    text: "Você escolhe o universo onde a história vai acontecer!",
+  },
+  {
+    icon: "👁️",
+    title: "Pré-visualização",
+    text: "Veja como o livro fica antes de finalizar o pedido.",
   },
 ];
 
@@ -234,51 +266,79 @@ export default async function HomePage() {
 
       {/* 1. HERO SECTION */}
       <section className="relative pt-12 pb-24 md:py-32 overflow-hidden bg-cream-to-white">
+        {/* Scroll-driven Video Background (Constrained to right side on desktop) */}
+        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[58%] z-0 pointer-events-none overflow-hidden mask-video-fade">
+          <HeroScrollVideo />
+        </div>
+
+        {/* Radial gold glow overlay */}
+        <div className="absolute inset-0 bg-hero-radial pointer-events-none z-10" />
+
         {/* Animated Magic Stars floating background */}
-        <MagicStars count={15} />
+        <MagicStars count={25} />
         
         {/* Floating Storytelling Magic Icons (stars, moon, book, key) */}
         <FloatingMagicElements />
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 relative z-20">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-20 items-center">
-            <div className="space-y-8 text-left max-w-xl mx-auto lg:mx-0 animate-fade-up">
-              <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-full">
-                <span className="text-xs text-primary font-bold uppercase tracking-wider">✨ 100% Personalizado</span>
+            
+            {/* Desktop Hero Content (Image 3 style) */}
+            <div className="hidden lg:block space-y-8 text-left max-w-xl mx-auto lg:mx-0">
+              <div 
+                className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-full animate-fade-up"
+                style={{ animationDelay: "100ms", animationFillMode: "both" }}
+              >
+                <span className="text-xs text-primary font-bold uppercase tracking-wider">✦ 100% PERSONALIZADO</span>
               </div>
               
-              <h1 className="font-serif text-5xl md:text-6xl text-primary leading-[1.08] tracking-tight">
-                Transforme a criança que você ama no herói da <span className="text-gold italic font-normal">própria</span> história
+              <h1 
+                className="font-serif text-5xl md:text-6xl text-primary leading-[1.08] tracking-tight animate-fade-up"
+                style={{ animationDelay: "250ms", animationFillMode: "both" }}
+              >
+                Transforme a criança que você ama no herói da <span className="font-[Georgia,serif] italic text-gold font-normal">própria</span> história
               </h1>
               
-              <p className="text-base md:text-lg text-dark/70 leading-relaxed font-sans">
+              <p 
+                className="text-base md:text-lg text-dark/70 leading-relaxed font-sans animate-fade-up"
+                style={{ animationDelay: "400ms", animationFillMode: "both" }}
+              >
                 Um livro personalizado e ilustrado que transforma momentos especiais em memórias para toda a vida. Feito sob medida com tecnologia de ponta e carinho humano.
               </p>
               
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+              <div 
+                className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 animate-fade-up"
+                style={{ animationDelay: "550ms", animationFillMode: "both" }}
+              >
                 <Link
                   href={settings.primaryCtaHref}
                   className="bg-primary text-cream hover:bg-primary-light hover:scale-105 active:scale-95 text-center px-8 py-4.5 rounded-full font-bold uppercase tracking-wide text-xs shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
                 >
-                  <span>{settings.primaryCtaLabel}</span>
+                  <span>CRIAR MEU LIVRO</span>
                   <span className="text-gold">→</span>
                 </Link>
                 <Link
                   href="#como-funciona"
                   className="bg-white border border-primary/20 text-primary hover:bg-cream-light text-center px-8 py-4.5 rounded-full font-bold uppercase tracking-wide text-xs transition-all duration-300"
                 >
-                  {settings.secondaryCtaLabel}
+                  COMO FUNCIONA
                 </Link>
               </div>
 
-              <div className="flex flex-wrap gap-4 text-xs font-semibold text-dark/60 pt-2">
+              <div 
+                className="flex flex-wrap gap-4 text-xs font-semibold text-dark/60 pt-2 animate-fade-up"
+                style={{ animationDelay: "700ms", animationFillMode: "both" }}
+              >
                 <span className="flex items-center gap-1.5">✓ Ilustrações exclusivas</span>
                 <span className="flex items-center gap-1.5">✓ Capa dura premium</span>
                 <span className="flex items-center gap-1.5">✓ Entrega em todo o Brasil</span>
               </div>
 
               {/* Trust Section */}
-              <div className="flex items-center gap-3 pt-4 border-t border-cream-deep/40">
+              <div 
+                className="flex items-center gap-3 pt-4 border-t border-cream-deep/40 animate-fade-up"
+                style={{ animationDelay: "850ms", animationFillMode: "both" }}
+              >
                 <div className="flex -space-x-2">
                   <div className="w-8 h-8 rounded-full bg-gold-light border border-white flex items-center justify-center text-xs font-bold text-primary">A</div>
                   <div className="w-8 h-8 rounded-full bg-rose-light border border-white flex items-center justify-center text-xs font-bold text-primary">J</div>
@@ -290,23 +350,75 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Hero Image - Cinematic child reading */}
-            <div className="relative flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-[420px] aspect-[4/5] rounded-[32px] overflow-hidden border border-cream-deep/40 shadow-xl lg:rotate-2 hover:rotate-0 transition-transform duration-500 animate-float">
-                <Image
-                  src="/child_reading.png"
-                  alt="Criança maravilhada lendo um livro personalizado premium"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 text-cream">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-gold">Cena Ilustrada</span>
-                  <h4 className="font-serif text-xl mt-1">Sofia e a Floresta Encantada</h4>
-                </div>
+            {/* Mobile Hero Content (Centered, Image 1 style) */}
+            <div className="block lg:hidden text-center space-y-6 max-w-xl mx-auto">
+              <div 
+                className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-1.5 rounded-full animate-fade-up mx-auto"
+                style={{ animationDelay: "50ms", animationFillMode: "both" }}
+              >
+                <span className="text-[10px] text-primary font-bold uppercase tracking-wider">✦ 100% Personalizado</span>
+              </div>
+
+              <h1 
+                className="font-serif text-3xl sm:text-4xl text-primary leading-tight px-2 font-semibold animate-fade-up"
+                style={{ animationDelay: "150ms", animationFillMode: "both" }}
+              >
+                Transforme quem você ama no herói da <span className="font-[Georgia,serif] italic text-gold font-normal">própria</span> história
+              </h1>
+              
+              <p 
+                className="text-sm sm:text-base text-dark/70 leading-relaxed font-sans px-4 animate-fade-up"
+                style={{ animationDelay: "250ms", animationFillMode: "both" }}
+              >
+                Um livro infantil ilustrado feito sob medida. O rosto da criança em todas as aventuras com ilustrações ricas em detalhes geradas por IA e acabamento premium em capa dura.
+              </p>
+              
+              <div 
+                className="flex flex-col sm:flex-row items-center justify-center gap-3 px-4 pt-2 animate-fade-up"
+                style={{ animationDelay: "450ms", animationFillMode: "both" }}
+              >
+                <Link
+                  href={settings.primaryCtaHref}
+                  className="w-full sm:w-auto bg-primary text-cream hover:bg-primary-light hover:scale-105 active:scale-95 text-center px-8 py-4 rounded-full font-bold uppercase tracking-wide text-xs shadow-lg transition-all duration-300"
+                >
+                  Criar meu livro
+                </Link>
+                <Link
+                  href="#como-funciona"
+                  className="w-full sm:w-auto bg-white border border-primary/20 text-primary hover:bg-cream-light text-center px-8 py-4 rounded-full font-bold uppercase tracking-wide text-xs transition-all duration-300"
+                >
+                  Como funciona
+                </Link>
+              </div>
+
+              {/* Centered Tags (Image 1 style) */}
+              <div 
+                className="flex flex-wrap justify-center gap-2.5 px-2 pt-2 animate-fade-up"
+                style={{ animationDelay: "550ms", animationFillMode: "both" }}
+              >
+                <span className="bg-[#FFFDF9] border border-gold/25 px-3.5 py-1.5 rounded-full text-[11px] font-semibold text-primary flex items-center gap-1.5 shadow-sm">
+                  <span>🎨</span> Ilustrações únicas com IA
+                </span>
+                <span className="bg-[#FFFDF9] border border-gold/25 px-3.5 py-1.5 rounded-full text-[11px] font-semibold text-primary flex items-center gap-1.5 shadow-sm">
+                  <span>🎯</span> Rosto da criança nas páginas
+                </span>
+                <span className="bg-[#FFFDF9] border border-gold/25 px-3.5 py-1.5 rounded-full text-[11px] font-semibold text-primary flex items-center gap-1.5 shadow-sm">
+                  <span>∞</span> Escolha seu universo favorito
+                </span>
+                <span className="bg-[#FFFDF9] border border-gold/25 px-3.5 py-1.5 rounded-full text-[11px] font-semibold text-primary flex items-center gap-1.5 shadow-sm">
+                  <span>📖</span> Capa dura premium
+                </span>
+                <span className="bg-[#FFFDF9] border border-gold/25 px-3.5 py-1.5 rounded-full text-[11px] font-semibold text-primary flex items-center gap-1.5 shadow-sm">
+                  <span>🇧🇷</span> Frete para todo Brasil
+                </span>
               </div>
             </div>
+
+            {/* Espaçador para deixar o lado direito livre para a animação do background */}
+            <div 
+              className="hidden lg:block h-[450px] pointer-events-none animate-fade-up"
+              style={{ animationDelay: "600ms", animationFillMode: "both" }}
+            />
           </div>
         </div>
       </section>
@@ -314,10 +426,12 @@ export default async function HomePage() {
       {/* 2. 3 BENEFITS SECTION (Sitting over/under hero) */}
       <section className="py-6 relative z-10 bg-cream reveal-on-scroll">
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-[32px] shadow-premium border border-cream-deep/30 p-8 md:p-10 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          {/* Desktop Version (Image 2 style) */}
+          <div className="hidden lg:grid bg-white rounded-[32px] shadow-premium border border-cream-deep/30 p-8 md:p-10 max-w-5xl mx-auto grid-cols-3 gap-8">
             {BENEFITS.map((b, i) => (
               <div key={i} className="flex flex-col items-center text-center space-y-3 p-4 group">
-                <div className="w-14 h-14 rounded-full bg-rose/30 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300 select-none">
+                <div className="w-14 h-14 rounded-full bg-[#FAF7F2] border border-cream-deep/30 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm">
                   {b.icon}
                 </div>
                 <h3 className="font-serif text-lg text-primary font-semibold transition-colors duration-300 group-hover:text-gold">{b.title}</h3>
@@ -325,6 +439,22 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+
+          {/* Mobile Version (Image 1 style) */}
+          <div className="grid lg:hidden bg-white rounded-[24px] shadow-premium border border-cream-deep/30 p-6 max-w-md mx-auto grid-cols-1 gap-6">
+            {MOBILE_BENEFITS.map((b, i) => (
+              <div key={i} className="flex items-start gap-4 p-2 group">
+                <div className="w-12 h-12 rounded-full bg-gold/10 border border-gold/25 flex items-center justify-center text-xl shrink-0 select-none group-hover:scale-105 transition-transform duration-300">
+                  {b.icon}
+                </div>
+                <div className="space-y-1 text-left">
+                  <h3 className="font-serif text-base font-bold text-primary">{b.title}</h3>
+                  <p className="text-xs text-dark/65 leading-relaxed">{b.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
         </div>
       </section>
 

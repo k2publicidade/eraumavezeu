@@ -177,8 +177,8 @@ const config: Config = {
           "50%": { backgroundPosition: "200% center" },
         },
         float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-8px)" },
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "50%": { transform: "translateY(-10px) rotate(3deg)" },
         },
       },
 

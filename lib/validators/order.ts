@@ -62,6 +62,8 @@ export const checkoutSchema = z.object({
       .pipe(z.string().regex(/^[A-Z]{2}$/, "UF inválida")),
   }),
   items: z.array(checkoutItemSchema).min(1).max(20),
+  shippingMethod: z.string().optional(),
+  shippingCost: z.number().optional(),
 });
 
 export type CheckoutPayload = z.infer<typeof checkoutSchema>;

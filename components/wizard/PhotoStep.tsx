@@ -103,10 +103,10 @@ export default function PhotoStep() {
                 key={p.fileKey}
                 className="relative aspect-square rounded-xl overflow-hidden border-2 border-gold/30 bg-cream"
               >
-                {/* Preview direto da URL Uploadthing — em produção, passar por /api/watermark */}
+                {/* Preview com marca d'água via API para conformidade com LGPD */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={p.url}
+                  src={`/api/watermark?url=${encodeURIComponent(p.url)}`}
                   alt={p.name}
                   className="w-full h-full object-cover"
                 />

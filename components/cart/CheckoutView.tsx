@@ -32,11 +32,15 @@ export default function CheckoutView() {
 
   const [serverError, setServerError] = useState<string | null>(null);
   const [cepLoading, setCepLoading] = useState(false);
+  const [selectedMethod, setSelectedMethod] = useState<string>("PAC");
+  const [selectedCost, setSelectedCost] = useState<number>(0);
+  const [shippingOptions, setShippingOptions] = useState<{ method: string; cost: number; days: number }[]>([]);
 
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -54,6 +58,47 @@ export default function CheckoutView() {
     },
   });
 
+  const watchedState = watch("address.state");
+
+  function calculateShipping(state: string) {
+    const uf = state.toUpperCase().trim();
+    if (!uf) return [];
+    if (["SP", "RJ", "ES", "MG"].includes(uf)) {
+      return [
+        { method: "PAC", cost: 0, days: 5 },
+        { method: "SEDEX", cost: 14.9, days: 2 },
+      ];
+    }
+    if (["PR", "SC", "RS", "DF", "GO", "MS", "MT"].includes(uf)) {
+      return [
+        { method: "PAC", cost: 9.9, days: 7 },
+        { method: "SEDEX", cost: 22.9, days: 3 },
+      ];
+    }
+    return [
+      { method: "PAC", cost: 14.9, days: 10 },
+      { method: "SEDEX", cost: 29.9, days: 4 },
+    ];
+  }
+
+  useEffect(() => {
+    if (watchedState && watchedState.length === 2) {
+      const options = calculateShipping(watchedState);
+      setShippingOptions(options);
+      const exists = options.find((o) => o.method === selectedMethod);
+      if (!exists && options.length > 0) {
+        setSelectedMethod(options[0].method);
+        setSelectedCost(options[0].cost);
+      } else if (exists) {
+        setSelectedCost(exists.cost);
+      }
+    } else {
+      setShippingOptions([]);
+      setSelectedCost(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedState]);
+
   async function handleCepBlur(e: React.FocusEvent<HTMLInputElement>) {
     const cep = e.target.value.replace(/\D/g, "");
     if (cep.length !== 8) return;
@@ -65,7 +110,15 @@ export default function CheckoutView() {
     if (found.street) setValue("address.street", found.street);
     if (found.district) setValue("address.district", found.district);
     if (found.city) setValue("address.city", found.city);
-    if (found.state) setValue("address.state", found.state);
+    if (found.state) {
+      setValue("address.state", found.state);
+      const options = calculateShipping(found.state);
+      setShippingOptions(options);
+      if (options.length > 0) {
+        setSelectedMethod(options[0].method);
+        setSelectedCost(options[0].cost);
+      }
+    }
   }
 
   const onSubmit = handleSubmit(async (data) => {
@@ -78,10 +131,16 @@ export default function CheckoutView() {
         quantity: it.quantity,
         customization: it.customization,
       })),
+      shippingMethod: selectedMethod,
+      shippingCost: selectedCost,
     });
     if (res.ok) {
       clear();
-      router.push(`/pedido/${res.orderId}`);
+      if (res.paymentUrl) {
+        window.location.href = res.paymentUrl;
+      } else {
+        router.push(`/pedido/${res.orderId}`);
+      }
     } else {
       setServerError(res.error);
     }
@@ -267,6 +326,47 @@ export default function CheckoutView() {
             </label>
           </fieldset>
 
+          {shippingOptions.length > 0 && (
+            <fieldset className="mt-8 border-t border-gold/15 pt-8" disabled={isSubmitting}>
+              <legend className="font-serif text-xl text-primary mb-4">
+                Opção de Envio
+              </legend>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {shippingOptions.map((opt) => (
+                  <label
+                    key={opt.method}
+                    className={`flex items-center justify-between p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                      selectedMethod === opt.method
+                        ? "border-primary bg-white shadow-md shadow-gold/10"
+                        : "border-gold/20 bg-white/40 hover:border-gold/45"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="radio"
+                        name="shippingMethod"
+                        value={opt.method}
+                        checked={selectedMethod === opt.method}
+                        onChange={() => {
+                          setSelectedMethod(opt.method);
+                          setSelectedCost(opt.cost);
+                        }}
+                        className="h-4 w-4 accent-primary"
+                      />
+                      <div>
+                        <span className="block text-sm font-semibold text-primary">{opt.method}</span>
+                        <span className="block text-xs text-dark/65">Chega em até {opt.days} dias úteis</span>
+                      </div>
+                    </div>
+                    <span className="font-semibold text-sm text-dark">
+                      {opt.cost === 0 ? "Grátis" : formatBRL(opt.cost)}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          )}
+
           {serverError && (
             <p className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
               {serverError}
@@ -281,8 +381,8 @@ export default function CheckoutView() {
             {isSubmitting ? "Registrando pedido…" : "Confirmar pedido →"}
           </button>
           <p className="mt-3 text-center text-xs text-dark/55">
-            Nenhuma cobrança é feita agora — o link de pagamento chega pelo WhatsApp
-            junto da confirmação das fotos.
+            Pagamento seguro via Mercado Pago (PIX, Cartão ou Boleto). Você será
+            redirecionado para a página de pagamento após confirmar o pedido.
           </p>
         </form>
       </section>
@@ -312,9 +412,15 @@ export default function CheckoutView() {
               <dd>- {formatBRL(totals.discount)}</dd>
             </div>
           )}
+          {shippingOptions.length > 0 && (
+            <div className="flex justify-between text-primary">
+              <dt>Frete ({selectedMethod})</dt>
+              <dd>{selectedCost === 0 ? "Grátis" : formatBRL(selectedCost)}</dd>
+            </div>
+          )}
           <div className="flex justify-between border-t border-gold/25 pt-3 text-lg">
             <dt className="font-semibold text-primary">Total</dt>
-            <dd className="font-serif text-fox font-bold">{formatBRL(totals.total)}</dd>
+            <dd className="font-serif text-fox font-bold">{formatBRL(totals.total + selectedCost)}</dd>
           </div>
         </dl>
 

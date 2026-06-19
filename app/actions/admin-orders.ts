@@ -9,8 +9,12 @@ import { orderCodeOf } from "@/lib/orders/build-order";
 import {
   ORDER_STATUSES,
   photosExpireAtFrom,
+  STATUS_LABELS,
   type OrderStatusValue,
 } from "@/lib/orders/status";
+import { sendEmail } from "@/lib/email";
+import { sendMessage } from "@/lib/whatsapp";
+import { statusMessage } from "@/lib/notifications/order-status";
 
 export type AdminActionResult = { ok: true } | { ok: false; error: string };
 
@@ -130,3 +134,153 @@ export async function setTrackingCode(
   revalidatePath(`/admin/pedidos/${orderId}`);
   return { ok: true };
 }
+
+const resendNotificationSchema = z.object({
+  orderId: z.string().min(1),
+  channel: z.enum(["email", "whatsapp"]),
+});
+
+export async function resendNotification(
+  input: unknown,
+): Promise<AdminActionResult> {
+  const admin = await getAdminUser();
+  if (!admin) return { ok: false, error: "Acesso negado." };
+
+  const parsed = resendNotificationSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Dados inválidos." };
+  const { orderId, channel } = parsed.data;
+
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+  });
+  if (!order) return { ok: false, error: "Pedido não encontrado." };
+
+  try {
+    const isWhatsapp = channel === "whatsapp";
+    if (isWhatsapp && !order.guestPhone) {
+      return { ok: false, error: "Este pedido não possui telefone cadastrado." };
+    }
+
+    const guestName = order.guestName || "Cliente";
+    const guestEmail = order.guestEmail || "";
+
+    if (channel === "email" && !guestEmail) {
+      return { ok: false, error: "Este pedido não possui e-mail cadastrado." };
+    }
+
+    const firstName = guestName.trim().split(/\s+/)[0] || "cliente";
+    const label = STATUS_LABELS[order.status as OrderStatusValue] || order.status;
+    const message = statusMessage({
+      orderId: order.id,
+      orderCode: orderCodeOf(order.id),
+      buyerName: guestName,
+      buyerEmail: guestEmail,
+      buyerPhone: order.guestPhone ?? "",
+      whatsappOptIn: order.whatsappOptIn,
+      toStatus: order.status as OrderStatusValue,
+      trackingCode: order.trackingCode,
+    });
+
+    if (channel === "email") {
+      const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+      const emailRes = await sendEmail({
+        to: guestEmail,
+        subject: `Pedido #${orderCodeOf(order.id)}: ${label} — Era Uma Vez Eu`,
+        html: [
+          `<p>Olá, ${firstName}!</p>`,
+          `<p>${message}</p>`,
+          `<p><a href="${baseUrl}/pedido/${order.id}">Acompanhar pedido #${orderCodeOf(order.id)}</a></p>`,
+          `<p>— Era Uma Vez Eu</p>`,
+        ].join("\n"),
+      });
+      if (!emailRes.ok) {
+        return { ok: false, error: emailRes.error || "Erro no envio do e-mail." };
+      }
+    } else {
+      const waRes = await sendMessage({
+        phone: order.guestPhone!,
+        text: `Olá, ${firstName}! 📚 Atualização do pedido #${orderCodeOf(order.id)}:\n\n${message}`,
+      });
+      if (!waRes.ok) {
+        return { ok: false, error: waRes.error || "Erro no envio do WhatsApp." };
+      }
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.error("resendNotification failed", err);
+    return { ok: false, error: "Erro interno ao reenviar notificação." };
+  }
+}
+
+const simulatePaymentSchema = z.object({
+  orderId: z.string().min(1),
+});
+
+export async function simulatePaymentApproval(
+  input: unknown,
+): Promise<AdminActionResult> {
+  const admin = await getAdminUser();
+  if (!admin) return { ok: false, error: "Acesso negado." };
+
+  const parsed = simulatePaymentSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "ID do pedido inválido." };
+  const { orderId } = parsed.data;
+
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+  });
+
+  if (!order) return { ok: false, error: "Pedido não encontrado." };
+  if (order.paymentStatus === "APROVADO") {
+    return { ok: false, error: "O pagamento deste pedido já está aprovado." };
+  }
+
+  try {
+    await db.$transaction([
+      db.order.update({
+        where: { id: orderId },
+        data: {
+          status: "PAGAMENTO_CONFIRMADO",
+          paymentStatus: "APROVADO",
+          paymentId: `SIM_MP_${Date.now()}`,
+          paymentMethod: "SIMULATION_PAYMENT",
+        },
+      }),
+      db.orderStatusHistory.create({
+        data: {
+          orderId,
+          fromStatus: order.status,
+          toStatus: "PAGAMENTO_CONFIRMADO",
+          changedBy: admin.id,
+          note: "Simulação de pagamento aprovado via Painel Admin",
+        },
+      }),
+    ]);
+  } catch (err) {
+    console.error("simulatePaymentApproval failed", err);
+    return { ok: false, error: "Não foi possível simular a aprovação do pagamento." };
+  }
+
+  // Envia notificações ao cliente caso o pagamento tenha sido confirmado
+  if (order.guestEmail) {
+    await notifyOrderStatusChanged({
+      orderId: order.id,
+      orderCode: orderCodeOf(order.id),
+      buyerName: order.guestName ?? "Cliente",
+      buyerEmail: order.guestEmail,
+      buyerPhone: order.guestPhone ?? "",
+      whatsappOptIn: order.whatsappOptIn && !!order.guestPhone,
+      toStatus: "PAGAMENTO_CONFIRMADO",
+      trackingCode: order.trackingCode,
+    }).catch((err) => console.error("notifyOrderStatusChanged failed during simulation", err));
+  }
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/pedidos");
+  revalidatePath(`/admin/pedidos/${orderId}`);
+  revalidatePath(`/pedido/${orderId}`);
+
+  return { ok: true };
+}
+

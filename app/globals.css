@@ -203,6 +203,14 @@
     color: #1B2A4A;
   }
 
+  /* Fade mask for background video on desktop only */
+  @media (min-width: 1024px) {
+    .mask-video-fade {
+      mask-image: linear-gradient(to right, transparent 0%, black 120px);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, black 120px);
+    }
+  }
+
   /* Texto dourado premium — sólido para evitar efeito decorativo excessivo */
   .text-gradient-gold {
     color: #D4A843;
@@ -281,6 +289,26 @@
 
 .perspective-\[1800px\] {
   perspective: 1800px;
+}
+
+.perspective-\[1200px\] {
+  perspective: 1200px;
+}
+
+.rotate-Y-\[-6deg\] {
+  transform: rotateY(-6deg);
+}
+
+.rotate-X-\[6deg\] {
+  transform: rotateX(6deg);
+}
+
+.group:hover .group-hover\:rotate-Y-\[-2deg\] {
+  transform: rotateY(-2deg);
+}
+
+.group:hover .group-hover\:rotate-X-\[2deg\] {
+  transform: rotateX(2deg);
 }
 
 /* --- PREMIUM 3D BOOK PREVIEW STYLES --- */

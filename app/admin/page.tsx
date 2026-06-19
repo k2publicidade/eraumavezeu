@@ -14,12 +14,22 @@ function formatDate(d: Date): string {
   }).format(d);
 }
 
-function StatCard({ label, value, hint }: { label: string; value: string; hint: string }) {
+function StatCard({ label, value, hint, icon }: { label: string; value: string; hint: string; icon?: string }) {
   return (
-    <div className="rounded-3xl border border-gold/25 bg-cream-light p-5 shadow-sm">
-      <p className="text-sm text-dark/55">{label}</p>
-      <p className="mt-2 font-serif text-3xl text-primary">{value}</p>
-      <p className="mt-1 text-xs text-dark/50">{hint}</p>
+    <div className="group relative overflow-hidden rounded-3xl border border-gold/25 bg-cream-light p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-gold/55 hover:shadow-md">
+      <div className="absolute top-0 left-0 h-[3px] w-full bg-gradient-to-r from-gold/30 via-gold to-gold/30 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="flex items-start justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wider text-dark/50">{label}</p>
+        {icon && (
+          <span className="rounded-xl bg-gold/15 p-2 text-base leading-none select-none transition-transform duration-300 group-hover:scale-110">
+            {icon}
+          </span>
+        )}
+      </div>
+      <p className="mt-4 font-serif text-3xl font-bold tracking-tight text-primary md:text-4xl">{value}</p>
+      <p className="mt-2 flex items-center gap-1 text-xs font-medium text-dark/50">
+        <span className="text-gold text-xs leading-none">✦</span> {hint}
+      </p>
     </div>
   );
 }
@@ -89,10 +99,10 @@ export default async function AdminDashboardPage() {
       )}
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Indicadores principais">
-        <StatCard label="Receita total" value={formatBRL(metrics.totalRevenue)} hint={`${metrics.totalOrders} pedidos registrados`} />
-        <StatCard label="Receita do mês" value={formatBRL(metrics.monthRevenue)} hint={`${metrics.monthOrders} pedidos neste mês`} />
-        <StatCard label="Ticket médio" value={formatBRL(metrics.averageTicket)} hint={`${metrics.paidOrders} pagamentos aprovados`} />
-        <StatCard label="Catálogo ativo" value={String(productsCount)} hint={`${customersCount} contas cadastradas`} />
+        <StatCard label="Receita total" value={formatBRL(metrics.totalRevenue)} hint={`${metrics.totalOrders} pedidos registrados`} icon="💰" />
+        <StatCard label="Receita do mês" value={formatBRL(metrics.monthRevenue)} hint={`${metrics.monthOrders} pedidos neste mês`} icon="📈" />
+        <StatCard label="Ticket médio" value={formatBRL(metrics.averageTicket)} hint={`${metrics.paidOrders} pagamentos aprovados`} icon="🎫" />
+        <StatCard label="Catálogo ativo" value={String(productsCount)} hint={`${customersCount} contas cadastradas`} icon="📚" />
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">

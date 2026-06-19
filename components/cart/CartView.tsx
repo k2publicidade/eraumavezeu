@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useCartStore } from "@/lib/cart/store";
-import type { CartProduct } from "@/lib/cart/types";
+import { COMBO_DISCOUNT, type CartProduct } from "@/lib/cart/types";
 
 function formatBRL(v: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -126,7 +126,7 @@ export default function CartView({ crossSellProducts }: Props) {
                       {formatBRL(p.price)}
                     </span>
                     <span className="text-fox font-semibold">
-                      {formatBRL(Math.max(p.price - 20, 0))}
+                      {formatBRL(Math.max(p.price - COMBO_DISCOUNT, 0))}
                     </span>
                   </div>
                   <span className="mt-2 inline-block text-xs text-primary font-medium">

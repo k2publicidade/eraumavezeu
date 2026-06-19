@@ -23,9 +23,9 @@ describe("scaffold smoke", () => {
 
   it("tailwind.config preserva paleta da marca", () => {
     const colors = (tailwindConfig.theme as any).extend.colors;
-    expect(colors.primary.DEFAULT).toBe("#1E3A5F");
-    expect(colors.secondary).toBe("#2E5D3C");
-    expect(colors.gold.DEFAULT).toBe("#E8C94A");
+    expect(colors.primary.DEFAULT).toBe("#1B2A4A");
+    expect(colors.secondary).toBe("#8BA888");
+    expect(colors.gold.DEFAULT).toBe("#D4A843");
   });
 
   it("package.json pinnou Next 14 + React 18 + Tailwind 3 (evita quebra de react-pageflip)", () => {

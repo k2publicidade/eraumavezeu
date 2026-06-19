@@ -17,7 +17,7 @@ export type OrderStatusNotificationData = {
 };
 
 /** Mensagem amigável por status — usada no e-mail e no WhatsApp. */
-function statusMessage(data: OrderStatusNotificationData): string {
+export function statusMessage(data: OrderStatusNotificationData): string {
   switch (data.toStatus) {
     case "PAGAMENTO_CONFIRMADO":
       return "Pagamento confirmado! Já estamos preparando tudo para começar a produção do livro.";

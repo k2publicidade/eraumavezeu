@@ -1,82 +1,207 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/site-content";
 import { getActiveProducts } from "@/lib/products";
-import FlipBookSection from "@/components/flipbook/FlipBookSection";
+import MagicStars from "@/components/effects/MagicStars";
+import ScrollRevealTrigger from "@/components/effects/ScrollRevealTrigger";
+import InteractiveBook from "@/components/site/InteractiveBook";
+import FloatingMagicElements from "@/components/effects/FloatingMagicElements";
+import AddToCartButton from "@/components/cart/AddToCartButton";
 
 export const metadata: Metadata = {
   title: "Livros infantis personalizados com IA",
   description:
-    "Transforme a crianca que voce ama no heroi da propria historia. Livros fisicos capa dura com ilustracoes unicas criadas por IA e revisao humana.",
+    "Transforme a criança que você ama no herói da própria história. Livros físicos capa dura com ilustrações únicas criadas por IA e revisão humana.",
   openGraph: {
     title: "Era Uma Vez Eu - Livros infantis personalizados com IA",
     description:
-      "Transforme a crianca que voce ama no heroi da propria historia.",
+      "Transforme a criança que você ama no herói da própria história.",
     type: "website",
   },
 };
 
-const BADGES = [
-  { icon: "\uD83C\uDFA8", label: "Ilustra\u00E7\u00F5es \u00FAnicas com IA" },
+const BENEFITS = [
   {
-    icon: "\uD83C\uDFAF",
-    label: "100% Personalizado: O rosto da crian\u00E7a em todas as aventuras.",
+    icon: "💖",
+    title: "Um presente cheio de amor",
+    text: "Surpreenda com um presente inesquecível e com alto apelo emocional.",
   },
   {
-    icon: "\u221E",
-    label: "Temas Infinitos: Voc\u00EA escolhe o universo onde a hist\u00F3ria vai acontecer!",
+    icon: "📖",
+    title: "Sua história, do seu jeito",
+    text: "Personalize cada detalhe para criar uma história única e especial.",
   },
-  { icon: "\uD83D\uDCD6", label: "Capa dura 20 p\u00E1ginas" },
-  { icon: "\uD83C\uDDE7\uD83C\uDDF7", label: "Entrega para todo Brasil" },
+  {
+    icon: "🎈",
+    title: "Feito para durar gerações",
+    text: "Um livro físico de altíssima qualidade que passa de geração em geração.",
+  },
 ];
 
 const HOW_STEPS = [
   {
     n: 1,
     title: "Escolha o tema",
-    text: "Aventura, mundo dos sonhos, super-her\u00F3i, princesa e mais.",
+    text: "Selecione o tema que mais combina com a criança.",
+    icon: (
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 3C4 1.89543 4.89543 1 6 1H18C19.1046 1 20 1.89543 20 3V21C20 22.1046 19.1046 23 18 23H6C4.89543 23 4 22.1046 4 21V3Z" fill="#E52E5E" />
+        <path d="M4 20C4 19.4477 4.44772 19 5 19H20V21.5C20 22.3284 19.3284 23 18.5 23H5.5C4.67157 23 4 22.3284 4 21.5V20Z" fill="#B01C41" />
+        <path d="M12 15.5L11.125 14.7C8.025 11.89 5.975 10.03 5.975 7.76C5.975 5.9 7.425 4.45 9.275 4.45C10.325 4.45 11.3375 4.94 12 5.7C12.6625 4.94 13.675 4.45 14.725 4.45C16.575 4.45 18.025 5.9 18.025 7.76C18.025 10.03 15.975 11.89 12.875 14.71L12 15.5Z" fill="white" />
+      </svg>
+    ),
   },
   {
     n: 2,
-    title: "Personalize",
-    text: "G\u00EAnero, estilo, cor favorita, faixa et\u00E1ria e fotos da crian\u00E7a.",
+    title: "Personalize a história",
+    text: "Conte detalhes, envie fotos e personalize os personagens.",
+    icon: (
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="2" width="14" height="20" rx="2" fill="#3CA0D8" />
+        <line x1="7" y1="7" x2="15" y2="7" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <line x1="7" y1="12" x2="13" y2="12" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <line x1="7" y1="17" x2="11" y2="17" stroke="white" strokeWidth="2" strokeLinecap="round" />
+        <path d="M14.5 17.5L21 11L22.5 12.5L16 19H14.5V17.5Z" fill="#FFD369" />
+        <path d="M21 11L22.5 12.5L21.5 13.5L20 12L21 11Z" fill="#E0A92E" />
+        <path d="M14.5 19H15.5L14.5 18V19Z" fill="#333333" />
+      </svg>
+    ),
   },
   {
     n: 3,
-    title: "Escreva sua dedicat\u00F3ria",
-    text: "Palavras de carinho que ficar\u00E3o guardadas para a vida toda.",
+    title: "Aprovação final",
+    text: "Veja uma prévia e faça ajustes para deixar tudo perfeito.",
+    icon: (
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="12" cy="12" r="11" fill="#56B25A" />
+        <path d="M8.5 12.5L11 15L16 9" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
   },
   {
     n: 4,
-    title: "Receba em casa",
-    text: "Livro f\u00EDsico capa dura impresso e entregue via Correios.",
+    title: "Receba o livro",
+    text: "Seu livro impresso, com muito carinho, na sua casa.",
+    icon: (
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="9" width="16" height="13" rx="1" fill="#ED8E3B" />
+        <rect x="3" y="6" width="18" height="4" rx="1" fill="#ED8E3B" />
+        <rect x="11" y="6" width="2" height="16" fill="white" />
+        <path d="M12 6C9.5 4.5 8 2 10.5 2C12.5 2 12 6 12 6Z" fill="white" />
+        <path d="M12 6C14.5 4.5 16 2 13.5 2C11.5 2 12 6 12 6Z" fill="white" />
+      </svg>
+    ),
   },
 ];
 
-const HOME_HIGHLIGHTS = [
+const WHY_US = [
   {
-    emoji: "\uD83C\uDFAF",
-    title: "100% Personalizado",
-    text: "O rosto da crian\u00E7a em todas as aventuras.",
+    title: "Personalização total",
+    text: "Cada detalhe feito para ser único",
   },
   {
-    emoji: "\u221E",
-    title: "Temas Infinitos",
-    text: "Voc\u00EA escolhe o universo onde a hist\u00F3ria vai acontecer!",
+    title: "Qualidade premium",
+    text: "Materiais de alta qualidade e impressão impecável",
   },
   {
-    emoji: "\uD83D\uDC41\uFE0F",
-    title: "Pr\u00E9-visualiza\u00E7\u00E3o",
-    text: "Veja como o livro fica antes de finalizar o pedido.",
+    title: "Entrega rápida",
+    text: "Enviamos para todo o Brasil",
+  },
+  {
+    title: "Atendimento humano",
+    text: "Estamos com você em cada etapa",
+  },
+  {
+    title: "Satisfação garantida",
+    text: "Garantia de amor e encantamento",
   },
 ];
 
-const PRODUCT_TYPE_EMOJI: Record<string, string> = {
-  LIVRO_PRINCIPAL: "\uD83D\uDCD5",
-  EBOOK: "\uD83D\uDCBB",
-  LIVRO_COLORIR: "\uD83D\uDD8D\uFE0F",
-  QUEBRA_CABECA: "\uD83E\uDDE9",
-  CARTELA_ADESIVOS: "\u2728",
+const WHY_US_ICONS = [
+  // 1. Personalização total
+  (
+    <svg key="icon-1" className="w-5 h-5 text-[#E63956]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+    </svg>
+  ),
+  // 2. Qualidade premium
+  (
+    <svg key="icon-2" className="w-5 h-5 text-[#0066CC]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+    </svg>
+  ),
+  // 3. Entrega rápida
+  (
+    <svg key="icon-3" className="w-5 h-5 text-[#339933]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 011-1v-4a1 1 0 01.816-.983L18 10h3a1 1 0 011 1v4a1 1 0 01-1 1h-2" />
+    </svg>
+  ),
+  // 4. Atendimento humano
+  (
+    <svg key="icon-4" className="w-5 h-5 text-[#8A2BE2]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+  ),
+  // 5. Satisfação garantida
+  (
+    <svg key="icon-5" className="w-5 h-5 text-[#FF8C00]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+  ),
+];
+
+const WHY_US_BG = [
+  "bg-[#FFEBF0]", // light pink
+  "bg-[#EBF5FF]", // light blue
+  "bg-[#EBF7EB]", // light green
+  "bg-[#F5EBFF]", // light purple
+  "bg-[#FFF2E0]", // light orange
+];
+
+const PRODUCT_MOCKUPS: Record<string, string> = {
+  LIVRO_PRINCIPAL: "/book_cover.png",
+  EBOOK: "/ebook_mockup.png",
+  LIVRO_COLORIR: "/coloring_book_mockup.png",
+  QUEBRA_CABECA: "/puzzle_mockup.png",
+  CARTELA_ADESIVOS: "/stickers_mockup.png",
+};
+
+const PRODUCT_BADGES: Record<string, string> = {
+  LIVRO_PRINCIPAL: "Item Estrela",
+  EBOOK: "Prático & Digital",
+  LIVRO_COLORIR: "Criatividade & Arte",
+  QUEBRA_CABECA: "Desafio & Raciocínio",
+  CARTELA_ADESIVOS: "Mimo Exclusivo",
+};
+
+const PRODUCT_FEATURES: Record<string, string[]> = {
+  LIVRO_PRINCIPAL: [
+    "Capa dura costurada premium",
+    "20 páginas Couché 170g",
+    "Tamanho deitado (30x21cm)",
+  ],
+  EBOOK: [
+    "Formato PDF de alta definição",
+    "Disponível em qualquer tela",
+    "Envio imediato no e-mail",
+  ],
+  LIVRO_COLORIR: [
+    "20 páginas personalizadas",
+    "Protagonizado pela criança",
+    "Papel grosso offset p/ canetinhas",
+  ],
+  QUEBRA_CABECA: [
+    "60 peças em papelão cartonado",
+    "Tamanho A4 (29x21 cm)",
+    "Encaixe suave de alta durabilidade",
+  ],
+  CARTELA_ADESIVOS: [
+    "Super cartela A4 vinílica",
+    "Mais de 25 adesivos cortados",
+    "Resistente a água e riscos",
+  ],
 };
 
 function formatBRL(value: number) {
@@ -88,107 +213,258 @@ function formatBRL(value: number) {
 
 const TESTIMONIALS = [
   {
-    quote:
-      "Minha filha chorou quando viu o livro. A ilustra\u00E7\u00E3o ficou id\u00EAntica a ela.",
-    author: "Marina, m\u00E3e da Sofia (5 anos)",
+    quote: "Meu filho se emocionou ao se ver como herói da história. Um presente que vamos guardar para sempre.",
+    author: "Juliana S. - Mãe do Pedro",
+    stars: 5,
   },
   {
-    quote:
-      "Dei de presente pro meu afilhado e virou o livro favorito da estante.",
-    author: "Pedro, padrinho do Davi (3 anos)",
+    quote: "A qualidade do livro é incrível e o atendimento foi impecável do início ao fim. Super recomendo!",
+    author: "Carlos M. - Pai da Sofia",
+    stars: 5,
   },
 ];
-
-function StarDeco({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden="true"
-      className={"text-gold inline-block " + className}
-    >
-      <path d="M8 0 L9.5 5.5 L15 8 L9.5 9.5 L8 16 L6.5 9.5 L1 8 L6.5 5.5 Z" />
-    </svg>
-  );
-}
 
 export default async function HomePage() {
   const [products, settings] = await Promise.all([getActiveProducts(), getSiteSettings()]);
 
   return (
-    <>
-      {/* HERO */}
-      <section className="relative overflow-hidden bg-hero-warm py-16 md:py-28">
-        <div
-          className="absolute inset-x-0 top-0 h-72 bg-hero-radial pointer-events-none"
-          aria-hidden="true"
-        />
+    <div className="relative overflow-hidden bg-cream">
+      {/* Scroll Reveal Observer activator */}
+      <ScrollRevealTrigger />
 
-        <div className="relative container mx-auto px-4 text-center max-w-3xl">
-          <div className="flex justify-center mb-8">
-            <div className="relative">
-              <div
-                className="absolute inset-0 rounded-full bg-gold/20 blur-xl scale-110"
-                aria-hidden="true"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/logo.jpeg"
-                alt="Selo Era Uma Vez Eu"
-                width={140}
-                height={140}
-                className="relative rounded-full ring-4 ring-gold/50 shadow-gold-lg"
-              />
+      {/* 1. HERO SECTION */}
+      <section className="relative pt-12 pb-24 md:py-32 overflow-hidden bg-cream-to-white">
+        {/* Animated Magic Stars floating background */}
+        <MagicStars count={15} />
+        
+        {/* Floating Storytelling Magic Icons (stars, moon, book, key) */}
+        <FloatingMagicElements />
+        
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-20 items-center">
+            <div className="space-y-8 text-left max-w-xl mx-auto lg:mx-0 animate-fade-up">
+              <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-full">
+                <span className="text-xs text-primary font-bold uppercase tracking-wider">✨ 100% Personalizado</span>
+              </div>
+              
+              <h1 className="font-serif text-5xl md:text-6xl text-primary leading-[1.08] tracking-tight">
+                Transforme a criança que você ama no herói da <span className="text-gold italic font-normal">própria</span> história
+              </h1>
+              
+              <p className="text-base md:text-lg text-dark/70 leading-relaxed font-sans">
+                Um livro personalizado e ilustrado que transforma momentos especiais em memórias para toda a vida. Feito sob medida com tecnologia de ponta e carinho humano.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                <Link
+                  href={settings.primaryCtaHref}
+                  className="bg-primary text-cream hover:bg-primary-light hover:scale-105 active:scale-95 text-center px-8 py-4.5 rounded-full font-bold uppercase tracking-wide text-xs shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <span>{settings.primaryCtaLabel}</span>
+                  <span className="text-gold">→</span>
+                </Link>
+                <Link
+                  href="#como-funciona"
+                  className="bg-white border border-primary/20 text-primary hover:bg-cream-light text-center px-8 py-4.5 rounded-full font-bold uppercase tracking-wide text-xs transition-all duration-300"
+                >
+                  {settings.secondaryCtaLabel}
+                </Link>
+              </div>
+
+              <div className="flex flex-wrap gap-4 text-xs font-semibold text-dark/60 pt-2">
+                <span className="flex items-center gap-1.5">✓ Ilustrações exclusivas</span>
+                <span className="flex items-center gap-1.5">✓ Capa dura premium</span>
+                <span className="flex items-center gap-1.5">✓ Entrega em todo o Brasil</span>
+              </div>
+
+              {/* Trust Section */}
+              <div className="flex items-center gap-3 pt-4 border-t border-cream-deep/40">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-gold-light border border-white flex items-center justify-center text-xs font-bold text-primary">A</div>
+                  <div className="w-8 h-8 rounded-full bg-rose-light border border-white flex items-center justify-center text-xs font-bold text-primary">J</div>
+                  <div className="w-8 h-8 rounded-full bg-forest-light border border-white flex items-center justify-center text-xs font-bold text-primary">P</div>
+                </div>
+                <p className="text-xs text-dark/60">
+                  Mais de <strong className="text-primary font-bold">10 mil histórias</strong> criadas e entregues.
+                </p>
+              </div>
+            </div>
+
+            {/* Hero Image - Cinematic child reading */}
+            <div className="relative flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-[420px] aspect-[4/5] rounded-[32px] overflow-hidden border border-cream-deep/40 shadow-xl lg:rotate-2 hover:rotate-0 transition-transform duration-500 animate-float">
+                <Image
+                  src="/child_reading.png"
+                  alt="Criança maravilhada lendo um livro personalizado premium"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6 text-cream">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-gold">Cena Ilustrada</span>
+                  <h4 className="font-serif text-xl mt-1">Sofia e a Floresta Encantada</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. 3 BENEFITS SECTION (Sitting over/under hero) */}
+      <section className="py-6 relative z-10 bg-cream reveal-on-scroll">
+        <div className="container mx-auto px-4">
+          <div className="bg-white rounded-[32px] shadow-premium border border-cream-deep/30 p-8 md:p-10 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+            {BENEFITS.map((b, i) => (
+              <div key={i} className="flex flex-col items-center text-center space-y-3 p-4 group">
+                <div className="w-14 h-14 rounded-full bg-rose/30 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform duration-300 select-none">
+                  {b.icon}
+                </div>
+                <h3 className="font-serif text-lg text-primary font-semibold transition-colors duration-300 group-hover:text-gold">{b.title}</h3>
+                <p className="text-xs text-dark/65 leading-relaxed">{b.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. FEATURED BOOK SECTION ("Livro em Destaque") */}
+      <section className="py-24 bg-cream reveal-on-scroll">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-16 items-center max-w-5xl mx-auto">
+            {/* Book standing mockup (Interactive 3D Flip) */}
+            <div className="flex justify-center relative w-full overflow-visible">
+              {/* Botanical leaves details */}
+              <div className="absolute -left-10 top-0 text-5xl opacity-15 pointer-events-none select-none">🍃</div>
+              <div className="absolute -right-10 bottom-0 text-5xl opacity-15 pointer-events-none select-none">🌿</div>
+              
+              <InteractiveBook />
+            </div>
+
+            {/* Description details */}
+            <div className="space-y-6 max-w-lg">
+              <span className="font-body text-xs font-bold text-gold uppercase tracking-[0.18em]">Livro em destaque</span>
+              <h2 className="font-serif text-4xl text-primary font-semibold">Sofia e a Floresta Encantada</h2>
+              <p className="text-sm text-dark/70 leading-relaxed font-sans">
+                Uma aventura mágica onde a pequena Sofia descobre coragem, amizade e o poder de acreditar em si mesma. Ilustrações lúdicas e ricas em detalhes emocionais adaptadas à foto da criança.
+              </p>
+
+              <div className="grid grid-cols-3 gap-4 pt-2">
+                <div className="bg-white/60 p-3 rounded-2xl border border-cream-deep/40 text-center shadow-sm">
+                  <span className="block text-lg select-none">📖</span>
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mt-1">Capa dura</span>
+                </div>
+                <div className="bg-white/60 p-3 rounded-2xl border border-cream-deep/40 text-center shadow-sm">
+                  <span className="block text-lg select-none">🎨</span>
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mt-1">Arte por IA</span>
+                </div>
+                <div className="bg-white/60 p-3 rounded-2xl border border-cream-deep/40 text-center shadow-sm">
+                  <span className="block text-lg select-none">✨</span>
+                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mt-1">Exclusivo</span>
+                </div>
+              </div>
+
+              <div className="pt-4 flex items-center gap-4">
+                <Link
+                  href={settings.primaryCtaHref}
+                  className="bg-primary text-cream hover:bg-primary-light hover:scale-105 active:scale-95 px-8 py-3.5 rounded-full font-bold uppercase tracking-wider text-xs flex items-center gap-2 shadow-md transition-all duration-300"
+                >
+                  <span>Ver todos os temas</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. COMO FUNCIONA (TIMELINE) */}
+      <section id="como-funciona" className="py-24 bg-cream-light reveal-on-scroll">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="font-body text-xs font-bold text-gold uppercase tracking-[0.18em]">Como funciona</span>
+            <h2 className="font-serif text-3xl md:text-4xl text-primary mt-2">Criar o livro é simples e mágico</h2>
+            {/* Elegant gold divider with star */}
+            <div className="flex items-center justify-center gap-4 mt-4 select-none">
+              <div className="w-12 h-0.5 bg-gold/40" />
+              <span className="text-gold text-xs">✦</span>
+              <div className="w-12 h-0.5 bg-gold/40" />
             </div>
           </div>
 
-          <p className="font-script text-xl text-fox mb-3">{settings.heroEyebrow}</p>
+          <div className="relative max-w-5xl mx-auto">
+            {/* Curved timeline connector line */}
+            <div className="hidden lg:block absolute top-[6px] left-[12.5%] right-[12.5%] h-[112px] pointer-events-none select-none z-0">
+              <svg width="100%" height="100%" viewBox="0 0 1000 112" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M 0 56 Q 166.5 110 333.3 56 Q 500 110 666.6 56 Q 833.3 110 1000 56"
+                  stroke="#D4A843"
+                  strokeWidth="2"
+                  strokeDasharray="4 6"
+                  opacity="0.35"
+                />
+              </svg>
+            </div>
 
-          <h1 className="font-serif text-4xl md:text-6xl text-primary leading-tight">
-            {settings.heroTitlePrefix}{" "}
-            <span className="underline-gold">{settings.heroTitleHighlight}</span>
-          </h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+              {HOW_STEPS.map((step) => (
+                <div key={step.n} className="flex flex-col items-center text-center space-y-5 relative z-10 group">
+                  {/* Circle Badge */}
+                  <div className="w-28 h-28 rounded-full bg-white shadow-sm flex items-center justify-center border border-gold/15 group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
+                    {step.icon}
+                  </div>
+                  
+                  {/* Step Title Row */}
+                  <div className="flex items-center gap-2 justify-center">
+                    <span className="w-5 h-5 rounded-full bg-primary text-white flex items-center justify-center font-sans text-xs font-bold shrink-0">
+                      {step.n}
+                    </span>
+                    <h3 className="font-serif text-base font-bold text-primary">
+                      {step.title}
+                    </h3>
+                  </div>
 
-          <p className="mt-6 text-lg md:text-xl text-dark/65 max-w-2xl mx-auto leading-relaxed">
-            {settings.heroDescription}
-          </p>
-
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href={settings.primaryCtaHref} className="btn-primary-lg">
-              {settings.primaryCtaLabel}
-            </Link>
-            <Link href={settings.secondaryCtaHref} className="btn-ghost">
-              {settings.secondaryCtaLabel}
-            </Link>
-          </div>
-
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            {BADGES.map((b) => (
-              <div key={b.label} className="badge-gold">
-                <span aria-hidden="true">{b.icon}</span>
-                <span>{b.label}</span>
-              </div>
-            ))}
+                  {/* Step Description */}
+                  <p className="text-xs sm:text-[13px] text-dark/70 leading-relaxed max-w-[200px] mx-auto">
+                    {step.text}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* DIFERENCIAIS */}
-      <section className="py-12 md:py-16 bg-cream-light">
+      {/* 5. WHY US SECTION ("Por que escolher") */}
+      <section className="py-12 md:py-16 bg-cream reveal-on-scroll">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto">
-            {HOME_HIGHLIGHTS.map((h) => (
-              <div key={h.title} className="card-premium p-6 text-center">
-                <div className="text-4xl" aria-hidden="true">
-                  {h.emoji}
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <h2 className="font-serif text-2xl md:text-3xl text-primary mt-2">Por que escolher o Livro da Sua História?</h2>
+            {/* Divider with central gold diamond */}
+            <div className="flex items-center justify-center gap-2 mt-4 select-none">
+              <div className="w-10 h-0.5 bg-gradient-to-r from-transparent to-gold/60" />
+              <span className="text-gold text-[10px]">◆</span>
+              <div className="w-10 h-0.5 bg-gradient-to-l from-transparent to-gold/60" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5 max-w-5xl mx-auto">
+            {WHY_US.map((item, i) => (
+              <div
+                key={i}
+                className="bg-[#FCFAF7]/95 border border-gold/15 rounded-[20px] p-5 shadow-sm hover:shadow-md hover:border-gold/35 transition-all duration-300 flex flex-col items-center text-center space-y-3"
+              >
+                {/* Custom icon inside rounded circle with category specific BG color */}
+                <div className={`w-12 h-12 rounded-full ${WHY_US_BG[i]} flex items-center justify-center flex-shrink-0 select-none transition-transform duration-300 hover:scale-110`}>
+                  {WHY_US_ICONS[i]}
                 </div>
-                <h3 className="mt-3 font-serif text-xl text-primary">
-                  {h.title}
+                
+                <h3 className="font-serif text-xs md:text-sm font-bold text-primary leading-tight mt-1">
+                  {item.title}
                 </h3>
-                <p className="mt-2 text-sm text-dark/65 leading-relaxed">
-                  {h.text}
+                
+                <p className="text-[11px] text-dark/70 leading-relaxed font-body max-w-[160px]">
+                  {item.text}
                 </p>
               </div>
             ))}
@@ -196,178 +472,180 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* FLIPBOOK / PRE-VISUALIZACAO */}
-      <FlipBookSection />
-
-      {/* COMO FUNCIONA */}
-      <section className="py-16 md:py-24 bg-cream-warm">
+      {/* 6. NOSSOS PRODUTOS (5 CARDS) */}
+      <section id="produtos" className="py-16 md:py-20 bg-rose reveal-on-scroll">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-2" aria-hidden="true">
-            <StarDeco className="opacity-60 mr-2" />
-            <StarDeco className="opacity-40" />
-            <StarDeco className="opacity-60 ml-2" />
-          </div>
-          <h2 className="font-serif text-3xl md:text-4xl text-center text-primary">
-            Como funciona
-          </h2>
-
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-5">
-            {HOW_STEPS.map((s) => (
-              <div
-                key={s.n}
-                className="card-premium p-6 relative overflow-hidden group"
-              >
-                <div className="w-10 h-10 rounded-full bg-primary text-cream flex items-center justify-center font-serif text-lg shadow-sm group-hover:bg-primary-light transition-colors duration-250">
-                  {s.n}
-                </div>
-                {s.n < 4 && (
-                  <div
-                    className="hidden md:block absolute top-11 left-full w-full h-px bg-gold/30 -translate-y-1/2 z-0"
-                    aria-hidden="true"
-                  />
-                )}
-                <h3 className="mt-4 font-serif text-xl text-primary">{s.title}</h3>
-                <p className="mt-2 text-sm text-dark/65 leading-relaxed">{s.text}</p>
-              </div>
-            ))}
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="font-body text-xs font-bold text-gold uppercase tracking-[0.18em]">Catálogo</span>
+            <h2 className="font-serif text-2xl md:text-3xl text-primary mt-2 font-medium">Nossos Produtos</h2>
+            {/* Divider with central gold diamond */}
+            <div className="flex items-center justify-center gap-2 mt-3 select-none">
+              <div className="w-10 h-0.5 bg-gradient-to-r from-transparent to-gold/60" />
+              <span className="text-gold text-[10px]">◆</span>
+              <div className="w-10 h-0.5 bg-gradient-to-l from-transparent to-gold/60" />
+            </div>
+            <p className="text-xs text-dark/60 mt-3 font-body">
+              Monte o combo perfeito: adicionais ganham <strong className="text-gold font-bold">R$ 15 de desconto</strong> quando comprados junto com o livro físico capa dura.
+            </p>
           </div>
 
-          <div className="mt-10 text-center">
-            <Link
-              href="/como-funciona"
-              className="text-primary hover:text-primary-light font-medium transition-colors duration-200 underline-gold"
-            >
-              Ver todos os 8 passos &rarr;
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* PRODUTOS */}
-      <section className="py-16 md:py-24 bg-cream-light">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-2" aria-hidden="true">
-            <StarDeco className="opacity-60 mr-2" />
-            <StarDeco className="opacity-40" />
-            <StarDeco className="opacity-60 ml-2" />
-          </div>
-          <h2 className="font-serif text-3xl md:text-4xl text-center text-primary">
-            Nossos produtos
-          </h2>
-          <p className="mt-2 text-center text-dark/55">
-            Monte o combo perfeito. Adicionais ganham{" "}
-            <span className="text-fox font-medium">R$ 15 de desconto</span> quando
-            comprados junto do livro capa dura.
-          </p>
-
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 max-w-7xl mx-auto">
             {products.map((p) => (
               <div
                 key={p.id}
-                className="card-premium p-6 text-center group cursor-default"
+                className="bg-white rounded-[24px] border border-cream-deep/20 shadow-premium p-4 flex flex-col justify-between hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 group"
               >
-                <div
-                  className="text-5xl group-hover:scale-110 transition-transform duration-250 inline-block"
-                  aria-hidden="true"
-                >
-                  {PRODUCT_TYPE_EMOJI[p.type] ?? "🎁"}
-                </div>
-                <h3 className="mt-4 font-serif text-lg text-primary">{p.name}</h3>
-                <p className="mt-2 flex items-baseline justify-center gap-2">
-                  {p.priceOld && (
-                    <span className="text-dark/35 line-through text-xs">
-                      {formatBRL(p.priceOld)}
+                <div>
+                  {/* Product Mockup Image Container */}
+                  <div className="relative w-full aspect-[4/3] bg-cream/35 rounded-xl overflow-hidden mb-3 flex items-center justify-center p-1.5 group-hover:scale-[1.01] transition-transform duration-500">
+                    <Image
+                      src={PRODUCT_MOCKUPS[p.type] ?? "/book_cover.png"}
+                      alt={p.name}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 200px"
+                    />
+                  </div>
+
+                  {/* Badges & Name */}
+                  <div className="text-center">
+                    <span className="bg-gold/10 border border-gold/25 px-2 py-0.5 rounded-full text-[8px] font-bold text-gold uppercase tracking-wider mb-1.5 inline-block">
+                      {PRODUCT_BADGES[p.type] ?? "Adicional"}
                     </span>
+                    <h3 className="font-serif text-sm font-bold text-primary leading-tight group-hover:text-gold transition-colors duration-300 truncate">
+                      {p.name}
+                    </h3>
+                  </div>
+
+                  {/* Bullet features list */}
+                  <ul className="text-[10px] text-dark/70 space-y-1 py-3 border-t border-cream-deep/15 text-left font-body mt-3">
+                    {(PRODUCT_FEATURES[p.type] ?? []).map((f, idx) => (
+                      <li key={idx} className="flex items-start gap-1">
+                        <span className="text-gold font-bold flex-shrink-0">✓</span>
+                        <span className="truncate">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                {/* Price and Actions */}
+                <div className="mt-3 pt-3 border-t border-cream-deep/20 flex flex-col space-y-3">
+                  {/* Pricing Comparison */}
+                  <div className="flex flex-col text-center font-body">
+                    {p.type !== "LIVRO_PRINCIPAL" ? (
+                      <>
+                        <span className="text-[8px] text-dark/40 uppercase tracking-wider block font-bold">Combo / Avulso</span>
+                        <div className="flex items-baseline justify-center gap-1.5">
+                          <span className="text-sm font-bold text-primary">
+                            {formatBRL(Number(p.price) - 15)}
+                          </span>
+                          <span className="text-[10px] text-dark/35 line-through">
+                            {formatBRL(Number(p.price))}
+                          </span>
+                        </div>
+                        <span className="text-[8px] text-emerald-600 font-semibold block mt-0.5">
+                          R$ 15 de desconto acumulado
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[8px] text-dark/40 uppercase tracking-wider block font-bold">Preço Especial</span>
+                        <div className="flex items-baseline justify-center gap-1.5">
+                          {p.priceOld && (
+                            <span className="text-[10px] text-dark/35 line-through">
+                              {formatBRL(Number(p.priceOld))}
+                            </span>
+                          )}
+                          <span className="text-sm font-bold text-primary">
+                            {formatBRL(Number(p.price))}
+                          </span>
+                        </div>
+                        <span className="text-[8px] text-emerald-600 font-semibold block mt-0.5">
+                          6x sem juros no cartão
+                        </span>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Add To Cart or Customize CTA Button */}
+                  {p.type === "LIVRO_PRINCIPAL" ? (
+                    <Link
+                      href="/personalizar"
+                      className="w-full bg-primary text-cream hover:bg-primary-light active:scale-95 py-2 rounded-full font-bold uppercase tracking-wider text-[9px] text-center shadow-sm transition-all duration-300 block"
+                    >
+                      Personalizar Livro
+                    </Link>
+                  ) : (
+                    <AddToCartButton
+                      product={{
+                        id: p.id,
+                        slug: p.slug,
+                        name: p.name,
+                        type: p.type,
+                        price: p.price,
+                      }}
+                      className="w-full bg-primary text-cream hover:bg-primary-light active:scale-95 py-2 rounded-full font-bold uppercase tracking-wider text-[9px] text-center shadow-sm transition-all duration-300 block"
+                    />
                   )}
-                  <span className="text-fox font-semibold">
-                    {formatBRL(p.price)}
-                  </span>
-                </p>
+                </div>
               </div>
             ))}
           </div>
-
-          <div className="mt-10 text-center">
-            <Link
-              href="/produtos"
-              className="text-primary hover:text-primary-light font-medium transition-colors duration-200 underline-gold"
-            >
-              Ver todos os produtos &rarr;
-            </Link>
-          </div>
         </div>
       </section>
 
-      {/* DEPOIMENTOS */}
-      <section className="py-16 md:py-24 bg-cream-warm">
+      {/* 7. DEPOIMENTOS ("Histórias que já viraram memórias") */}
+      <section id="depoimentos" className="py-24 bg-cream reveal-on-scroll">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-2" aria-hidden="true">
-            <StarDeco className="opacity-60 mr-2" />
-            <StarDeco className="opacity-40" />
-            <StarDeco className="opacity-60 ml-2" />
+          <div className="text-center max-w-2xl mx-auto mb-16">
+            <span className="font-body text-xs font-bold text-gold uppercase tracking-[0.18em]">Depoimentos</span>
+            <h2 className="font-serif text-3xl md:text-4xl text-primary mt-2">Histórias que já viraram memórias</h2>
           </div>
-          <h2 className="font-serif text-3xl md:text-4xl text-center text-primary">
-            Fam&iacute;lias que j&aacute; viveram essa hist&oacute;ria
-          </h2>
 
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-            {TESTIMONIALS.map((t) => (
-              <blockquote key={t.author} className="card-premium p-8 relative">
-                <span
-                  className="absolute top-4 left-6 font-serif text-6xl text-gold/30 leading-none select-none"
-                  aria-hidden="true"
-                >
-                  &ldquo;
-                </span>
-                <p className="font-serif text-xl text-primary/85 leading-relaxed pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} className="bg-white rounded-[28px] border border-gold/15 p-8 relative shadow-sm hover:shadow-md transition-shadow duration-300 group">
+                <span className="absolute top-4 left-6 font-serif text-6xl text-gold/20 select-none">“</span>
+                <div className="flex text-gold text-xs gap-1 mb-4 group-hover:scale-105 transition-transform duration-300">
+                  {Array.from({ length: t.stars }).map((_, s) => (
+                    <span key={s}>★</span>
+                  ))}
+                </div>
+                <p className="font-serif text-base text-primary/90 italic leading-relaxed pt-2">
                   {t.quote}
                 </p>
-                <footer className="mt-5 flex items-center gap-2">
-                  <div className="h-px flex-1 bg-gold/25" />
-                  <cite className="text-sm text-dark/55 not-italic">{t.author}</cite>
-                </footer>
-              </blockquote>
+                <div className="mt-6 pt-4 border-t border-cream-deep/30 flex items-center justify-between text-xs">
+                  <span className="font-bold text-primary">{t.author}</span>
+                  <span className="text-dark/45">✓ Cliente Verificado</span>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA FINAL */}
-      <section className="py-16 md:py-28 bg-cta-premium text-cream relative overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-10 pointer-events-none select-none"
-          aria-hidden="true"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, #E8C94A 1px, transparent 1px)",
-            backgroundSize: "60px 60px",
-          }}
-        />
-        <div className="relative container mx-auto px-4 text-center max-w-2xl">
-          <p className="font-script text-2xl text-gold-warm mb-4">comece agora</p>
-          <h2 className="font-serif text-3xl md:text-5xl text-cream leading-tight">
-            Pronto para criar o livro da sua fam&iacute;lia?
+      {/* 8. CTA FINAL */}
+      <section className="bg-primary text-cream py-24 md:py-32 relative overflow-hidden text-center reveal-on-scroll">
+        {/* Animated Magic Stars floating background in Navy */}
+        <MagicStars count={30} />
+        
+        <div className="relative container mx-auto px-4 max-w-2xl z-10">
+          <span className="font-body text-xs font-semibold text-gold uppercase tracking-[0.2em] block mb-4">Comece hoje</span>
+          <h2 className="font-serif text-4xl md:text-5xl text-cream leading-tight mb-4">
+            Pronto para criar o livro da sua família?
           </h2>
-          <p className="mt-5 text-cream/75 text-lg leading-relaxed">
-            Em poucos passos voc&ecirc; monta a hist&oacute;ria completa. Come&ccedil;amos a
-            produzir assim que o pagamento &eacute; confirmado.
+          <p className="text-sm md:text-base text-cream/70 leading-relaxed max-w-lg mx-auto mb-10 font-sans">
+            Dê o primeiro passo para transformar momentos especiais em uma história para toda a vida. Nosso Wizard leva apenas 5 minutos.
           </p>
           <Link
             href={settings.primaryCtaHref}
-            className="inline-flex items-center gap-2 mt-8 bg-gold text-primary-dark px-8 py-4 rounded-full hover:bg-gold-light transition-all duration-250 text-lg font-semibold shadow-gold-lg hover:shadow-gold hover:scale-105 active:scale-95"
+            className="bg-gold text-primary hover:bg-gold-light hover:scale-105 active:scale-95 px-10 py-4.5 rounded-full font-bold uppercase tracking-wide text-xs shadow-gold-lg hover:shadow-xl transition-all duration-300 inline-flex items-center gap-2"
           >
-            {settings.primaryCtaLabel}
+            <span>{settings.primaryCtaLabel}</span>
+            <span>→</span>
           </Link>
-          <div
-            className="mt-8 flex justify-center gap-3 text-gold/50 text-lg"
-            aria-hidden="true"
-          >
-            <StarDeco className="opacity-50" />
-            <StarDeco className="opacity-30" />
-            <StarDeco className="opacity-50" />
-          </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }

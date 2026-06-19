@@ -25,7 +25,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: var(--text);
-    background-color: #FAF3DC;
+    background-color: #FAF7F2;
   }
 
   /* Focus visível em todos os interativos — contraste AA */
@@ -37,8 +37,8 @@
 
   /* Seleção de texto com cor da marca */
   ::selection {
-    background-color: rgba(232, 201, 74, 0.35);
-    color: #142845;
+    background-color: rgba(212, 168, 67, 0.35);
+    color: #1B2A4A;
   }
 
   /* Scrollbar discreta */
@@ -46,7 +46,7 @@
     width: 6px;
   }
   ::-webkit-scrollbar-track {
-    background: #FAF3DC;
+    background: #FAF7F2;
   }
   ::-webkit-scrollbar-thumb {
     background: rgba(30, 58, 95, 0.25);
@@ -61,6 +61,8 @@
 @layer components {
   /* Botão primário — navy com shimmer dourado no hover */
   .btn-primary {
+    position: relative;
+    overflow: hidden;
     @apply inline-flex items-center justify-center gap-2
            bg-primary text-white
            px-6 py-3 rounded-full
@@ -70,6 +72,28 @@
            hover:bg-primary-light hover:shadow-lg
            active:scale-95
            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2;
+  }
+
+  .btn-primary::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(212, 168, 67, 0.45) 50%,
+      transparent 100%
+    );
+    transform: skewX(-25deg);
+    pointer-events: none;
+  }
+
+  .btn-primary:hover::after {
+    left: 150%;
+    transition: left 0.9s cubic-bezier(0.23, 1, 0.32, 1);
   }
 
   /* Botão primário grande — hero/CTA section */
@@ -176,12 +200,12 @@
 
   /* Texto navy premium — sólido para leitura mais editorial */
   .text-gradient-navy {
-    color: #1E3A5F;
+    color: #1B2A4A;
   }
 
   /* Texto dourado premium — sólido para evitar efeito decorativo excessivo */
   .text-gradient-gold {
-    color: #C4A832;
+    color: #D4A843;
   }
 
   /* Paper texture overlay sutil */
@@ -197,8 +221,279 @@
   /* Linha decorativa dourada sob headings */
   .underline-gold {
     text-decoration: underline;
-    text-decoration-color: rgba(232, 201, 74, 0.6);
+    text-decoration-color: rgba(212, 168, 67, 0.6);
     text-underline-offset: 6px;
     text-decoration-thickness: 2px;
   }
 }
+
+/* ============================================================
+   UX MICRO-INTERACTIONS & TRANSITIONS
+   ============================================================ */
+
+/* Scroll Reveal Engine classes */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.reveal-on-scroll.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Twinkle and drift background particles animation */
+@keyframes twinkleDrift {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translateY(-25px) scale(1.15) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.8) rotate(360deg);
+  }
+}
+
+.animate-twinkle-drift {
+  animation: twinkleDrift infinite ease-in-out;
+}
+
+/* Custom cubic bezier for physical page flipping */
+.ease-book {
+  transition-timing-function: cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/* 3D Transform preservation helper */
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.perspective-\[1800px\] {
+  perspective: 1800px;
+}
+
+/* --- PREMIUM 3D BOOK PREVIEW STYLES --- */
+.book-viewport {
+  perspective: 1800px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem 0;
+  overflow: visible;
+}
+
+.book-wrap {
+  position: relative;
+  width: 240px;
+  height: 310px;
+  transform-style: preserve-3d;
+  transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  /* Tilt padrão do livro fechado */
+  transform: rotateX(12deg) rotateY(-8deg) rotateZ(0deg) translateX(0);
+}
+
+@media (min-width: 640px) {
+  .book-wrap {
+    width: 280px;
+    height: 360px;
+  }
+}
+
+.book-wrap.open {
+  /* Posição quando aberto: translada ligeiramente para o lado para centralizar as duas páginas abertas na tela */
+  transform: rotateX(12deg) rotateY(4deg) rotateZ(-2deg) translateX(60px);
+}
+
+@media (min-width: 640px) {
+  .book-wrap.open {
+    transform: rotateX(12deg) rotateY(4deg) rotateZ(-2deg) translateX(70px);
+  }
+}
+
+@media (min-width: 768px) {
+  .book-wrap.open {
+    transform: rotateX(12deg) rotateY(4deg) rotateZ(-2deg) translateX(80px);
+  }
+}
+
+/* Contra-capa dura (Back Cover) */
+.book-cover-back {
+  position: absolute;
+  /* Ligeiramente maior que as páginas internas para o efeito "capa dura" */
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  top: -4px;
+  left: -2px;
+  background: #1B2A4A; /* Cor escura que combina com a identidade */
+  border-radius: 2px 14px 14px 2px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transform: translateZ(-10px);
+  border: 1px solid rgba(212, 168, 67, 0.3); /* Moldura dourada sutil */
+}
+
+/* Bloco que simula a espessura das páginas (Page Stack) */
+.book-pages-stack {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  border-radius: 0 12px 12px 0;
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.1),
+    inset -10px 0 20px rgba(0, 0, 0, 0.04);
+  transform: translateZ(-5px);
+  transform-style: preserve-3d;
+}
+
+/* Efeito de páginas empilhadas na borda lateral direita */
+.book-pages-stack::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  right: -3px;
+  width: 4px;
+  background: linear-gradient(to right, #e0e0e0 0%, #ffffff 20%, #e0e0e0 40%, #ffffff 60%, #e0e0e0 80%, #ffffff 100%);
+  border-radius: 0 4px 4px 0;
+  box-shadow: inset 1px 0 0 rgba(0,0,0,0.1);
+  transform: translateZ(1px);
+}
+
+/* Efeito de páginas empilhadas na borda inferior */
+.book-pages-stack::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  bottom: -3px;
+  right: 1px;
+  height: 4px;
+  background: linear-gradient(to bottom, #dcdcdc, #ffffff);
+  border-radius: 0 0 4px 4px;
+  transform: rotateX(90deg) translateZ(1px);
+  transform-origin: bottom;
+}
+
+/* Página direita interna (estática, embaixo) */
+.book-page-right {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  border-radius: 0 12px 12px 0;
+  overflow: hidden;
+  z-index: 10;
+  transform: translateZ(0px);
+}
+
+/* Capa frontal (o contêiner que rotaciona) */
+.book-cover-front {
+  position: absolute;
+  /* Ligeiramente maior que as páginas internas */
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  top: -4px;
+  left: -6px;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  z-index: 20;
+  cursor: pointer;
+  transform: rotateY(0deg);
+}
+
+.book-cover-front.open {
+  transform: rotateY(-180deg);
+}
+
+/* Lado externo da capa (imagem da capa principal) */
+.book-cover-face-front {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 2px 14px 14px 2px;
+  overflow: hidden;
+  border: 1px solid rgba(212, 168, 67, 0.4);
+  box-shadow: 
+    5px 5px 15px rgba(0, 0, 0, 0.15),
+    inset 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* Lado interno da capa (página 1, esquerda ao abrir) */
+.book-cover-face-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: rotateY(180deg);
+  border-radius: 14px 2px 2px 14px;
+  overflow: hidden;
+  background: #ffffff;
+  border-left: 1px solid rgba(212, 168, 67, 0.1);
+  box-shadow: inset 15px 0 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Sombreado realista de vinco na página esquerda */
+.spine-shadow-left {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15px;
+  height: 100%;
+  background: linear-gradient(to left, rgba(0,0,0,0.12), transparent);
+  pointer-events: none;
+}
+
+/* Sombreado realista de vinco na página direita */
+.spine-shadow-right {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15px;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0,0,0,0.12), transparent);
+  pointer-events: none;
+}
+
+/* Brilho da lombada/dobra da capa dura fechada */
+.cover-spine-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0,0,0,0.2) 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Sombra projetada do livro no pedestal */
+.book-shadow-pedestal {
+  position: absolute;
+  bottom: -22px;
+  left: 5%;
+  right: 5%;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  filter: blur(8px);
+  transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.2s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Quando aberto, a sombra do pedestal expande e desloca ligeiramente */
+.book-wrap.open ~ .book-shadow-pedestal {
+  transform: scaleX(1.7) translateX(-25px);
+  opacity: 0.75;
+}
+

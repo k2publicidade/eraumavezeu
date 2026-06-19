@@ -25,10 +25,10 @@ export function buildProductSlug(name: string) {
     .slice(0, 80);
 }
 
-export function parseImageLines(value: unknown) {
-  return String(value ?? "")
-    .split(/\r?\n/)
-    .map((line) => line.trim())
+export function parseUploadedImageUrls(value: unknown) {
+  const values = Array.isArray(value) ? value : value ? [value] : [];
+  return values
+    .map((item) => String(item ?? "").trim())
     .filter(Boolean);
 }
 
@@ -54,14 +54,14 @@ export const productActionSchema = z
     priceOld: z.preprocess(emptyToUndefined, z.coerce.number().positive().max(9999).optional()),
     type: z.enum(productTypeValues),
     active: z.preprocess(parseBoolean, z.boolean()),
-    imagesText: z.unknown().optional(),
+    productImageUrls: z.unknown().optional(),
   })
   .transform((value) => ({
     ...value,
     slug: buildProductSlug(value.slug || value.name),
     price: Number(value.price.toFixed(2)),
     priceOld: value.priceOld ? Number(value.priceOld.toFixed(2)) : undefined,
-    images: parseImageLines(value.imagesText),
+    images: parseUploadedImageUrls(value.productImageUrls),
   }))
   .refine((value) => value.slug.length > 0, {
     path: ["slug"],

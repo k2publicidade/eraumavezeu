@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCartStore } from "@/lib/cart/store";
 import { useWizardStore } from "@/lib/wizard/store";
 import {
@@ -40,6 +40,23 @@ export default function Wizard() {
   const hydrated = useHydrated();
   const isDesktop = useIsDesktop();
   const state = useWizardStore();
+  const searchParams = useSearchParams();
+
+  // Pre-select theme if passed via query parameter (e.g. ?theme=dinossauros)
+  useEffect(() => {
+    if (!hydrated) return;
+    const themeParam = searchParams.get("theme");
+    if (themeParam) {
+      const validTheme = THEMES.find((t) => t.slug === themeParam);
+      if (validTheme) {
+        state.setTheme(validTheme.slug);
+        // Advance to step 2 if we are currently on the theme step
+        if (state.step === 1) {
+          state.setStep(2);
+        }
+      }
+    }
+  }, [hydrated, searchParams, state]);
 
   useEffect(() => {
     if (!hydrated) return;

@@ -19,9 +19,9 @@ const config: Config = {
         // Contraste AA: white sobre navy = 7.2:1 (AAA)
         // ----------------------------------------------------------
         primary: {
-          DEFAULT: "#1E3A5F",
-          light: "#2D548A",
-          dark: "#142845",
+          DEFAULT: "#1B2A4A",
+          light: "#2E426B",
+          dark: "#0F1A30",
         },
 
         // ----------------------------------------------------------
@@ -29,10 +29,10 @@ const config: Config = {
         // Uso: badges, destaques, bordas de cards premium, ícones
         // ----------------------------------------------------------
         gold: {
-          DEFAULT: "#E8C94A",
-          light: "#F5E08A",
-          dark: "#C4A832",
-          warm: "#F5D87E",
+          DEFAULT: "#D4A843",
+          light: "#E2B958",
+          dark: "#A37E2F",
+          warm: "#EFC768",
         },
 
         // ----------------------------------------------------------
@@ -40,10 +40,10 @@ const config: Config = {
         // Uso: background principal, cards, seções claras
         // ----------------------------------------------------------
         cream: {
-          DEFAULT: "#FAF3DC",
-          light: "#FFFDF5",
-          warm: "#FFF8E8",
-          deep: "#F2E8C4",
+          DEFAULT: "#FAF7F2",
+          light: "#FCFAF7",
+          warm: "#FDFBF7",
+          deep: "#EDE7DF",
         },
 
         // ----------------------------------------------------------
@@ -52,9 +52,9 @@ const config: Config = {
         // Contraste AA: white sobre forest = 5.8:1 (AA)
         // ----------------------------------------------------------
         forest: {
-          DEFAULT: "#2E5D3C",
-          light: "#3B7A4A",
-          dark: "#1E3D28",
+          DEFAULT: "#8BA888",
+          light: "#9CBA99",
+          dark: "#6D8B6B",
         },
 
         // ----------------------------------------------------------
@@ -69,27 +69,27 @@ const config: Config = {
 
         // ----------------------------------------------------------
         // ROSE — Tom rosado suave (livro aberto do selo)
-        // Uso: toques sutis, tags de gênero, elementos decorativos
+        // Uso: toques sutis, tags de gênero, elements decorativos
         // ----------------------------------------------------------
         rose: {
-          DEFAULT: "#D4849A",
-          light: "#EBB5C4",
-          pale: "#FAF0F3",
+          DEFAULT: "#F2E8E4",
+          light: "#F5ECE8",
+          pale: "#FBF7F5",
         },
 
         // ----------------------------------------------------------
         // SEMANTIC ALIASES (mantém compatibilidade com código existente)
         // ----------------------------------------------------------
-        secondary: "#2E5D3C", // forest
-        dark: "#1E2A3A",
-        light: "#FAF3DC", // cream
+        secondary: "#8BA888", // forest
+        dark: "#2C2C2C",
+        light: "#FAF7F2", // cream
 
         // Mantido para compatibilidade do UploadThing e outros
         // Atualizado para navy
       },
 
       fontFamily: {
-        serif: ["var(--font-playfair)", "Georgia", "serif"],
+        serif: ["var(--font-plus-jakarta)", "system-ui", "sans-serif"],
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         script: ["var(--font-dancing)", "cursive"],
       },

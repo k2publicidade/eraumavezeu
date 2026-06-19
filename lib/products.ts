@@ -9,6 +9,7 @@ export type CatalogProduct = {
   price: number;
   priceOld: number | null;
   type: ProductType;
+  images: string[];
 };
 
 export const FALLBACK_PRODUCTS: CatalogProduct[] = [
@@ -21,6 +22,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 249.9,
     priceOld: 299.9,
     type: "LIVRO_PRINCIPAL",
+    images: [],
   },
   {
     id: "fallback-ebook",
@@ -31,6 +33,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 79.9,
     priceOld: null,
     type: "EBOOK",
+    images: [],
   },
   {
     id: "fallback-livro-colorir",
@@ -41,6 +44,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 99.9,
     priceOld: null,
     type: "LIVRO_COLORIR",
+    images: [],
   },
   {
     id: "fallback-quebra-cabeca",
@@ -51,6 +55,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 79.9,
     priceOld: null,
     type: "QUEBRA_CABECA",
+    images: [],
   },
   {
     id: "fallback-cartela-adesivos",
@@ -61,6 +66,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 69.9,
     priceOld: null,
     type: "CARTELA_ADESIVOS",
+    images: [],
   },
 ];
 
@@ -72,8 +78,8 @@ type ProductRecord = {
   price: { toString(): string } | number;
   priceOld: { toString(): string } | number | null;
   type: string;
+  images: string[];
 };
-
 export function resolveCatalogProducts(products: ProductRecord[]): CatalogProduct[] {
   if (products.length === 0) return FALLBACK_PRODUCTS;
 
@@ -85,6 +91,7 @@ export function resolveCatalogProducts(products: ProductRecord[]): CatalogProduc
     price: Number(product.price),
     priceOld: product.priceOld ? Number(product.priceOld) : null,
     type: product.type as ProductType,
+    images: product.images || [],
   }));
 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FALLBACK_PRODUCTS, resolveCatalogProducts } from "@/lib/products";
-import { buildProductSlug, parseImageLines, productActionSchema } from "@/lib/admin/products";
+import { buildProductSlug, parseUploadedImageUrls, productActionSchema } from "@/lib/admin/products";
 
 describe("admin product helpers", () => {
   it("builds stable URL slugs from product names", () => {
@@ -8,8 +8,8 @@ describe("admin product helpers", () => {
     expect(buildProductSlug("Quebra-Cabeça 60 peças")).toBe("quebra-cabeca-60-pecas");
   });
 
-  it("normalizes image URLs from multiline input", () => {
-    expect(parseImageLines(" https://cdn.test/a.png\n\nhttps://cdn.test/b.png ")).toEqual([
+  it("normalizes uploaded product image URLs from form fields", () => {
+    expect(parseUploadedImageUrls([" https://cdn.test/a.png ", "", "https://cdn.test/b.png"])).toEqual([
       "https://cdn.test/a.png",
       "https://cdn.test/b.png",
     ]);
@@ -24,7 +24,7 @@ describe("admin product helpers", () => {
       priceOld: "299.90",
       type: "LIVRO_PRINCIPAL",
       active: "on",
-      imagesText: "https://cdn.test/book.png",
+      productImageUrls: ["https://cdn.test/book.png"],
     });
 
     expect(parsed.price).toBe(249.9);

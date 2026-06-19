@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Header from "@/components/site/Header";
 import WhatsAppFloatingButton from "@/components/site/WhatsAppFloatingButton";
@@ -29,10 +30,13 @@ export default function PersonalizarPage() {
           <p className="text-center text-dark/60 mb-10">
             7 passos simples. Você pode fechar e continuar depois de onde parou.
           </p>
-          <Wizard />
+          <Suspense fallback={<div className="text-center py-20 text-dark/60">Carregando wizard…</div>}>
+            <Wizard />
+          </Suspense>
         </div>
       </main>
       <WhatsAppFloatingButton />
     </>
   );
 }
+

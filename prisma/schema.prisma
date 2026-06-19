@@ -257,3 +257,31 @@ model FaqItem {
 
   @@index([active, sortOrder])
 }
+
+// ============================================================
+// Mensagens de Contato (Fale Conosco)
+// ============================================================
+
+model ContactMessage {
+  id        String        @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String        @db.Text
+  status    ContactStatus @default(NOVA)
+  notes     String?       @db.Text
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum ContactStatus {
+  NOVA
+  LIDA
+  RESPONDIDA
+  ARQUIVADA
+}
+

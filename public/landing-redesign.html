@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Era Uma Vez, Eu — Livros Infantis Personalizados Premium</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Transforme a criança que você ama no herói da própria história. Livros físicos de capa dura premium com ilustrações exclusivas por inteligência artificial e revisão humana.">
+  <meta property="og:title" content="Era Uma Vez, Eu — Livros Infantis Personalizados Premium">
+  <meta property="og:description" content="Um presente com alto apelo emocional: veja a criança que você ama viver aventuras inesquecíveis.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Cormorant Garamond (Headlines) & DM Sans (Body) -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+    /* ============================================================
+       DESIGN SYSTEM & VARIABLES
+       ============================================================ */
+    :root {
+      /* Palette */
+      --color-navy: #1B2A4A;
+      --color-navy-rgb: 27, 42, 74;
+      --color-cream: #FAF7F2;
+      --color-gold: #D4A843;
+      --color-gold-hover: #E8C15A;
+      --color-sage: #8BA888;
+      --color-blush: #F2E8E4;
+      --color-text-dark: #2C2C2C;
+      --color-text-muted: #666666;
+      --color-white: #FFFFFF;
+      
+      /* Typography */
+      --font-display: 'Cormorant Garamond', serif;
+      --font-body: 'DM Sans', sans-serif;
+
+      /* Shadows */
+      --shadow-premium: 0 20px 40px -15px rgba(27, 42, 74, 0.08);
+      --shadow-gold: 0 10px 25px -5px rgba(212, 168, 67, 0.4);
+      --shadow-3d-book: 0 30px 60px -10px rgba(0, 0, 0, 0.25);
+    }
+
+    /* ============================================================
+       RESET & BASE STYLES
+       ============================================================ */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      color: var(--color-text-dark);
+      background-color: var(--color-cream);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Paper texture noise overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.025'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* Container */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Typography Utilities */
+    h1, h2, h3, h4 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      color: var(--color-navy);
+      line-height: 1.15;
+    }
+
+    .italic-accent {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    .label-uppercase {
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 14px 28px;
+      border-radius: 50px;
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      cursor: pointer;
+      text-decoration: none;
+      border: none;
+      outline: none;
+    }
+
+    .btn-gold {
+      background-color: var(--color-gold);
+      color: var(--color-navy);
+      box-shadow: var(--shadow-gold);
+    }
+
+    .btn-gold:hover {
+      background-color: var(--color-gold-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -5px rgba(212, 168, 67, 0.6);
+    }
+
+    .btn-gold:active {
+      transform: translateY(0);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      color: var(--color-white);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-outline:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+      border-color: var(--color-white);
+      transform: translateY(-2px);
+    }
+
+    /* ============================================================
+       SIGNATURE ELEMENT: POEIRA MÁGICA (CSS STARS)
+       ============================================================ */
+    .magic-stars-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .magic-star {
+      position: absolute;
+      background-color: var(--color-gold);
+      border-radius: 50%;
+      opacity: 0;
+      box-shadow: 0 0 6px 1.5px rgba(212, 168, 67, 0.8);
+      animation: twinkleAndDrift 6s infinite ease-in-out;
+    }
+
+    @keyframes twinkleAndDrift {
+      0% {
+        opacity: 0;
+        transform: translateY(0) scale(0.8) rotate(0deg);
+      }
+      50% {
+        opacity: 0.8;
+        transform: translateY(-20px) scale(1.2) rotate(180deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0.8) rotate(360deg);
+      }
+    }
+
+    /* ============================================================
+       SCROLL REVEAL EFFECT
+       ============================================================ */
+    .reveal-section {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 1s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                  transform 1s cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    .reveal-section.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       HEADER / NAVIGATION
+       ============================================================ */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      background-color: rgba(27, 42, 74, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background-color 0.3s ease;
+    }
+
+    header.scrolled {
+      background-color: rgba(27, 42, 74, 0.95);
+    }
+
+    .nav-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.625rem;
+      font-weight: 700;
+      color: var(--color-cream);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo span {
+      color: var(--color-gold);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(250, 247, 242, 0.8);
+      text-decoration: none;
+      transition: color 0.2s ease;
+      position: relative;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 0;
+      width: 0;
+      height: 1.5px;
+      background-color: var(--color-gold);
+      transition: width 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--color-cream);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--color-cream);
+    }
+
+    /* ============================================================
+       HERO SECTION
+       ============================================================ */
+    .hero {
+      position: relative;
+      background-color: var(--color-navy);
+      padding-top: 160px;
+      padding-bottom: 100px;
+      color: var(--color-cream);
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-cols: 1.1fr 0.9fr;
+      gap: 64px;
+      align-items: center;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-size: 3.5rem;
+      color: var(--color-cream);
+      margin-bottom: 24px;
+      line-height: 1.1;
+    }
+
+    .hero-title span.highlight {
+      color: var(--color-gold);
+      text-decoration: underline;
+      text-decoration-color: rgba(212, 168, 67, 0.4);
+      text-underline-offset: 8px;
+    }
+
+    .hero-description {
+      font-size: 1.125rem;
+      color: rgba(250, 247, 242, 0.8);
+      margin-bottom: 40px;
+      max-width: 520px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 16px;
+      border-radius: 30px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--color-cream);
+    }
+
+    .hero-badge svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--color-gold);
+    }
+
+    .hero-media {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-image-frame {
+      position: relative;
+      width: 100%;
+      max-width: 440px;
+      aspect-ratio: 4/5;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      animation: floatEffect 6s ease-in-out infinite;
+    }
+
+    @keyframes floatEffect {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .hero-image-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-image-frame::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
+      pointer-events: none;
+    }
+
+    .hero-decor-badge {
+      position: absolute;
+      bottom: -20px;
+      left: -20px;
+      background-color: var(--color-cream);
+      color: var(--color-navy);
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: var(--shadow-premium);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 3;
+      border: 1px solid rgba(212, 168, 67, 0.2);
+    }
+
+    .hero-decor-badge .decor-icon {
+      width: 40px;
+      height: 40px;
+      background-color: var(--color-blush);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-gold);
+    }
+
+    .hero-decor-badge h4 {
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+
+    .hero-decor-badge p {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ============================================================
+       BENEFITS SECTION (ASYMMETRICAL EDITORIAL)
+       ============================================================ */
+    .benefits {
+      padding: 120px 0;
+      background-color: var(--color-cream);
+    }
+
+    .benefits-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 80px auto;
+    }
+
+    .benefits-header h2 {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-cols: 1fr 1fr 1.2fr;
+      gap: 32px;
+    }
+
+    /* Editorial asymmetry styling */
+    .benefit-card {
+      background-color: var(--color-white);
+      border-radius: 24px;
+      padding: 48px 36px;
+      box-shadow: var(--shadow-premium);
+      border: 1px solid rgba(27, 42, 74, 0.03);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .benefit-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background-color: transparent;
+      transition: background-color 0.3s ease;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px -15px rgba(27, 42, 74, 0.12);
+    }
+
+    .benefit-card:hover::before {
+      background-color: var(--color-gold);
+    }
+
+    .benefit-card:nth-child(2) {
+      background-color: var(--color-blush);
+      transform: translateY(24px);
+    }
+
+    .benefit-card:nth-child(2):hover {
+      transform: translateY(16px);
+    }
+
+    .benefit-number {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-style: italic;
+      line-height: 1;
+      color: rgba(214, 168, 67, 0.3);
+      margin-bottom: 24px;
+    }
+
+    .benefit-card h3 {
+      font-size: 1.875rem;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .benefit-card p {
+      font-size: 0.9375rem;
+      color: var(--color-text-muted);
+      line-height: 1.7;
+    }
+
+    .benefit-icon {
+      margin-top: 32px;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(212, 168, 67, 0.1);
+      border-radius: 50%;
+      color: var(--color-gold);
+    }
+
+    /* ============================================================
+       HOW IT WORKS SECTION (TIMELINE STEPPER)
+       ============================================================ */
+    .how-it-works {
+      padding: 120px 0;
+      background-color: var(--color-blush);
+      position: relative;
+    }
+
+    .how-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 80px auto;
+    }
+
+    .how-header h2 {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .how-timeline {
+      display: grid;
+      grid-template-cols: repeat(4, 1fr);
+      gap: 32px;
+      position: relative;
+    }
+
+    /* Line connector for desktop */
+    .how-timeline::after {
+      content: "";
+      position: absolute;
+      top: 32px;
+      left: 12%;
+      right: 12%;
+      height: 2px;
+      background-image: linear-gradient(to right, rgba(212, 168, 67, 0.4) 50%, transparent 50%);
+      background-size: 8px 2px;
+      z-index: 1;
+    }
+
+    .how-step {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .step-number {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background-color: var(--color-navy);
+      color: var(--color-cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      border: 3px solid var(--color-blush);
+      box-shadow: 0 0 0 1px var(--color-gold);
+      transition: all 0.3s ease;
+    }
+
+    .how-step:hover .step-number {
+      background-color: var(--color-gold);
+      color: var(--color-navy);
+      transform: scale(1.1);
+      box-shadow: 0 0 0 4px rgba(212, 168, 67, 0.2);
+    }
+
+    .how-step h3 {
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+
+    .how-step p {
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      max-width: 220px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       PREVIEW SECTION (3D INTERACTIVE BOOK)
+       ============================================================ */
+    .book-preview {
+      padding: 120px 0;
+      background-color: var(--color-cream);
+    }
+
+    .preview-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 60px auto;
+    }
+
+    .preview-header h2 {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    /* Interactive 3D Book Layout */
+    .preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .book-mockup-wrapper {
+      perspective: 1800px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 60px 0;
+    }
+
+    .book-3d {
+      position: relative;
+      width: 320px;
+      height: 400px;
+      transform-style: preserve-3d;
+      transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+      transform: rotateX(15deg) rotateY(0deg);
+      box-shadow: var(--shadow-3d-book);
+      border-radius: 4px 12px 12px 4px;
+    }
+
+    .book-3d.open {
+      /* Shifts right to offset the flipped left cover and center the spread */
+      transform: rotateX(15deg) rotateY(0deg) translateX(80px);
+      box-shadow: 0 40px 90px -15px rgba(0, 0, 0, 0.35);
+    }
+
+    .book-page-3d {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform-style: preserve-3d;
+      transform-origin: left center;
+      transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+      border-radius: 4px 12px 12px 4px;
+    }
+
+    .book-cover-3d {
+      z-index: 10;
+    }
+
+    .book-3d.open .book-cover-3d {
+      transform: rotateY(-180deg);
+    }
+
+    .book-face-3d {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 4px 12px 12px 4px;
+      overflow: hidden;
+    }
+
+    .cover-front-3d {
+      z-index: 2;
+      transform: rotateY(0deg);
+      border-left: 4px solid rgba(255,255,255,0.05);
+    }
+
+    .cover-front-3d img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Soft spine gold line */
+    .cover-front-3d::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+    }
+
+    .cover-back-3d {
+      transform: rotateY(180deg);
+      background-color: var(--color-white);
+      box-shadow: inset 10px 0 30px rgba(0,0,0,0.1);
+      border-right: 5px solid #e2d7be; /* Thick inner spine look */
+    }
+
+    .cover-back-3d img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Inside pages */
+    .page-inside-3d {
+      background-color: var(--color-white);
+      box-shadow: inset 15px 0 30px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+
+    .page-inside-left {
+      /* Left page is actually the back of the cover, so it flips to the left */
+      display: none; /* Handled by cover-back-3d to keep structural simplicity */
+    }
+
+    .page-inside-right {
+      /* Hidden directly under the closed cover */
+      z-index: 5;
+      border-radius: 4px 12px 12px 4px;
+    }
+
+    .page-inside-right img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Spine effect on right page */
+    .page-inside-right::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 15px;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
+    }
+
+    /* Controls */
+    .book-controls {
+      margin-top: 48px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .btn-book-action {
+      background-color: var(--color-navy);
+      color: var(--color-cream);
+      padding: 16px 36px;
+      border-radius: 50px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-premium);
+    }
+
+    .btn-book-action:hover {
+      background-color: var(--color-gold);
+      color: var(--color-navy);
+      border-color: var(--color-gold);
+      transform: translateY(-2px);
+    }
+
+    .btn-book-action svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-book-action:hover svg {
+      transform: scale(1.2);
+    }
+
+    .preview-tips {
+      margin-top: 24px;
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ============================================================
+       PRODUCTS SECTION (5 CARDS GRID)
+       ============================================================ */
+    .products {
+      padding: 120px 0;
+      background-color: var(--color-blush);
+    }
+
+    .products-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 80px auto;
+    }
+
+    .products-header h2 {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-cols: repeat(5, 1fr);
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .product-card {
+      background-color: var(--color-white);
+      border-radius: 20px;
+      padding: 32px 24px;
+      box-shadow: var(--shadow-premium);
+      border: 1px solid rgba(27, 42, 74, 0.02);
+      transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      position: relative;
+    }
+
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 25px 50px -15px rgba(27, 42, 74, 0.15);
+    }
+
+    /* Main product feature */
+    .product-card.featured {
+      border: 2px solid var(--color-gold);
+      transform: scale(1.03);
+    }
+
+    .product-card.featured:hover {
+      transform: scale(1.03) translateY(-8px);
+    }
+
+    .product-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--color-gold);
+      color: var(--color-navy);
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 4px 16px;
+      border-radius: 20px;
+      box-shadow: var(--shadow-gold);
+    }
+
+    .product-icon-wrapper {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      line-height: 1;
+      transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-icon-wrapper {
+      transform: scale(1.15);
+    }
+
+    .product-card h3 {
+      font-size: 1.375rem;
+      margin-bottom: 12px;
+    }
+
+    .product-card p {
+      font-size: 0.8125rem;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      margin-bottom: auto;
+    }
+
+    .product-pricing {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .price-old {
+      font-size: 0.75rem;
+      text-decoration: line-through;
+      color: var(--color-text-muted);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .price-current {
+      font-family: var(--font-body);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-navy);
+    }
+
+    .combo-discount-info {
+      text-align: center;
+      font-size: 0.875rem;
+      color: var(--color-text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .combo-discount-info span.accent {
+      color: var(--color-gold);
+      font-weight: 700;
+    }
+
+    /* ============================================================
+       TESTIMONIALS SECTION
+       ============================================================ */
+    .testimonials {
+      padding: 120px 0;
+      background-color: var(--color-cream);
+    }
+
+    .testimonials-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 80px auto;
+    }
+
+    .testimonials-header h2 {
+      font-size: 3rem;
+      margin-bottom: 16px;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      gap: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background-color: var(--color-white);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: var(--shadow-premium);
+      border: 1px solid rgba(27, 42, 74, 0.02);
+      position: relative;
+    }
+
+    .testimonial-rating {
+      color: var(--color-gold);
+      margin-bottom: 20px;
+      font-size: 0.875rem;
+      display: flex;
+      gap: 4px;
+    }
+
+    .quote-mark {
+      font-family: var(--font-display);
+      font-size: 5rem;
+      font-style: italic;
+      color: rgba(212, 168, 67, 0.15);
+      position: absolute;
+      top: 10px;
+      left: 36px;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .testimonial-text {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      line-height: 1.4;
+      color: var(--color-navy);
+      margin-bottom: 32px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .testimonial-text span.emotion {
+      font-style: italic;
+      font-weight: 500;
+      border-bottom: 2px dashed rgba(212, 168, 67, 0.3);
+    }
+
+    .testimonial-user {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: var(--color-blush);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--color-navy);
+      border: 2px solid var(--color-gold);
+    }
+
+    .user-info h4 {
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--color-navy);
+    }
+
+    .user-info p {
+      font-size: 0.75rem;
+      color: var(--color-text-muted);
+    }
+
+    /* ============================================================
+       CTA FINAL (DRAMATIC MOONLIGHT/STARRY BACKDROP)
+       ============================================================ */
+    .cta-final {
+      position: relative;
+      background-color: var(--color-navy);
+      color: var(--color-cream);
+      padding: 140px 0;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    /* Stylized celestial backdrop */
+    .cta-final::before {
+      content: "";
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(212, 168, 67, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-content {
+      position: relative;
+      z-index: 2;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .cta-final h2 {
+      font-size: 3.5rem;
+      color: var(--color-cream);
+      margin-bottom: 24px;
+      line-height: 1.1;
+    }
+
+    .cta-final p {
+      font-size: 1.125rem;
+      color: rgba(250, 247, 242, 0.8);
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+
+    .cta-final .btn-gold {
+      padding: 18px 48px;
+      font-size: 1rem;
+    }
+
+    /* Decorative details */
+    .cta-star-group {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 40px;
+      color: rgba(212, 168, 67, 0.4);
+    }
+
+    .cta-star-group svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    footer {
+      background-color: #121E36;
+      color: rgba(250, 247, 242, 0.7);
+      padding: 80px 0 40px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.875rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-cols: 1.5fr 1fr 1fr 1.5fr;
+      gap: 48px;
+      margin-bottom: 60px;
+    }
+
+    .footer-brand h3 {
+      font-size: 1.5rem;
+      color: var(--color-cream);
+      margin-bottom: 16px;
+    }
+
+    .footer-brand p {
+      line-height: 1.6;
+      margin-bottom: 24px;
+      max-width: 280px;
+    }
+
+    .footer-links h4 {
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--color-cream);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-links ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-links ul a {
+      color: rgba(250, 247, 242, 0.7);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links ul a:hover {
+      color: var(--color-gold);
+    }
+
+    .footer-payment h4 {
+      font-family: var(--font-body);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: var(--color-cream);
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .payment-icons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .payment-badge {
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-cream);
+    }
+
+    .security-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background-color: rgba(139, 168, 136, 0.1);
+      border: 1px solid rgba(139, 168, 136, 0.25);
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--color-sage);
+      font-size: 0.8125rem;
+      max-width: 260px;
+    }
+
+    .security-badge svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      font-size: 0.75rem;
+      color: rgba(250, 247, 242, 0.5);
+    }
+
+    .footer-socials {
+      display: flex;
+      gap: 16px;
+    }
+
+    .footer-socials a {
+      color: rgba(250, 247, 242, 0.5);
+      transition: color 0.2s ease;
+    }
+
+    .footer-socials a:hover {
+      color: var(--color-gold);
+    }
+
+    /* ============================================================
+       RESPONSIVE DESIGN (MEDIA QUERIES)
+       ============================================================ */
+    @media (max-width: 1024px) {
+      .benefits-grid {
+        grid-template-cols: 1fr;
+      }
+      .benefit-card:nth-child(2) {
+        transform: translateY(0);
+      }
+      .benefit-card:nth-child(2):hover {
+        transform: translateY(-8px);
+      }
+      .products-grid {
+        grid-template-cols: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      html {
+        font-size: 14px;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+
+      .nav-toggle {
+        display: block;
+      }
+
+      .hero-grid {
+        grid-template-cols: 1fr;
+        gap: 48px;
+        text-align: center;
+      }
+
+      .hero-description {
+        margin: 0 auto 32px auto;
+      }
+
+      .hero-actions {
+        justify-content: center;
+      }
+
+      .hero-badges {
+        justify-content: center;
+      }
+
+      .how-timeline {
+        grid-template-cols: 1fr;
+        gap: 48px;
+      }
+
+      .how-timeline::after {
+        display: none;
+      }
+
+      .products-grid {
+        grid-template-cols: repeat(2, 1fr);
+      }
+
+      .testimonials-grid {
+        grid-template-cols: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-cols: 1fr 1fr;
+      }
+
+      .book-3d.open {
+        transform: rotateX(15deg) rotateY(0deg) translateX(0); /* Center spread fits mobile screen differently */
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 2.75rem;
+      }
+      
+      .hero-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+      }
+
+      .products-grid {
+        grid-template-cols: 1fr;
+      }
+
+      .footer-grid {
+        grid-template-cols: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       HEADER / NAVBAR
+       ============================================================ */ -->
+  <header id="main-header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="#" class="logo">
+          Era Uma Vez, <span>Eu</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#diferenciais">Benefícios</a></li>
+          <li><a href="#como-funciona">Como Funciona</a></li>
+          <li><a href="#preview-livro">O Livro</a></li>
+          <li><a href="#produtos">Produtos</a></li>
+          <li><a href="#depoimentos">Depoimentos</a></li>
+        </ul>
+        <div class="nav-cta">
+          <a href="#produtos" class="btn btn-gold">Criar meu livro</a>
+          <button class="nav-toggle" aria-label="Abrir Menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       HERO SECTION
+       ============================================================ */ -->
+  <section class="hero">
+    <div class="magic-stars-container" id="hero-stars"></div>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <span class="label-uppercase">Presente Emocional Premium</span>
+          <h1 class="hero-title">
+            Transforme a criança que você ama no <span class="highlight">herói</span> da própria <span class="italic-accent">história</span>.
+          </h1>
+          <p class="hero-description">
+            Livros físicos personalizados de capa dura premium, ilustrados por inteligência artificial e revisados por artistas humanos. O presente mágico que fica guardado para toda a vida.
+          </p>
+          <div class="hero-actions">
+            <a href="#produtos" class="btn btn-gold">Personalizar Livro</a>
+            <a href="#preview-livro" class="btn btn-outline">Ver Preview do Livro</a>
+          </div>
+          <div class="hero-badges">
+            <div class="hero-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              <span>Ilustrações Exclusivas</span>
+            </div>
+            <div class="hero-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              <span>Capa Dura Costurada</span>
+            </div>
+            <div class="hero-badge">
+              <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+              <span>Entrega Rápida</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-media">
+          <div class="hero-image-frame">
+            <img src="child_reading.png" alt="Criança lendo livro personalizado em quarto mágico aconchegante">
+            <div class="hero-decor-badge">
+              <div class="decor-icon">✨</div>
+              <div>
+                <h4>Ana Luiza, 6 anos</h4>
+                <p>A personagem principal do próprio livro</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       BENEFITS SECTION
+       ============================================================ */ -->
+  <section id="diferenciais" class="benefits reveal-section">
+    <div class="container">
+      <div class="benefits-header">
+        <span class="label-uppercase">O Cuidado Editorial</span>
+        <h2>Muito mais do que um presente comum</h2>
+      </div>
+      <div class="benefits-grid">
+        <div class="benefit-card">
+          <div>
+            <div class="benefit-number">01</div>
+            <h3>Conexão <span class="italic-accent">afetiva</span> profunda</h3>
+            <p>Mais do que uma história: um momento especial de aconchego, leitura conjunta e memórias emocionais inesquecíveis entre pais, afilhados e filhos.</p>
+          </div>
+          <div class="benefit-icon">❤️</div>
+        </div>
+        <div class="benefit-card">
+          <div>
+            <div class="benefit-number">02</div>
+            <h3>O rostinho do herói por <span class="italic-accent">IA artística</span></h3>
+            <p>Nossa tecnologia analisa as fotos reais enviadas e gera ilustrações adaptadas e estilizadas para o universo mágico, preservando a identidade única da criança.</p>
+          </div>
+          <div class="benefit-icon">🎨</div>
+        </div>
+        <div class="benefit-card">
+          <div>
+            <div class="benefit-number">03</div>
+            <h3>Impressão <span class="italic-accent">premium</span> de editora</h3>
+            <p>Capa dura com toque sedoso, miolo em papel de alta gramatura e costura profissional. Feito para durar gerações e encantar ao toque.</p>
+          </div>
+          <div class="benefit-icon">📖</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       HOW IT WORKS SECTION
+       ============================================================ */ -->
+  <section id="como-funciona" class="how-it-works reveal-section">
+    <div class="container">
+      <div class="how-header">
+        <span class="label-uppercase">Quatro Passos Mágicos</span>
+        <h2>Como o livro é criado</h2>
+      </div>
+      <div class="how-timeline">
+        <div class="how-step">
+          <div class="step-number">1</div>
+          <h3>Escolha o Tema</h3>
+          <p>Selecione a aventura ideal para seu pequeno: Espaço, Dinossauros ou Floresta Mágica.</p>
+        </div>
+        <div class="how-step">
+          <div class="step-number">2</div>
+          <h3>Envie as Fotos</h3>
+          <p>Envie de 1 a 3 fotos do rostinho da criança. Nossa IA fará a mágica de mesclá-la na história.</p>
+        </div>
+        <div class="how-step">
+          <div class="step-number">3</div>
+          <h3>Crie a Dedicatória</h3>
+          <p>Escreva palavras de amor que serão impressas na página de abertura para sempre.</p>
+        </div>
+        <div class="how-step">
+          <div class="step-number">4</div>
+          <h3>Entrega Premium</h3>
+          <p>Revisamos o design manualmente, imprimimos e enviamos com embalagem presenteável exclusiva.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PREVIEW SECTION (3D BOOK MOCKUP)
+       ============================================================ */ -->
+  <section id="preview-livro" class="book-preview reveal-section">
+    <div class="container">
+      <div class="preview-header">
+        <span class="label-uppercase">Toque Mágico</span>
+        <h2>Folheie o livro personalizado</h2>
+        <p>Interaja com o nosso mockup digital e sinta a textura visual do livro impresso em capa dura.</p>
+      </div>
+      
+      <div class="preview-container">
+        <div class="book-mockup-wrapper">
+          <div class="book-3d" id="book3d">
+            <!-- Front Cover Page -->
+            <div class="book-page-3d book-cover-3d" id="bookCoverPage">
+              <div class="book-face-3d cover-front-3d">
+                <img src="book_cover.png" alt="Capa do Livro Era Uma Vez Eu">
+              </div>
+              <div class="book-face-3d cover-back-3d">
+                <img src="book_page_1.png" alt="Página Interna Direita do Livro">
+              </div>
+            </div>
+            <!-- Right Inside Page (static underneath) -->
+            <div class="book-page-3d page-inside-3d page-inside-right">
+              <img src="book_page_2.png" alt="Página Interna Direita do Livro">
+            </div>
+          </div>
+        </div>
+
+        <div class="book-controls">
+          <button class="btn-book-action" id="btnBookOpen">
+            <span id="btnBookText">Abrir Livro</span>
+            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="preview-tips">
+          <span>✨</span>
+          <span>Clique no botão para abrir e revelar a aventura interna.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PRODUCTS SECTION
+       ============================================================ */ -->
+  <section id="produtos" class="products reveal-section">
+    <div class="container">
+      <div class="products-header">
+        <span class="label-uppercase">Coleção Completa</span>
+        <h2>Escolha a lembrança ideal</h2>
+      </div>
+      <div class="products-grid">
+        <!-- Product 1 (Featured) -->
+        <div class="product-card featured">
+          <div class="product-badge">Mais Vendido</div>
+          <div class="product-icon-wrapper">📕</div>
+          <h3>Livro Capa Dura</h3>
+          <p>O produto estrela. Livro impresso premium costurado em capa dura, papel couché fosco 170g.</p>
+          <div class="product-pricing">
+            <span class="price-old">R$ 149,90</span>
+            <span class="price-current">R$ 119,90</span>
+          </div>
+        </div>
+        <!-- Product 2 -->
+        <div class="product-card">
+          <div class="product-icon-wrapper">📱</div>
+          <h3>eBook Digital</h3>
+          <p>A mesma história personalizada enviada em formato PDF de alta resolução no seu e-mail.</p>
+          <div class="product-pricing">
+            <span class="price-old">R$ 59,90</span>
+            <span class="price-current">R$ 39,90</span>
+          </div>
+        </div>
+        <!-- Product 3 -->
+        <div class="product-card">
+          <div class="product-icon-wrapper">🖍️</div>
+          <h3>Livro de Colorir</h3>
+          <p>Páginas com as ilustrações do seu personagem em traço preto e branco para colorir.</p>
+          <div class="product-pricing">
+            <span class="price-old">R$ 39,90</span>
+            <span class="price-current">R$ 29,90</span>
+          </div>
+        </div>
+        <!-- Product 4 -->
+        <div class="product-card">
+          <div class="product-icon-wrapper">🧩</div>
+          <h3>Quebra-Cabeça</h3>
+          <p>Um quebra-cabeça de madeira premium personalizado com a cena principal do livro.</p>
+          <div class="product-pricing">
+            <span class="price-old">R$ 69,90</span>
+            <span class="price-current">R$ 49,90</span>
+          </div>
+        </div>
+        <!-- Product 5 -->
+        <div class="product-card">
+          <div class="product-icon-wrapper">✨</div>
+          <h3>Cartela Adesivos</h3>
+          <p>Cartela autoadesiva brilhante com poses variadas do pequeno herói personalizado.</p>
+          <div class="product-pricing">
+            <span class="price-old">R$ 24,90</span>
+            <span class="price-current">R$ 14,90</span>
+          </div>
+        </div>
+      </div>
+      <div class="combo-discount-info">
+        <span>💡</span>
+        <p>Adicionais ganham <span class="accent">R$ 15,00 de desconto</span> quando comprados junto com o Livro Físico de Capa Dura.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       TESTIMONIALS SECTION
+       ============================================================ */ -->
+  <section id="depoimentos" class="testimonials reveal-section">
+    <div class="container">
+      <div class="testimonials-header">
+        <span class="label-uppercase">Histórias Reais</span>
+        <h2>Depoimentos de quem se emocionou</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="quote-mark">“</div>
+          <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">
+            "A minha filha Sofia <span class="emotion">chorou de emoção</span> ao ver o rostinho dela na floresta com o dragãozinho. Ela agora quer ler toda noite antes de dormir, virou a nossa rotina favorita."
+          </p>
+          <div class="testimonial-user">
+            <div class="user-avatar">M</div>
+            <div class="user-info">
+              <h4>Marina, mãe da Sofia (5 anos)</h4>
+              <p>São Paulo, SP</p>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="quote-mark">“</div>
+          <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+          <p class="testimonial-text">
+            "Dei de presente de aniversário para o meu afilhado Davi. A reação dos pais e dele ao verem as ilustrações <span class="emotion">foi o ponto mais alto</span> da festa. Produto premium impecável!"
+          </p>
+          <div class="testimonial-user">
+            <div class="user-avatar">P</div>
+            <div class="user-info">
+              <h4>Pedro, padrinho do Davi (4 anos)</h4>
+              <p>Rio de Janeiro, RJ</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CTA FINAL
+       ============================================================ */ -->
+  <section class="cta-final">
+    <div class="magic-stars-container" id="cta-stars"></div>
+    <div class="container">
+      <div class="cta-content">
+        <span class="label-uppercase">Crie Memórias Inesquecíveis</span>
+        <h2>Dê à criança o presente de se ver como protagonista.</h2>
+        <p>Leva menos de 5 minutos para iniciar a criação do livro. Nosso time de design revisa cada foto pessoalmente para garantir um resultado perfeito.</p>
+        <a href="#produtos" class="btn btn-gold">Criar Meu Livro Mágico</a>
+        <div class="cta-star-group">
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ */ -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3>Era Uma Vez, Eu</h3>
+          <p>Criando conexões afetivas entre pais e filhos através de livros personalizados com o máximo de carinho e tecnologia.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Navegação</h4>
+          <ul>
+            <li><a href="#diferenciais">Benefícios</a></li>
+            <li><a href="#como-funciona">Como funciona</a></li>
+            <li><a href="#preview-livro">O Livro</a></li>
+            <li><a href="#produtos">Produtos</a></li>
+          </ul>
+        </div>
+        <div class="footer-links">
+          <h4>Ajuda</h4>
+          <ul>
+            <li><a href="#">FAQ</a></li>
+            <li><a href="#">Contato</a></li>
+            <li><a href="#">Políticas de Envio</a></li>
+            <li><a href="#">Termos de Uso</a></li>
+          </ul>
+        </div>
+        <div class="footer-payment">
+          <h4>Pagamento & Segurança</h4>
+          <div class="payment-icons">
+            <span class="payment-badge">Pix</span>
+            <span class="payment-badge">Cartão de Crédito</span>
+            <span class="payment-badge">Até 6x</span>
+          </div>
+          <div class="security-badge">
+            <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+            <span>Site Seguro SSL com Criptografia de Alta Segurança</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Era Uma Vez, Eu. Todos os direitos reservados. K2 Publicidade Ltda.</p>
+        <div class="footer-socials">
+          <a href="#" aria-label="Instagram">Instagram</a>
+          <a href="#" aria-label="Facebook">Facebook</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       JAVASCRIPT
+       ============================================================ */ -->
+  <script>
+    // 1. Dynamic Twinkling Stars (Poeira Mágica) Generator
+    function initStars(containerId, count) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      
+      for (let i = 0; i < count; i++) {
+        const star = document.createElement('div');
+        star.className = 'magic-star';
+        star.style.left = `${Math.random() * 100}%`;
+        star.style.top = `${Math.random() * 100}%`;
+        
+        // Random dimensions (between 1.5px and 4px)
+        const size = 1.5 + Math.random() * 2.5;
+        star.style.width = `${size}px`;
+        star.style.height = `${size}px`;
+        
+        // Random delays and speeds
+        star.style.animationDelay = `${Math.random() * 5}s`;
+        star.style.animationDuration = `${4 + Math.random() * 4}s`;
+        
+        container.appendChild(star);
+      }
+    }
+
+    // Initialize stars in Navy background sections
+    document.addEventListener('DOMContentLoaded', () => {
+      initStars('hero-stars', 35);
+      initStars('cta-stars', 30);
+    });
+
+    // 2. Interactive 3D Page Flip Book
+    const book3d = document.getElementById('book3d');
+    const btnBookOpen = document.getElementById('btnBookOpen');
+    const btnBookText = document.getElementById('btnBookText');
+    let isBookOpen = false;
+
+    btnBookOpen.addEventListener('click', () => {
+      isBookOpen = !isBookOpen;
+      
+      if (isBookOpen) {
+        book3d.classList.add('open');
+        btnBookText.textContent = 'Fechar Livro';
+      } else {
+        book3d.classList.remove('open');
+        btnBookText.textContent = 'Abrir Livro';
+      }
+    });
+
+    // 3. Scroll Reveal System using IntersectionObserver
+    const revealSections = document.querySelectorAll('.reveal-section');
+    
+    if ('IntersectionObserver' in window) {
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.15
+      };
+
+      const observer = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            observer.unobserve(entry.target); // Trigger once
+          }
+        });
+      }, observerOptions);
+
+      revealSections.forEach(section => {
+        observer.observe(section);
+      });
+    } else {
+      // Fallback for browsers that don't support IntersectionObserver
+      revealSections.forEach(section => {
+        section.classList.add('revealed');
+      });
+    }
+
+    // 4. Header Scroll styling
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 20) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // 5. Mobile Menu toggling (simple utility)
+    const navToggle = document.querySelector('.nav-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    
+    navToggle.addEventListener('click', () => {
+      if (navLinks.style.display === 'flex') {
+        navLinks.style.display = 'none';
+      } else {
+        navLinks.style.display = 'flex';
+        navLinks.style.flexDirection = 'column';
+        navLinks.style.position = 'absolute';
+        navLinks.style.top = '80px';
+        navLinks.style.left = '0';
+        navLinks.style.width = '100%';
+        navLinks.style.backgroundColor = 'rgba(27, 42, 74, 0.98)';
+        navLinks.style.padding = '20px';
+        navLinks.style.gap = '20px';
+        navLinks.style.borderBottom = '1px solid rgba(255, 255, 255, 0.1)';
+      }
+    });
+  </script>
+</body>
+</html>

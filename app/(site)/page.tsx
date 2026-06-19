@@ -266,8 +266,8 @@ export default async function HomePage() {
 
       {/* 1. HERO SECTION */}
       <section className="relative pt-12 pb-24 md:py-32 overflow-hidden bg-cream-to-white">
-        {/* Scroll-driven Video Background (Constrained to right side on desktop) */}
-        <div className="absolute right-0 top-0 bottom-0 w-full lg:w-[58%] z-0 pointer-events-none overflow-hidden mask-video-fade">
+        {/* Scroll-driven Video Background (Constrained to right side on desktop, hidden on mobile) */}
+        <div className="hidden lg:block absolute right-0 top-0 bottom-0 lg:w-[58%] z-0 pointer-events-none overflow-hidden mask-video-fade">
           <HeroScrollVideo />
         </div>
 
@@ -372,6 +372,16 @@ export default async function HomePage() {
               >
                 Um livro infantil ilustrado feito sob medida. O rosto da criança em todas as aventuras com ilustrações ricas em detalhes geradas por IA e acabamento premium em capa dura.
               </p>
+              
+              {/* Centered Mobile Scroll Video Card */}
+              <div 
+                className="w-full max-w-[320px] sm:max-w-[380px] mx-auto py-2 animate-fade-up"
+                style={{ animationDelay: "350ms", animationFillMode: "both" }}
+              >
+                <div className="relative w-full aspect-[16/9] rounded-2xl overflow-hidden border border-gold/25 bg-white shadow-lg">
+                  <HeroScrollVideo />
+                </div>
+              </div>
               
               <div 
                 className="flex flex-col sm:flex-row items-center justify-center gap-3 px-4 pt-2 animate-fade-up"

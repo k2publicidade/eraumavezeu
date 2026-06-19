@@ -29,6 +29,7 @@ export default async function AdminProductEditPage({ params }: { params: { id: s
           priceOld: product.priceOld ? Number(product.priceOld) : null,
           type: product.type,
           active: product.active,
+          images: product.images,
         }}
       />
     </div>

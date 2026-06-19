@@ -64,6 +64,30 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
   },
 ];
 
+type ProductRecord = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  price: { toString(): string } | number;
+  priceOld: { toString(): string } | number | null;
+  type: string;
+};
+
+export function resolveCatalogProducts(products: ProductRecord[]): CatalogProduct[] {
+  if (products.length === 0) return FALLBACK_PRODUCTS;
+
+  return products.map((product) => ({
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    description: product.description,
+    price: Number(product.price),
+    priceOld: product.priceOld ? Number(product.priceOld) : null,
+    type: product.type as ProductType,
+  }));
+}
+
 export async function getActiveProducts(): Promise<CatalogProduct[]> {
   if (process.env.NEXT_PHASE === "phase-production-build") {
     return FALLBACK_PRODUCTS;
@@ -75,15 +99,7 @@ export async function getActiveProducts(): Promise<CatalogProduct[]> {
       orderBy: { price: "desc" },
     });
 
-    return products.map((product) => ({
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      description: product.description,
-      price: Number(product.price),
-      priceOld: product.priceOld ? Number(product.priceOld) : null,
-      type: product.type as ProductType,
-    }));
+    return resolveCatalogProducts(products);
   } catch (error) {
     if (process.env.NODE_ENV !== "production") {
       console.warn("[products:fallback] usando catálogo estático", error);

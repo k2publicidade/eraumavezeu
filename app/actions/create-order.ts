@@ -8,7 +8,8 @@ import { buildOrderDraft, orderCodeOf, type DbProduct } from "@/lib/orders/build
 import { checkoutSchema } from "@/lib/validators/order";
 import { gerarPromptIA } from "@/lib/wizard/prompt";
 import type { ProductType } from "@/lib/cart/types";
-import { mpPreference } from "@/lib/mercadopago";
+import { getPaymentGateway } from "@/lib/payments/gateway-registry";
+import { calculateShippingOptions } from "@/lib/shipping";
 
 export type CreateOrderResult =
   | { ok: true; orderId: string; orderCode: string; paymentUrl?: string }
@@ -19,7 +20,17 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
   if (!parsed.success) {
     return { ok: false, error: "Dados inválidos — revise o formulário." };
   }
-  const { buyer, address, items, shippingMethod, shippingCost } = parsed.data;
+  const { buyer, address, items, shippingMethod, shippingCost, paymentGateway } = parsed.data;
+
+  // Validação do frete no servidor (segurança contra manipulação de preço de frete)
+  const validShippingOptions = calculateShippingOptions(address.state);
+  const matchedShipping = validShippingOptions.find((o) => o.method === shippingMethod);
+  if (!matchedShipping) {
+    return { ok: false, error: "Método de frete inválido." };
+  }
+  if (Math.abs(matchedShipping.cost - shippingCost) > 0.01) {
+    return { ok: false, error: "Valor de frete divergente. Por favor, recalcule no checkout." };
+  }
 
   // preço é autoridade do servidor: busca produtos ativos do banco
   const slugs = Array.from(new Set(items.map((i) => i.slug)));
@@ -81,6 +92,7 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
         shippingMethod: shippingMethod || "PAC",
         shippingCost: shippingCost || 0,
         total: finalTotal,
+        paymentGateway,
         dedication: customization?.dedication || null,
         items: { create: draft.items },
         shippingAddress: {
@@ -148,52 +160,26 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
       total: finalTotal,
     }).catch((err) => console.error("notifyOrderCreated failed", err));
 
-    // Integração com Mercado Pago (Criação de Preferência de Checkout)
+    // Processamento do pagamento pelo Gateway escolhido
     let paymentUrl: string | undefined = undefined;
-    const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
-
     try {
-      if (process.env.MP_ACCESS_TOKEN) {
-        const preferenceItems = draft.items.map((it) => {
-          const product = productById.get(it.productId);
-          const unitPrice = Number(it.price) - (Number(it.discount) / it.quantity);
-          return {
-            id: it.productId,
-            title: product?.name || "Produto Era Uma Vez Eu",
-            quantity: it.quantity,
-            unit_price: Number(unitPrice.toFixed(2)),
-          };
-        });
+      const fullOrder = await db.order.findUnique({
+        where: { id: order.id },
+        include: {
+          items: { include: { product: true } },
+          shippingAddress: true,
+        },
+      });
 
-        if (shippingCost && shippingCost > 0) {
-          preferenceItems.push({
-            id: "shipping",
-            title: `Frete: ${shippingMethod || "Entrega"}`,
-            quantity: 1,
-            unit_price: Number(shippingCost.toFixed(2)),
-          });
+      if (fullOrder) {
+        const gateway = getPaymentGateway(paymentGateway);
+        const paymentRes = await gateway.createPayment(fullOrder);
+        if (paymentRes.success && paymentRes.paymentUrl) {
+          paymentUrl = paymentRes.paymentUrl;
         }
-
-        const preferenceResponse = await mpPreference.create({
-          body: {
-            items: preferenceItems,
-            back_urls: {
-              success: `${baseUrl}/pedido/${order.id}?payment=success`,
-              failure: `${baseUrl}/pedido/${order.id}?payment=failure`,
-              pending: `${baseUrl}/pedido/${order.id}?payment=pending`,
-            },
-            auto_return: "approved",
-            external_reference: order.id,
-            notification_url: `${baseUrl}/api/webhook/mercadopago`,
-          },
-        });
-
-        paymentUrl = process.env.NODE_ENV === "production"
-          ? preferenceResponse.init_point
-          : preferenceResponse.sandbox_init_point || preferenceResponse.init_point;
       }
-    } catch (mpErr) {
-      console.error("Erro ao gerar link de pagamento Mercado Pago:", mpErr);
+    } catch (paymentErr) {
+      console.error(`Erro ao gerar link de pagamento (${paymentGateway}):`, paymentErr);
     }
 
     return { ok: true, orderId: order.id, orderCode: orderCodeOf(order.id), paymentUrl };

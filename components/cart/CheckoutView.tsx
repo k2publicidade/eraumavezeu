@@ -11,9 +11,10 @@ import { lookupCep } from "@/lib/cep";
 import { useCartStore } from "@/lib/cart/store";
 import { formatBRL } from "@/lib/format";
 import { checkoutSchema } from "@/lib/validators/order";
+import { calculateShippingOptions } from "@/lib/shipping";
 
-// buyer + address vêm do form; items entram programaticamente do carrinho
-const formSchema = checkoutSchema.pick({ buyer: true, address: true });
+// buyer + address + paymentGateway vêm do form; items entram programaticamente do carrinho
+const formSchema = checkoutSchema.pick({ buyer: true, address: true, paymentGateway: true });
 type FormValues = z.output<typeof formSchema>;
 
 function useHydrated() {
@@ -55,35 +56,15 @@ export default function CheckoutView() {
         city: "",
         state: "",
       },
+      paymentGateway: "MERCADOPAGO",
     },
   });
 
   const watchedState = watch("address.state");
 
-  function calculateShipping(state: string) {
-    const uf = state.toUpperCase().trim();
-    if (!uf) return [];
-    if (["SP", "RJ", "ES", "MG"].includes(uf)) {
-      return [
-        { method: "PAC", cost: 0, days: 5 },
-        { method: "SEDEX", cost: 14.9, days: 2 },
-      ];
-    }
-    if (["PR", "SC", "RS", "DF", "GO", "MS", "MT"].includes(uf)) {
-      return [
-        { method: "PAC", cost: 9.9, days: 7 },
-        { method: "SEDEX", cost: 22.9, days: 3 },
-      ];
-    }
-    return [
-      { method: "PAC", cost: 14.9, days: 10 },
-      { method: "SEDEX", cost: 29.9, days: 4 },
-    ];
-  }
-
   useEffect(() => {
     if (watchedState && watchedState.length === 2) {
-      const options = calculateShipping(watchedState);
+      const options = calculateShippingOptions(watchedState);
       setShippingOptions(options);
       const exists = options.find((o) => o.method === selectedMethod);
       if (!exists && options.length > 0) {
@@ -112,7 +93,7 @@ export default function CheckoutView() {
     if (found.city) setValue("address.city", found.city);
     if (found.state) {
       setValue("address.state", found.state);
-      const options = calculateShipping(found.state);
+      const options = calculateShippingOptions(found.state);
       setShippingOptions(options);
       if (options.length > 0) {
         setSelectedMethod(options[0].method);
@@ -133,6 +114,7 @@ export default function CheckoutView() {
       })),
       shippingMethod: selectedMethod,
       shippingCost: selectedCost,
+      paymentGateway: data.paymentGateway,
     });
     if (res.ok) {
       clear();
@@ -367,6 +349,57 @@ export default function CheckoutView() {
             </fieldset>
           )}
 
+          <fieldset className="mt-8 border-t border-gold/15 pt-8" disabled={isSubmitting}>
+            <legend className="font-serif text-xl text-primary mb-4">
+              Forma de Pagamento
+            </legend>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {/* Mercado Pago */}
+              <label
+                className={`flex items-start gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                  watch("paymentGateway") === "MERCADOPAGO"
+                    ? "border-primary bg-white shadow-md shadow-gold/10"
+                    : "border-gold/20 bg-white/40 hover:border-gold/45"
+                }`}
+              >
+                <input
+                  type="radio"
+                  {...register("paymentGateway")}
+                  value="MERCADOPAGO"
+                  className="h-4 w-4 mt-1 accent-primary"
+                />
+                <div>
+                  <span className="block text-sm font-semibold text-primary">Mercado Pago</span>
+                  <span className="block text-xs text-dark/65 mt-0.5">
+                    PIX, Cartão (até 12x) ou Boleto. Confirmação imediata para PIX/Cartão.
+                  </span>
+                </div>
+              </label>
+
+              {/* Gateway Simulado */}
+              <label
+                className={`flex items-start gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                  watch("paymentGateway") === "SIMULADO"
+                    ? "border-primary bg-white shadow-md shadow-gold/10"
+                    : "border-gold/20 bg-white/40 hover:border-gold/45"
+                }`}
+              >
+                <input
+                  type="radio"
+                  {...register("paymentGateway")}
+                  value="SIMULADO"
+                  className="h-4 w-4 mt-1 accent-primary"
+                />
+                <div>
+                  <span className="block text-sm font-semibold text-primary">Ambiente de Testes</span>
+                  <span className="block text-xs text-dark/65 mt-0.5">
+                    Simule a aprovação ou cancelamento do pagamento instantaneamente.
+                  </span>
+                </div>
+              </label>
+            </div>
+          </fieldset>
+
           {serverError && (
             <p className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
               {serverError}
@@ -381,8 +414,9 @@ export default function CheckoutView() {
             {isSubmitting ? "Registrando pedido…" : "Confirmar pedido →"}
           </button>
           <p className="mt-3 text-center text-xs text-dark/55">
-            Pagamento seguro via Mercado Pago (PIX, Cartão ou Boleto). Você será
-            redirecionado para a página de pagamento após confirmar o pedido.
+            {watch("paymentGateway") === "SIMULADO"
+              ? "Ambiente de Testes ativo. Você será redirecionado para a tela de simulação de pagamento após confirmar."
+              : "Pagamento seguro via Mercado Pago (PIX, Cartão ou Boleto). Você será redirecionado para a página de pagamento após confirmar o pedido."}
           </p>
         </form>
       </section>

@@ -10,7 +10,11 @@ const SIGNED_URL_TTL_SECONDS = 900; // 15 min
 let utapi: UTApi | null = null;
 
 function getUtApi(): UTApi {
-  if (!utapi) utapi = new UTApi();
+  if (!utapi) {
+    utapi = new UTApi({
+      token: process.env.UPLOADTHING_TOKEN,
+    });
+  }
   return utapi;
 }
 

@@ -107,7 +107,7 @@ export default function CartView({ crossSellProducts }: Props) {
         {hasMainBook && crossSellCandidates.length > 0 && (
           <div className="bg-gold/10 border border-gold/35 rounded-2xl p-6">
             <h3 className="font-serif text-lg text-primary">
-              Economize R$ 15 adicionando
+              Economize {formatBRL(COMBO_DISCOUNT)} adicionando
             </h3>
             <p className="text-sm text-dark/55 mt-1 mb-4">
               Cada adicional entra com desconto combo.

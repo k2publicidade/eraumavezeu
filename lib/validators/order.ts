@@ -64,6 +64,7 @@ export const checkoutSchema = z.object({
   items: z.array(checkoutItemSchema).min(1).max(20),
   shippingMethod: z.string().optional(),
   shippingCost: z.number().optional(),
+  paymentGateway: z.enum(["MERCADOPAGO", "SIMULADO"]).default("MERCADOPAGO"),
 });
 
 export type CheckoutPayload = z.infer<typeof checkoutSchema>;

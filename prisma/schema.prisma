@@ -120,6 +120,7 @@ model Order {
   paymentMethod   String?
   paymentId       String?       @unique // MP payment id — UNIQUE para idempotência de webhook
   paymentStatus   PaymentStatus @default(PENDENTE)
+  paymentGateway  String?       @default("MERCADOPAGO")
   trackingCode    String?
   dedication      String?       @db.Text
   notes           String?       @db.Text

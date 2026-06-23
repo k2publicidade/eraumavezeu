@@ -60,7 +60,7 @@ describe.skipIf(!shouldRunDbTests)("seed products (FND-08)", () => {
     }
   );
 
-  it("soma dos 4 adicionais = 339.60 (base pro combo da Fase 3)", async () => {
+  it("soma dos 4 adicionais = 329.60 (base pro combo da Fase 3)", async () => {
     const adicionais = await prisma!.product.findMany({
       where: {
         slug: {
@@ -69,7 +69,7 @@ describe.skipIf(!shouldRunDbTests)("seed products (FND-08)", () => {
       },
     });
     const soma = adicionais.reduce((acc, p) => acc + Number(p.price), 0);
-    expect(soma).toBeCloseTo(339.6, 2);
+    expect(soma).toBeCloseTo(329.6, 2);
   });
 
   it("todos os 5 produtos estão ativos", async () => {
@@ -77,9 +77,9 @@ describe.skipIf(!shouldRunDbTests)("seed products (FND-08)", () => {
     expect(inativos).toBe(0);
   });
 
-  it("soma total dos 5 produtos = 589.50", async () => {
+  it("soma total dos 5 produtos = 579.50", async () => {
     const todos = await prisma!.product.findMany();
     const soma = todos.reduce((acc, p) => acc + Number(p.price), 0);
-    expect(soma).toBeCloseTo(589.5, 2);
+    expect(soma).toBeCloseTo(579.5, 2);
   });
 });

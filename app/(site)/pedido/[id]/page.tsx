@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { formatBRL } from "@/lib/format";
 import { orderCodeOf } from "@/lib/orders/build-order";
 import { statusLabelOf } from "@/lib/orders/status";
-import { getOrCreatePaymentUrl } from "@/lib/mercadopago";
+// import do mercadopago removido para usar gateway registry dinâmico
 
 // lê o banco a cada request — nunca prerender (id é cuid não-enumerável)
 export const dynamic = "force-dynamic";
@@ -39,7 +39,30 @@ export default async function PedidoPage({ params, searchParams }: PedidoPagePro
 
   // Determina se exibe o botão de pagamento
   const isAwaitingPayment = order.status === "AGUARDANDO_PAGAMENTO";
-  const paymentUrl = isAwaitingPayment ? await getOrCreatePaymentUrl(order.id) : null;
+  let paymentUrl: string | null = null;
+  if (isAwaitingPayment) {
+    try {
+      const { getPaymentGateway } = await import("@/lib/payments/gateway-registry");
+      const gatewayName = order.paymentGateway || "MERCADOPAGO";
+      const gateway = getPaymentGateway(gatewayName);
+      
+      const orderWithDetails = {
+        ...order,
+        items: order.items.map((it) => ({
+          ...it,
+          product: it.product,
+        })),
+        shippingAddress: order.shippingAddress,
+      };
+
+      const res = await gateway.createPayment(orderWithDetails as any);
+      if (res.success && res.paymentUrl) {
+        paymentUrl = res.paymentUrl;
+      }
+    } catch (err) {
+      console.error("Erro ao gerar link de pagamento na página do pedido:", err);
+    }
+  }
 
   // Estado do pagamento baseado nos query params ou no banco
   const isPaid = order.paymentStatus === "APROVADO" || searchParams.payment === "success";
@@ -112,24 +135,34 @@ export default async function PedidoPage({ params, searchParams }: PedidoPagePro
             )}
           </div>
 
-          {/* Botão de Pagamento Mercado Pago */}
+          {/* Botão de Pagamento dinâmico */}
           {isAwaitingPayment && !isPaid && paymentUrl && (
             <div className="mt-8 border-t border-gold/15 pt-8">
               <h3 className="text-sm font-medium text-dark/60 uppercase tracking-wider">Forma de Pagamento</h3>
-              <p className="mt-2 text-sm text-dark/80">PIX, Cartão de Crédito em até 12x ou Boleto via Mercado Pago</p>
+              <p className="mt-2 text-sm text-dark/80">
+                {order.paymentGateway === "SIMULADO"
+                  ? "Ambiente de Testes (Simulação de pagamento instantâneo)"
+                  : "PIX, Cartão de Crédito em até 12x ou Boleto via Mercado Pago"}
+              </p>
               
               <a
                 href={paymentUrl}
                 className="btn-primary inline-flex items-center justify-center gap-2 mt-4 px-8 py-3.5 text-base shadow-lg shadow-gold/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 w-full sm:w-auto"
               >
-                <span>Pagar Agora com Mercado Pago</span>
+                <span>
+                  {order.paymentGateway === "SIMULADO"
+                    ? "Ir para o Simulador de Pagamento"
+                    : "Pagar Agora com Mercado Pago"}
+                </span>
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </a>
 
               <div className="mt-4 flex items-center justify-center gap-6 text-xs text-dark/50">
-                <span className="flex items-center gap-1">🔒 Ambiente 100% Seguro</span>
+                <span className="flex items-center gap-1">
+                  {order.paymentGateway === "SIMULADO" ? "⚙️ Modo de Testes" : "🔒 Ambiente 100% Seguro"}
+                </span>
                 <span>⚡ Confirmação Instantânea</span>
               </div>
             </div>

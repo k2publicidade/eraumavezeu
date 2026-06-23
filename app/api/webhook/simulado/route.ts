@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { MercadoPagoGateway } from "@/lib/payments/mercadopago";
+import { SimulatedGateway } from "@/lib/payments/simulado";
 import { notifyOrderStatusChanged } from "@/lib/notifications/order-status";
 import { orderCodeOf } from "@/lib/orders/build-order";
 import type { PaymentStatus, OrderStatus } from "@prisma/client";
@@ -8,40 +8,31 @@ import type { PaymentStatus, OrderStatus } from "@prisma/client";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const gateway = new MercadoPagoGateway();
+  const gateway = new SimulatedGateway();
   const result = await gateway.processWebhook(req);
 
   if (!result.success) {
-    if (result.error === "Ignorado - não é evento de pagamento") {
-      return NextResponse.json({ ok: true, message: result.error });
-    }
-    if (result.error === "Assinatura inválida") {
-      return new Response("Assinatura inválida", { status: 401 });
-    }
-    return new Response(result.error || "Erro ao processar", { status: 500 });
+    return new Response(result.error || "Erro ao processar", { status: 400 });
   }
 
   const { orderId, paymentId, paymentStatus, orderStatus, paymentMethod } = result;
 
   if (!orderId || !paymentId || !paymentStatus || !orderStatus) {
-    return new Response("Dados incompletos retornados do gateway", { status: 500 });
+    return new Response("Dados incompletos retornados do simulador", { status: 500 });
   }
 
   try {
-    // Busca o pedido no banco de dados
     const order = await db.order.findUnique({
       where: { id: orderId },
     });
 
     if (!order) {
-      console.error(`Pedido ${orderId} associado ao pagamento ${paymentId} não foi encontrado.`);
       return new Response("Pedido não encontrado", { status: 404 });
     }
 
     const newPaymentStatus: PaymentStatus = paymentStatus;
     const newOrderStatus: OrderStatus = orderStatus;
 
-    // Evita atualizações redundantes se o status já for o mesmo (Idempotência)
     if (
       order.paymentId === paymentId &&
       order.paymentStatus === newPaymentStatus &&
@@ -50,23 +41,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true, message: "Evento duplicado - já processado" });
     }
 
-    // Executa a atualização do status em uma transação do banco de dados
     const updatedOrder = await db.$transaction(async (tx) => {
-      // Re-busca o pedido dentro da transação para evitar condições de corrida
       const currentOrder = await tx.order.findUnique({
         where: { id: orderId },
       });
 
       if (!currentOrder) {
         throw new Error("Pedido não encontrado na transação");
-      }
-
-      if (
-        currentOrder.paymentId === paymentId &&
-        currentOrder.paymentStatus === newPaymentStatus &&
-        currentOrder.status === newOrderStatus
-      ) {
-        return currentOrder;
       }
 
       const updated = await tx.order.update({
@@ -80,8 +61,8 @@ export async function POST(req: NextRequest) {
             create: {
               fromStatus: currentOrder.status,
               toStatus: newOrderStatus,
-              changedBy: "webhook_mercadopago",
-              note: `Webhook Mercado Pago: status ${paymentStatus} (ID ${paymentId})`,
+              changedBy: "webhook_simulado",
+              note: `Simulador de Pagamento: status ${paymentStatus} (ID ${paymentId})`,
             },
           },
         },
@@ -90,7 +71,6 @@ export async function POST(req: NextRequest) {
       return updated;
     });
 
-    // Envia notificações ao cliente caso o pagamento tenha sido confirmado
     if (updatedOrder.status === "PAGAMENTO_CONFIRMADO" && order.status !== "PAGAMENTO_CONFIRMADO") {
       await notifyOrderStatusChanged({
         orderId: updatedOrder.id,
@@ -107,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, processed: true });
   } catch (error) {
-    console.error(`Erro ao processar webhook para o pedido ${orderId}:`, error);
+    console.error(`Erro ao processar webhook simulado para o pedido ${orderId}:`, error);
     return new Response("Erro interno do servidor", { status: 500 });
   }
 }

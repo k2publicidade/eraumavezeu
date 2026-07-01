@@ -66,9 +66,26 @@ export class MercadoPagoGateway implements PaymentGateway {
         paymentUrl: paymentUrl || undefined,
         paymentId: preferenceResponse.id || undefined,
       };
-    } catch (err) {
+    } catch (err: any) {
       console.error("Erro ao criar preferência no Mercado Pago:", err);
-      return { success: false, error: "Falha ao gerar link de pagamento no Mercado Pago." };
+      
+      const isHttpLocalhost = baseUrl.startsWith("http://localhost") || baseUrl.startsWith("http://127.0.0.1");
+      if (isHttpLocalhost) {
+        console.warn(
+          "\n[MERCADO PAGO - ALERTA DE CONFIGURAÇÃO]\n" +
+          "Identificamos que NEXT_PUBLIC_URL está configurada como HTTP local (localhost).\n" +
+          "O Mercado Pago exige obrigatoriamente protocolo HTTPS para as URLs de retorno (back_urls e webhook).\n" +
+          "Para testar localmente, utilize uma ferramenta de túnel (ex: ngrok, localtunnel) e defina a variável:\n" +
+          "NEXT_PUBLIC_URL=\"https://seu-subdominio.ngrok-free.app\"\n"
+        );
+      }
+      
+      return { 
+        success: false, 
+        error: isHttpLocalhost 
+          ? "Configuração local inválida (Mercado Pago exige HTTPS nas URLs de retorno). Configure um túnel HTTPS." 
+          : "Falha ao gerar link de pagamento no Mercado Pago." 
+      };
     }
   }
 

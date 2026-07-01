@@ -36,20 +36,23 @@ export async function GET(req: Request) {
   }
   const buf = Buffer.from(await upstream.arrayBuffer());
 
-  const resized = await sharp(buf)
-    .rotate()
-    .resize({
-      width: MAX_DIMENSION,
-      height: MAX_DIMENSION,
-      fit: "inside",
-      withoutEnlargement: true,
-    })
-    .jpeg({ quality: 82 })
-    .toBuffer();
+  const meta = await sharp(buf).metadata();
+  let w = meta.width ?? MAX_DIMENSION;
+  let h = meta.height ?? MAX_DIMENSION;
 
-  const meta = await sharp(resized).metadata();
-  const w = meta.width ?? MAX_DIMENSION;
-  const h = meta.height ?? MAX_DIMENSION;
+  // Considere a orientação EXIF (se rotacionado 90/270 graus, inverte largura e altura)
+  const orientation = meta.orientation ?? 1;
+  if (orientation >= 5 && orientation <= 8) {
+    const tmp = w;
+    w = h;
+    h = tmp;
+  }
+
+  if (w > MAX_DIMENSION || h > MAX_DIMENSION) {
+    const ratio = Math.min(MAX_DIMENSION / w, MAX_DIMENSION / h);
+    w = Math.round(w * ratio);
+    h = Math.round(h * ratio);
+  }
 
   const tileSvg = Buffer.from(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
@@ -64,7 +67,14 @@ export async function GET(req: Request) {
     </svg>`,
   );
 
-  const final = await sharp(resized)
+  const final = await sharp(buf)
+    .rotate()
+    .resize({
+      width: w,
+      height: h,
+      fit: "inside",
+      withoutEnlargement: true,
+    })
     .composite([{ input: tileSvg, blend: "over" }])
     .jpeg({ quality: 82 })
     .toBuffer();

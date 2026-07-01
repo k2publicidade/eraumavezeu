@@ -193,7 +193,7 @@ const WHY_US_BG = [
 ];
 
 const PRODUCT_MOCKUPS: Record<string, string> = {
-  LIVRO_PRINCIPAL: "/book_cover.png",
+  LIVRO_PRINCIPAL: "/livro/Era Uma Vez - Bernardo_Página_01.jpg",
   EBOOK: "/ebook_mockup.png",
   LIVRO_COLORIR: "/coloring_book_mockup.png",
   QUEBRA_CABECA: "/puzzle_mockup.png",
@@ -334,20 +334,7 @@ export default async function HomePage() {
                 <span className="flex items-center gap-1.5">✓ Entrega em todo o Brasil</span>
               </div>
 
-              {/* Trust Section */}
-              <div 
-                className="flex items-center gap-3 pt-4 border-t border-cream-deep/40 animate-fade-up"
-                style={{ animationDelay: "850ms", animationFillMode: "both" }}
-              >
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-gold-light border border-white flex items-center justify-center text-xs font-bold text-primary">A</div>
-                  <div className="w-8 h-8 rounded-full bg-rose-light border border-white flex items-center justify-center text-xs font-bold text-primary">J</div>
-                  <div className="w-8 h-8 rounded-full bg-forest-light border border-white flex items-center justify-center text-xs font-bold text-primary">P</div>
-                </div>
-                <p className="text-xs text-dark/60">
-                  Mais de <strong className="text-primary font-bold">10 mil histórias</strong> criadas e entregues.
-                </p>
-              </div>
+
             </div>
 
             {/* Mobile Hero Content (Centered, Image 1 style) */}

@@ -1,3 +1,4 @@
+import { renderOrderStatusEmail } from "@/emails/order-status";
 import { sendEmail } from "@/lib/email";
 import { statusLabelOf, type OrderStatusValue } from "@/lib/orders/status";
 import { sendMessage } from "@/lib/whatsapp";
@@ -53,17 +54,20 @@ export async function notifyOrderStatusChanged(
   const tasks: { label: string; run: () => Promise<{ ok: boolean; error?: string }> }[] = [
     {
       label: "email-status",
-      run: () =>
-        sendEmail({
+      run: async () => {
+        const { subject, html } = await renderOrderStatusEmail({
+          buyerName: data.buyerName,
+          orderCode: data.orderCode,
+          orderId: data.orderId,
+          toStatus: data.toStatus,
+          trackingCode: data.trackingCode,
+        });
+        return sendEmail({
           to: data.buyerEmail,
-          subject: `Pedido #${data.orderCode}: ${label} — Era Uma Vez Eu`,
-          html: [
-            `<p>Olá, ${firstName}!</p>`,
-            `<p>${message}</p>`,
-            `<p><a href="${baseUrl}/pedido/${data.orderId}">Acompanhar pedido #${data.orderCode}</a></p>`,
-            `<p>— Era Uma Vez Eu</p>`,
-          ].join("\n"),
-        }),
+          subject,
+          html,
+        });
+      },
     },
   ];
 

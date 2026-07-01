@@ -12,6 +12,7 @@ import {
   STATUS_LABELS,
   type OrderStatusValue,
 } from "@/lib/orders/status";
+import { renderOrderStatusEmail } from "@/emails/order-status";
 import { sendEmail } from "@/lib/email";
 import { sendMessage } from "@/lib/whatsapp";
 import { statusMessage } from "@/lib/notifications/order-status";
@@ -182,16 +183,17 @@ export async function resendNotification(
     });
 
     if (channel === "email") {
-      const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+      const { subject, html } = await renderOrderStatusEmail({
+        buyerName: guestName,
+        orderCode: orderCodeOf(order.id),
+        orderId: order.id,
+        toStatus: order.status as OrderStatusValue,
+        trackingCode: order.trackingCode,
+      });
       const emailRes = await sendEmail({
         to: guestEmail,
-        subject: `Pedido #${orderCodeOf(order.id)}: ${label} — Era Uma Vez Eu`,
-        html: [
-          `<p>Olá, ${firstName}!</p>`,
-          `<p>${message}</p>`,
-          `<p><a href="${baseUrl}/pedido/${order.id}">Acompanhar pedido #${orderCodeOf(order.id)}</a></p>`,
-          `<p>— Era Uma Vez Eu</p>`,
-        ].join("\n"),
+        subject,
+        html,
       });
       if (!emailRes.ok) {
         return { ok: false, error: emailRes.error || "Erro no envio do e-mail." };

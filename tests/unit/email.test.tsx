@@ -6,6 +6,7 @@ import {
   type EmailMessage,
 } from "@/lib/email";
 import { renderOrderConfirmationEmail } from "@/emails/order-confirmation";
+import { renderOrderStatusEmail } from "@/emails/order-status";
 
 afterEach(() => {
   // restaura o stub padrão (sem RESEND_API_KEY em test, defaultClient é stub)
@@ -92,5 +93,71 @@ describe("renderOrderConfirmationEmail", () => {
     const { html } = await renderOrderConfirmationEmail(props);
     expect(html).toContain("Nenhuma cobrança foi feita ainda");
     expect(html).not.toContain("Mercado Pago");
+  });
+});
+
+describe("renderOrderStatusEmail", () => {
+  const baseProps = {
+    buyerName: "Mariana Souza",
+    orderCode: "XYZ987",
+    orderId: "ord_123",
+  };
+
+  it("gera assunto com o código do pedido e o status traduzido", async () => {
+    const { subject } = await renderOrderStatusEmail({
+      ...baseProps,
+      toStatus: "EM_PRODUCAO",
+    });
+    expect(subject).toContain("#XYZ987");
+    expect(subject).toContain("Em produção");
+    expect(subject).toContain("Era Uma Vez Eu");
+  });
+
+  it("HTML contém primeiro nome, código do pedido e botão de CTA", async () => {
+    const { html } = await renderOrderStatusEmail({
+      ...baseProps,
+      toStatus: "EM_PRODUCAO",
+    });
+    expect(html).toContain("Mariana");
+    expect(html).toContain("#XYZ987");
+    expect(html).toContain("Acompanhar Produção");
+    expect(html).toContain("/pedido/ord_123");
+  });
+
+  it("renderiza detalhes específicos para PAGAMENTO_CONFIRMADO", async () => {
+    const { html } = await renderOrderStatusEmail({
+      ...baseProps,
+      toStatus: "PAGAMENTO_CONFIRMADO",
+    });
+    expect(html).toContain("Pagamento Confirmado");
+    expect(html).toContain("preparando tudo");
+  });
+
+  it("renderiza detalhes específicos para ENVIADO com código de rastreamento", async () => {
+    const { html } = await renderOrderStatusEmail({
+      ...baseProps,
+      toStatus: "ENVIADO",
+      trackingCode: "BR123456789BR",
+    });
+    expect(html).toContain("BR123456789BR");
+    expect(html).toContain("Rastrear Entrega");
+  });
+
+  it("renderiza detalhes específicos para ENTREGUE", async () => {
+    const { html } = await renderOrderStatusEmail({
+      ...baseProps,
+      toStatus: "ENTREGUE",
+    });
+    expect(html).toContain("Entrega concluída");
+    expect(html).toContain("Deixar uma Avaliação");
+  });
+
+  it("renderiza detalhes específicos para CANCELADO", async () => {
+    const { html } = await renderOrderStatusEmail({
+      ...baseProps,
+      toStatus: "CANCELADO",
+    });
+    expect(html).toContain("Pedido cancelado");
+    expect(html).toContain("Falar com o Suporte");
   });
 });

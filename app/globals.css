@@ -525,3 +525,47 @@
   opacity: 0.75;
 }
 
+/* Folhas de páginas internas para o Flipbook */
+.book-page-sheet-front, .book-page-sheet-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: inset -10px 0 20px rgba(0, 0, 0, 0.05);
+}
+
+.book-page-sheet-front {
+  border-radius: 0 12px 12px 0;
+}
+
+.book-page-sheet-back {
+  transform: rotateY(180deg);
+  border-radius: 0 12px 12px 0; /* Rotacionado 180deg, o canto direito vira a borda externa esquerda */
+}
+
+/* Sombra realista de vinco na página esquerda (para folhas do flipbook) */
+.book-page-sheet-back .spine-shadow-left {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 18px;
+  height: 100%;
+  background: linear-gradient(to left, rgba(0,0,0,0.15), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Sombra realista de vinco na página direita (para folhas do flipbook) */
+.book-page-sheet-front .spine-shadow-right {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 18px;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
+

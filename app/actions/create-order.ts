@@ -28,6 +28,9 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
   if (!matchedShipping) {
     return { ok: false, error: "Método de frete inválido." };
   }
+  if (shippingCost === undefined) {
+    return { ok: false, error: "Valor de frete não informado." };
+  }
   if (Math.abs(matchedShipping.cost - shippingCost) > 0.01) {
     return { ok: false, error: "Valor de frete divergente. Por favor, recalcule no checkout." };
   }

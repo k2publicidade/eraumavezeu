@@ -471,9 +471,9 @@ export default async function HomePage() {
             {/* Description details */}
             <div className="space-y-6 max-w-lg">
               <span className="font-body text-xs font-bold text-gold uppercase tracking-[0.18em]">Livro em destaque</span>
-              <h2 className="font-serif text-4xl text-primary font-semibold">Sofia e a Floresta Encantada</h2>
+              <h2 className="font-serif text-4xl text-primary font-semibold">Bernardo e a Aventura com Dinossauros</h2>
               <p className="text-sm text-dark/70 leading-relaxed font-sans">
-                Uma aventura mágica onde a pequena Sofia descobre coragem, amizade e o poder de acreditar em si mesma. Ilustrações lúdicas e ricas em detalhes emocionais adaptadas à foto da criança.
+                Uma viagem emocionante de volta no tempo onde o pequeno Bernardo explora a era pré-histórica, faz amizade com dinossauros gigantes e vive grandes descobertas. Ilustrações lúdicas e ricas em detalhes emocionais adaptadas à foto da criança.
               </p>
 
               <div className="grid grid-cols-3 gap-4 pt-2">

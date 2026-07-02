@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { formatBRL } from "@/lib/format";
 import { orderCodeOf } from "@/lib/orders/build-order";
 import { statusLabelOf } from "@/lib/orders/status";
+import { PixCopyButton } from "@/components/payments/PixCopyButton";
 // import do mercadopago removido para usar gateway registry dinâmico
 
 // lê o banco a cada request — nunca prerender (id é cuid não-enumerável)
@@ -37,10 +38,13 @@ export default async function PedidoPage({ params, searchParams }: PedidoPagePro
   const address = order.shippingAddress;
   const buyerFirstName = order.guestName?.split(" ")[0] ?? "cliente";
 
-  // Determina se exibe o botão de pagamento
+  // Determina se exibe o botão/dados de pagamento
   const isAwaitingPayment = order.status === "AGUARDANDO_PAGAMENTO";
-  let paymentUrl: string | null = null;
-  if (isAwaitingPayment) {
+  let paymentUrl: string | null = order.paymentUrl;
+  let pixQrCode: string | null = order.pixQrCode;
+  let pixQrCodeBase64: string | null = order.pixQrCodeBase64;
+
+  if (isAwaitingPayment && (!paymentUrl && !pixQrCode)) {
     try {
       const { getPaymentGateway } = await import("@/lib/payments/gateway-registry");
       const gatewayName = order.paymentGateway || "MERCADOPAGO";
@@ -56,11 +60,23 @@ export default async function PedidoPage({ params, searchParams }: PedidoPagePro
       };
 
       const res = await gateway.createPayment(orderWithDetails as any);
-      if (res.success && res.paymentUrl) {
-        paymentUrl = res.paymentUrl;
+      if (res.success) {
+        paymentUrl = res.paymentUrl || null;
+        pixQrCode = res.pixQrCode || null;
+        pixQrCodeBase64 = res.pixQrCodeBase64 || null;
+
+        // Persiste no banco de dados para acessos futuros
+        await db.order.update({
+          where: { id: order.id },
+          data: {
+            paymentUrl: res.paymentUrl || null,
+            pixQrCode: res.pixQrCode || null,
+            pixQrCodeBase64: res.pixQrCodeBase64 || null,
+          },
+        });
       }
     } catch (err) {
-      console.error("Erro ao gerar link de pagamento na página do pedido:", err);
+      console.error("Erro ao gerar dados de pagamento na página do pedido:", err);
     }
   }
 
@@ -135,35 +151,89 @@ export default async function PedidoPage({ params, searchParams }: PedidoPagePro
             )}
           </div>
 
-          {/* Botão de Pagamento dinâmico */}
-          {isAwaitingPayment && !isPaid && paymentUrl && (
+          {/* Métodos de Pagamento */}
+          {isAwaitingPayment && !isPaid && (
             <div className="mt-8 border-t border-gold/15 pt-8">
-              <h3 className="text-sm font-medium text-dark/60 uppercase tracking-wider">Forma de Pagamento</h3>
-              <p className="mt-2 text-sm text-dark/80">
-                {order.paymentGateway === "SIMULADO"
-                  ? "Ambiente de Testes (Simulação de pagamento instantâneo)"
-                  : "PIX, Cartão de Crédito em até 12x ou Boleto via Mercado Pago"}
-              </p>
+              <h3 className="text-sm font-bold text-primary uppercase tracking-wider mb-6">Como deseja realizar o pagamento?</h3>
               
-              <a
-                href={paymentUrl}
-                className="btn-primary inline-flex items-center justify-center gap-2 mt-4 px-8 py-3.5 text-base shadow-lg shadow-gold/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 w-full sm:w-auto"
-              >
-                <span>
-                  {order.paymentGateway === "SIMULADO"
-                    ? "Ir para o Simulador de Pagamento"
-                    : "Pagar Agora com Mercado Pago"}
-                </span>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </a>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-2xl mx-auto text-left">
+                {/* Opção 1: PIX */}
+                {pixQrCode && pixQrCodeBase64 && (
+                  <div className="bg-cream-warm/30 rounded-3xl border border-gold/20 p-6 flex flex-col justify-between items-center text-center">
+                    <div>
+                      <span className="bg-forest/10 text-forest px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                        Recomendado
+                      </span>
+                      <h4 className="font-serif text-lg text-primary mt-3 font-semibold font-sans">Pagar com Pix</h4>
+                      <p className="text-xs text-dark/65 mt-1 leading-relaxed">
+                        Aprovação instantânea! A produção do livro começa imediatamente.
+                      </p>
+                    </div>
+                    
+                    {/* QR Code */}
+                    <div className="my-5 bg-white p-3 rounded-2xl border border-gold/15 shadow-inner">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={`data:image/png;base64,${pixQrCodeBase64}`}
+                        alt="QR Code Pix"
+                        className="w-40 h-40 object-contain"
+                      />
+                    </div>
+                    
+                    <p className="text-[11px] text-dark/50 px-2 leading-relaxed">
+                      Escaneie o código acima com o app do seu banco ou copie a chave abaixo:
+                    </p>
+                    
+                    <PixCopyButton code={pixQrCode} />
+                  </div>
+                )}
+                
+                {/* Opção 2: Outros Meios (Cartão/Boleto) */}
+                {paymentUrl && (
+                  <div className="bg-cream-warm/30 rounded-3xl border border-gold/20 p-6 flex flex-col justify-between items-center text-center">
+                    <div>
+                      <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                        Outras opções
+                      </span>
+                      <h4 className="font-serif text-lg text-primary mt-3 font-semibold font-sans">Cartão ou Boleto</h4>
+                      <p className="text-xs text-dark/65 mt-1 leading-relaxed">
+                        Parcele em até 12x no cartão ou pague via boleto bancário pelo Mercado Pago.
+                      </p>
+                    </div>
 
-              <div className="mt-4 flex items-center justify-center gap-6 text-xs text-dark/50">
+                    <div className="my-8 flex flex-col items-center justify-center w-full">
+                      {/* Bandeiras de cartões */}
+                      <div className="flex flex-wrap justify-center gap-2 max-w-[200px] opacity-85">
+                        <span className="bg-white border border-dark/5 rounded px-1.5 py-1 text-[9px] font-bold text-dark/60 shadow-sm">VISA</span>
+                        <span className="bg-white border border-dark/5 rounded px-1.5 py-1 text-[9px] font-bold text-dark/60 shadow-sm">MASTERCARD</span>
+                        <span className="bg-white border border-dark/5 rounded px-1.5 py-1 text-[9px] font-bold text-dark/60 shadow-sm">ELO</span>
+                        <span className="bg-white border border-dark/5 rounded px-1.5 py-1 text-[9px] font-bold text-dark/60 shadow-sm">AMEX</span>
+                        <span className="bg-white border border-dark/5 rounded px-1.5 py-1 text-[9px] font-bold text-dark/60 shadow-sm">BOLETO</span>
+                      </div>
+                    </div>
+
+                    <a
+                      href={paymentUrl}
+                      className="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3.5 text-xs w-full mt-auto shadow-md"
+                    >
+                      <span>
+                        {order.paymentGateway === "SIMULADO"
+                          ? "Ir para o Simulador"
+                          : "Pagar com Cartão / Boleto"}
+                      </span>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-8 flex items-center justify-center gap-6 text-xs text-dark/50 border-t border-gold/10 pt-4">
                 <span className="flex items-center gap-1">
-                  {order.paymentGateway === "SIMULADO" ? "⚙️ Modo de Testes" : "🔒 Ambiente 100% Seguro"}
+                  {order.paymentGateway === "SIMULADO" ? "⚙️ Modo de Testes" : "🔒 Transação 100% Segura"}
                 </span>
-                <span>⚡ Confirmação Instantânea</span>
+                <span>⚡ Confirmação em Tempo Real</span>
               </div>
             </div>
           )}

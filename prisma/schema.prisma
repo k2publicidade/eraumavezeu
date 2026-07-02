@@ -121,6 +121,9 @@ model Order {
   paymentId       String?       @unique // MP payment id — UNIQUE para idempotência de webhook
   paymentStatus   PaymentStatus @default(PENDENTE)
   paymentGateway  String?       @default("MERCADOPAGO")
+  paymentUrl      String?       @db.Text
+  pixQrCode       String?       @db.Text
+  pixQrCodeBase64 String?       @db.Text
   trackingCode    String?
   dedication      String?       @db.Text
   notes           String?       @db.Text

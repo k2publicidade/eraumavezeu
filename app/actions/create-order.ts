@@ -177,8 +177,16 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
       if (fullOrder) {
         const gateway = getPaymentGateway(paymentGateway);
         const paymentRes = await gateway.createPayment(fullOrder);
-        if (paymentRes.success && paymentRes.paymentUrl) {
+        if (paymentRes.success) {
           paymentUrl = paymentRes.paymentUrl;
+          await db.order.update({
+            where: { id: order.id },
+            data: {
+              paymentUrl: paymentRes.paymentUrl || null,
+              pixQrCode: paymentRes.pixQrCode || null,
+              pixQrCodeBase64: paymentRes.pixQrCodeBase64 || null,
+            },
+          });
         }
       }
     } catch (paymentErr) {

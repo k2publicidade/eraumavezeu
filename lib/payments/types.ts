@@ -9,6 +9,8 @@ export interface PaymentResponse {
   success: boolean;
   paymentUrl?: string;
   paymentId?: string;
+  pixQrCode?: string;
+  pixQrCodeBase64?: string;
   error?: string;
 }
 

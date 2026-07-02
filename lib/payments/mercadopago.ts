@@ -1,6 +1,7 @@
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import crypto from "crypto";
 import type { PaymentGateway, OrderWithDetails, PaymentResponse, WebhookResult } from "./types";
+import { orderCodeOf } from "@/lib/orders/build-order";
 
 const accessToken = process.env.MP_ACCESS_TOKEN || "";
 
@@ -43,6 +44,46 @@ export class MercadoPagoGateway implements PaymentGateway {
         });
       }
 
+      const isHttpLocalhost = baseUrl.startsWith("http://localhost") || baseUrl.startsWith("http://127.0.0.1");
+      const notificationUrl = isHttpLocalhost ? undefined : `${baseUrl}/api/webhook/mercadopago`;
+
+      // 1. Criar o pagamento PIX no Mercado Pago
+      let pixQrCode: string | undefined = undefined;
+      let pixQrCodeBase64: string | undefined = undefined;
+
+      try {
+        const orderCode = orderCodeOf(order.id);
+        const buyerName = order.guestName || "Cliente";
+        const firstName = buyerName.split(" ")[0] || "Cliente";
+        const lastName = buyerName.split(" ").slice(1).join(" ") || "Era Uma Vez Eu";
+
+        const pixResponse = await mpPayment.create({
+          body: {
+            transaction_amount: Number(order.total.toFixed(2)),
+            description: `Pedido #${orderCode} - Era Uma Vez Eu`,
+            payment_method_id: "pix",
+            payer: {
+              email: order.guestEmail || "atendimento@eraumavezeu.com.br",
+              first_name: firstName,
+              last_name: lastName,
+            },
+            notification_url: notificationUrl,
+            external_reference: order.id,
+          },
+        });
+
+        if (pixResponse && pixResponse.id) {
+          const transData = pixResponse.point_of_integration?.transaction_data;
+          if (transData) {
+            pixQrCode = transData.qr_code;
+            pixQrCodeBase64 = transData.qr_code_base64;
+          }
+        }
+      } catch (pixErr) {
+        console.error("Erro ao criar pagamento Pix no Mercado Pago:", pixErr);
+      }
+
+      // 2. Criar a Preferência (Checkout Pro) para Cartão/Boleto
       const preferenceResponse = await mpPreference.create({
         body: {
           items: preferenceItems,
@@ -53,7 +94,7 @@ export class MercadoPagoGateway implements PaymentGateway {
           },
           auto_return: "approved",
           external_reference: order.id,
-          notification_url: `${baseUrl}/api/webhook/mercadopago`,
+          notification_url: notificationUrl,
         },
       });
 
@@ -65,6 +106,8 @@ export class MercadoPagoGateway implements PaymentGateway {
         success: true,
         paymentUrl: paymentUrl || undefined,
         paymentId: preferenceResponse.id || undefined,
+        pixQrCode,
+        pixQrCodeBase64,
       };
     } catch (err: any) {
       console.error("Erro ao criar preferência no Mercado Pago:", err);

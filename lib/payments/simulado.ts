@@ -11,6 +11,8 @@ export class SimulatedGateway implements PaymentGateway {
       success: true,
       paymentUrl,
       paymentId: `sim_pref_${Date.now()}`,
+      pixQrCode: `00020101021226870014br.gov.bcb.pix2565pix-h.mercadopago.com/qr/v2/simulado-order-${order.id}-5204000053039865802BR5925Era Uma Vez Eu6009SAO PAULO62070503***6304ABCD`,
+      pixQrCodeBase64: "iVBORw0KGgoAAAANSUhEUgAAAJQAAACUAQMAAAB7HnJ2AAAABlBMVEUAAAD///+l2Z/dAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAnklEQVQoz2P4DwUMDKwGBg5WIPmfgQFIM/z/DxMCDkP+P8OAsAGxP8PAsIGwP6PDsAGlP6MDsUGF/2NDsEG1/0NDsEG9P0NAsEG9P5PDsEG9P7NDsEG9P0NAsEG9P8NDsEGdPyPDsEGdfyNDsEHdPyPDsEHdf2NDsEHdP6PDsEGdP0NDsEG9/0NDsEG9PyNDsEG9PyNDsEG9PyPDsEG9PyPDsEG9P0NAsEG9PyND2GAAAABJRU5ErkJggg==",
     };
   }
 

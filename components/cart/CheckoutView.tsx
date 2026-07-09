@@ -12,6 +12,7 @@ import { useCartStore } from "@/lib/cart/store";
 import { formatBRL } from "@/lib/format";
 import { checkoutSchema } from "@/lib/validators/order";
 import { calculateShippingOptions } from "@/lib/shipping";
+import { validateCoupon } from "@/app/actions/coupons";
 
 // buyer + address + paymentGateway vêm do form; items entram programaticamente do carrinho
 const formSchema = checkoutSchema.pick({ buyer: true, address: true, paymentGateway: true });
@@ -36,6 +37,62 @@ export default function CheckoutView() {
   const [selectedMethod, setSelectedMethod] = useState<string>("PAC");
   const [selectedCost, setSelectedCost] = useState<number>(0);
   const [shippingOptions, setShippingOptions] = useState<{ method: string; cost: number; days: number }[]>([]);
+
+  const [couponCodeInput, setCouponCodeInput] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [couponSuccess, setCouponSuccess] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: string;
+    code: string;
+    type: "PERCENTAGE" | "FIXED";
+    value: number;
+    discountAmount: number;
+  } | null>(null);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCodeInput.trim()) return;
+    setCouponLoading(true);
+    setCouponError(null);
+    setCouponSuccess(null);
+
+    const remainingValue = Math.max(0, totals.subtotal - totals.discount);
+    const res = await validateCoupon(couponCodeInput, remainingValue);
+    setCouponLoading(false);
+
+    if (res.ok) {
+      setAppliedCoupon(res.coupon);
+      setCouponSuccess(`Cupom ${res.coupon.code} aplicado com sucesso!`);
+    } else {
+      setCouponError(res.error);
+      setAppliedCoupon(null);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCodeInput("");
+    setCouponSuccess(null);
+    setCouponError(null);
+  };
+
+  useEffect(() => {
+    if (appliedCoupon) {
+      const remainingValue = Math.max(0, totals.subtotal - totals.discount);
+      let newDiscount = 0;
+      if (appliedCoupon.type === "PERCENTAGE") {
+        newDiscount = Math.round(remainingValue * (appliedCoupon.value / 100) * 100) / 100;
+      } else {
+        newDiscount = appliedCoupon.value;
+      }
+      newDiscount = Math.min(newDiscount, remainingValue);
+      setAppliedCoupon((prev) => {
+        if (!prev) return null;
+        if (prev.discountAmount === newDiscount) return prev;
+        return { ...prev, discountAmount: newDiscount };
+      });
+    }
+  }, [totals.subtotal, totals.discount, appliedCoupon]);
 
   const {
     register,
@@ -115,6 +172,7 @@ export default function CheckoutView() {
       shippingMethod: selectedMethod,
       shippingCost: selectedCost,
       paymentGateway: data.paymentGateway,
+      couponCode: appliedCoupon?.code || undefined,
     });
     if (res.ok) {
       clear();
@@ -428,14 +486,55 @@ export default function CheckoutView() {
             <div key={item.id} className="flex gap-3 justify-between border-b border-gold/20 pb-3">
               <div>
                 <p className="font-medium text-primary">{item.name}</p>
-                <p className="text-xs text-dark/60">Qtd. {item.quantity}</p>
+                <p className="text-xs text-dark/65">Qtd. {item.quantity}</p>
               </div>
               <p className="font-semibold text-dark">{formatBRL(item.price * item.quantity)}</p>
             </div>
           ))}
         </div>
 
-        <dl className="mt-5 space-y-2 text-sm">
+        {/* Coupon Input Box */}
+        <div className="mt-5 border-t border-gold/15 pt-5">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-dark/65 mb-2">
+            Possui um cupom de desconto?
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={couponCodeInput}
+              onChange={(e) => setCouponCodeInput(e.target.value)}
+              disabled={couponLoading || !!appliedCoupon}
+              placeholder="CÓDIGO"
+              className="input-field py-2 text-sm uppercase flex-1"
+            />
+            {appliedCoupon ? (
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-100 transition-colors"
+              >
+                Remover
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleApplyCoupon}
+                disabled={couponLoading || !couponCodeInput}
+                className="btn-primary py-2 px-4 text-xs font-bold disabled:opacity-50"
+              >
+                {couponLoading ? "..." : "Aplicar"}
+              </button>
+            )}
+          </div>
+          {couponError && (
+            <p className="mt-2 text-xs font-medium text-red-600">{couponError}</p>
+          )}
+          {couponSuccess && (
+            <p className="mt-2 text-xs font-medium text-forest">{couponSuccess}</p>
+          )}
+        </div>
+
+        <dl className="mt-5 space-y-2 text-sm border-t border-gold/15 pt-5">
           <div className="flex justify-between">
             <dt className="text-dark/65">Subtotal</dt>
             <dd>{formatBRL(totals.subtotal)}</dd>
@@ -446,6 +545,12 @@ export default function CheckoutView() {
               <dd>- {formatBRL(totals.discount)}</dd>
             </div>
           )}
+          {appliedCoupon && (
+            <div className="flex justify-between text-forest font-medium">
+              <dt>Cupom ({appliedCoupon.code})</dt>
+              <dd>- {formatBRL(appliedCoupon.discountAmount)}</dd>
+            </div>
+          )}
           {shippingOptions.length > 0 && (
             <div className="flex justify-between text-primary">
               <dt>Frete ({selectedMethod})</dt>
@@ -454,7 +559,12 @@ export default function CheckoutView() {
           )}
           <div className="flex justify-between border-t border-gold/25 pt-3 text-lg">
             <dt className="font-semibold text-primary">Total</dt>
-            <dd className="font-serif text-fox font-bold">{formatBRL(totals.total + selectedCost)}</dd>
+            <dd className="font-serif text-fox font-bold">
+              {formatBRL(
+                Math.max(0, totals.subtotal - totals.discount - (appliedCoupon?.discountAmount || 0)) +
+                  selectedCost
+              )}
+            </dd>
           </div>
         </dl>
 

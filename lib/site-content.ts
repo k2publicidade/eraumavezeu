@@ -179,6 +179,22 @@ export const DEFAULT_FAQ_ITEMS: FaqItem[] = [
     sortOrder: 110,
     active: true,
   },
+  {
+    id: "aprovacao-previa",
+    question: "Eu aprovo a ilustração ou o livro antes da impressão?",
+    answer:
+      "Sim! Assim que a história e as ilustrações estiverem prontas, enviaremos uma prévia do livro completo em PDF para a sua conferência. Nessa etapa, você poderá analisar cada detalhe e terá direito a solicitar uma rodada de revisões ou pequenos ajustes. Somente após essas possíveis mudanças e a sua aprovação final, o arquivo será encaminhado para a gráfica para ganhar vida no papel!",
+    sortOrder: 120,
+    active: true,
+  },
+  {
+    id: "escolha-tema",
+    question: "Posso escolher o tema ou o roteiro da história?",
+    answer:
+      "Sim! Não trabalhamos com catálogos: cada livro é 100% sob medida e você escolhe todos os passos da história. Desde o tema até o roteiro, tudo é criado do zero, com a criança como protagonista em ilustrações feitas a partir de fotos reais. Para completar essa experiência totalmente exclusiva, você também adiciona uma dedicatória especial impressa nas primeiras páginas.",
+    sortOrder: 130,
+    active: true,
+  },
 ];
 
 export function resolveSiteSettings(records: SiteSettingRecord[]): SiteSettings {

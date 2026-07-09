@@ -26,10 +26,10 @@ function formatBRL(value: number) {
 }
 
 const PRODUCT_MOCKUPS: Record<string, string> = {
-  EBOOK: "/ebook_mockup.png",
-  LIVRO_COLORIR: "/coloring_book_mockup.png",
-  QUEBRA_CABECA: "/puzzle_mockup.png",
-  CARTELA_ADESIVOS: "/stickers_mockup.png",
+  EBOOK: "/produtos/ebook.png",
+  LIVRO_COLORIR: "/produtos/Bernardo Colorir1.png",
+  QUEBRA_CABECA: "/produtos/Bernardo Quebra Cabeça.png",
+  CARTELA_ADESIVOS: "/produtos/Bernardo Adesivo.png",
 };
 
 const PRODUCT_BADGES: Record<string, string> = {
@@ -221,16 +221,22 @@ export default async function ProdutosPage() {
                         <span className="bg-gold/10 border border-gold/25 px-2 py-0.5 rounded-full text-[7px] font-bold text-gold uppercase tracking-wider">
                           {PRODUCT_BADGES[p.type] ?? "Adicional"}
                         </span>
-                        <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
-                          - R$ 15 no Combo
-                        </span>
+                        {p.type === "EBOOK" ? (
+                          <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
+                            Grátis no Combo
+                          </span>
+                        ) : (
+                          <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
+                            - R$ 15 no Combo
+                          </span>
+                        )}
                       </div>
 
                       <h4 className="font-serif text-lg font-bold text-primary group-hover:text-gold transition-colors duration-300 truncate">
                         {p.name}
                       </h4>
 
-                      <p className="text-[10px] text-dark/60 leading-relaxed font-body line-clamp-2">
+                      <p className="text-[10px] text-dark/60 leading-relaxed font-body">
                         {p.description}
                       </p>
 
@@ -247,10 +253,12 @@ export default async function ProdutosPage() {
 
                     <div className="pt-2 border-t border-cream-deep/20 flex items-center justify-between gap-3">
                       <div className="flex flex-col font-body">
-                        <span className="text-[7px] text-dark/40 uppercase tracking-wider block font-bold">Combo / Avulso</span>
+                        <span className="text-[7px] text-dark/40 uppercase tracking-wider block font-bold">
+                          {p.type === "EBOOK" ? "No Combo / Avulso" : "Combo / Avulso"}
+                        </span>
                         <div className="flex items-baseline gap-1">
                           <span className="font-serif text-base font-bold text-primary">
-                            {formatBRL(p.price - 15)}
+                            {p.type === "EBOOK" ? "Grátis" : formatBRL(p.price - 15)}
                           </span>
                           <span className="text-[9px] text-dark/35 line-through">
                             {formatBRL(p.price)}

@@ -30,7 +30,7 @@ async function main() {
       price: 249.9,
       priceOld: 299.9,
       type: ProductType.LIVRO_PRINCIPAL,
-      images: [],
+      images: ["/livro/Era Uma Vez - Bernardo_Página_01.jpg"],
     },
     {
       slug: "ebook",
@@ -39,7 +39,7 @@ async function main() {
         "Versão digital do livro personalizado em PDF de alta qualidade, enviado por e-mail. Na compra do livro capa dura, o e-book está incluso de presente!",
       price: 79.9,
       type: ProductType.EBOOK,
-      images: [],
+      images: ["/produtos/ebook.png"],
     },
     {
       slug: "livro-colorir",
@@ -48,7 +48,7 @@ async function main() {
         "Imagine a alegria da criança ao poder colorir a própria imagem. São 20 páginas repletas de cenas da aventura escolhida, onde ela é a verdadeira protagonista. Você define o estilo da arte e nós entregamos um livro no tamanho perfeito (22x15cm) para levar a criatividade a qualquer lugar!",
       price: 99.9,
       type: ProductType.LIVRO_COLORIR,
-      images: [],
+      images: ["/produtos/Bernardo Colorir1.png"],
     },
     {
       slug: "quebra-cabeca",
@@ -57,7 +57,7 @@ async function main() {
         "Monte essa magia junto com a criança! Transforme uma imagem personalizada do seu filho — ou uma foto especial escolhida por você — em um quebra-cabeça de 60 peças (21x29 cm). A alegria de ver o próprio rosto se formando a cada encaixe!",
       price: 79.9,
       type: ProductType.QUEBRA_CABECA,
-      images: [],
+      images: ["/produtos/Bernardo Quebra Cabeça.png"],
     },
     {
       slug: "cartela-adesivos",
@@ -66,7 +66,7 @@ async function main() {
         "Uma super cartela (28x40 cm) repleta de ilustrações personalizadas do protagonista e elementos do tema. Perfeita para a criança soltar a imaginação e personalizar o que quiser!",
       price: 69.9,
       type: ProductType.CARTELA_ADESIVOS,
-      images: [],
+      images: ["/produtos/Bernardo Adesivo.png"],
     },
   ];
 

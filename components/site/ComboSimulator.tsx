@@ -38,8 +38,12 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
   const addonsSubtotal = selectedAddonList.reduce((acc, a) => acc + a.price, 0);
   const subtotal = bookPrice + addonsSubtotal;
   
-  // R$ 15 discount per addon unit when main book is included
-  const discount = selectedAddons.length * 15;
+  // E-book is included (free) when book is purchased. Other addons get 15 BRL discount.
+  const selectedEbook = selectedAddonList.find((a) => a.type === "EBOOK");
+  const ebookDiscount = selectedEbook ? selectedEbook.price : 0;
+  const otherAddonsCount = selectedAddonList.filter((a) => a.type !== "EBOOK").length;
+  const otherDiscount = otherAddonsCount * 15;
+  const discount = ebookDiscount + otherDiscount;
   const total = Math.max(subtotal - discount, 0);
 
   const handleAddSelectedToCart = () => {
@@ -76,13 +80,13 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
   const getAddonImage = (type: string) => {
     switch (type) {
       case "EBOOK":
-        return "/ebook_mockup.png";
+        return "/produtos/ebook.png";
       case "LIVRO_COLORIR":
-        return "/coloring_book_mockup.png";
+        return "/produtos/Bernardo Colorir1.png";
       case "QUEBRA_CABECA":
-        return "/puzzle_mockup.png";
+        return "/produtos/Bernardo Quebra Cabeça.png";
       case "CARTELA_ADESIVOS":
-        return "/stickers_mockup.png";
+        return "/produtos/Bernardo Adesivo.png";
       default:
         return "/book_cover.png";
     }
@@ -173,7 +177,7 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
                   <div className="text-right pr-1 flex-shrink-0">
                     <div className="flex flex-col items-end">
                       <span className="font-serif text-xs font-bold text-primary">
-                        {formatBRL(a.price - 15)}
+                        {a.type === "EBOOK" ? "Grátis" : formatBRL(a.price - 15)}
                       </span>
                       <span className="text-[8px] text-dark/35 line-through">
                         {formatBRL(a.price)}

@@ -125,9 +125,15 @@ export default function CartView({ crossSellProducts }: Props) {
                     <span className="text-dark/35 line-through text-xs">
                       {formatBRL(p.price)}
                     </span>
-                    <span className="text-fox font-semibold">
-                      {formatBRL(Math.max(p.price - COMBO_DISCOUNT, 0))}
-                    </span>
+                    {p.type === "EBOOK" ? (
+                      <span className="text-forest font-bold text-xs uppercase tracking-wider bg-forest/10 px-2 py-0.5 rounded border border-forest/20">
+                        Grátis
+                      </span>
+                    ) : (
+                      <span className="text-fox font-semibold">
+                        {formatBRL(Math.max(p.price - COMBO_DISCOUNT, 0))}
+                      </span>
+                    )}
                   </div>
                   <span className="mt-2 inline-block text-xs text-primary font-medium">
                     + Adicionar

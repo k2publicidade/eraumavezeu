@@ -194,10 +194,10 @@ const WHY_US_BG = [
 
 const PRODUCT_MOCKUPS: Record<string, string> = {
   LIVRO_PRINCIPAL: "/livro/Era Uma Vez - Bernardo_Página_01.jpg",
-  EBOOK: "/ebook_mockup.png",
-  LIVRO_COLORIR: "/coloring_book_mockup.png",
-  QUEBRA_CABECA: "/puzzle_mockup.png",
-  CARTELA_ADESIVOS: "/stickers_mockup.png",
+  EBOOK: "/produtos/ebook.png",
+  LIVRO_COLORIR: "/produtos/Bernardo Colorir1.png",
+  QUEBRA_CABECA: "/produtos/Bernardo Quebra Cabeça.png",
+  CARTELA_ADESIVOS: "/produtos/Bernardo Adesivo.png",
 };
 
 const PRODUCT_BADGES: Record<string, string> = {
@@ -661,17 +661,19 @@ export default async function HomePage() {
                   <div className="flex flex-col text-center font-body">
                     {p.type !== "LIVRO_PRINCIPAL" ? (
                       <>
-                        <span className="text-[8px] text-dark/40 uppercase tracking-wider block font-bold">Combo / Avulso</span>
+                        <span className="text-[8px] text-dark/40 uppercase tracking-wider block font-bold">
+                          {p.type === "EBOOK" ? "No Combo / Avulso" : "Combo / Avulso"}
+                        </span>
                         <div className="flex items-baseline justify-center gap-1.5">
                           <span className="text-sm font-bold text-primary">
-                            {formatBRL(Number(p.price) - 15)}
+                            {p.type === "EBOOK" ? "Grátis" : formatBRL(Number(p.price) - 15)}
                           </span>
                           <span className="text-[10px] text-dark/35 line-through">
                             {formatBRL(Number(p.price))}
                           </span>
                         </div>
                         <span className="text-[8px] text-emerald-600 font-semibold block mt-0.5">
-                          R$ 15 de desconto acumulado
+                          {p.type === "EBOOK" ? "Incluso com o Livro Capa Dura" : "R$ 15 de desconto acumulado"}
                         </span>
                       </>
                     ) : (

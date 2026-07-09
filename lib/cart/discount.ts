@@ -48,12 +48,31 @@ export function applyComboDiscount(items: CartItem[]): Totals {
     .filter((it) => it.type === "LIVRO_PRINCIPAL")
     .reduce((acc, it) => acc + it.quantity, 0);
 
-  const addonUnits = items
-    .filter((it) => isAddon(it.type))
-    .reduce((acc, it) => acc + it.quantity, 0);
+  // E-book is included (free) when a main book is in the cart
+  const ebookItems = items.filter((it) => it.type === "EBOOK");
+  const ebookQuantity = ebookItems.reduce((acc, it) => acc + it.quantity, 0);
+  const freeEbooksCount = mainBookQuantity > 0 ? Math.min(mainBookQuantity, ebookQuantity) : 0;
+  
+  // Calculate total discount from free ebooks (using their respective prices)
+  let ebookDiscount = 0;
+  let remainingFreeCount = freeEbooksCount;
+  for (const it of ebookItems) {
+    if (remainingFreeCount <= 0) break;
+    const taken = Math.min(it.quantity, remainingFreeCount);
+    ebookDiscount += taken * it.price;
+    remainingFreeCount -= taken;
+  }
 
-  const discountedUnits = mainBookQuantity > 0 ? addonUnits : 0;
-  const discount = discountedUnits * COMBO_DISCOUNT;
+  // Other addons get the standard COMBO_DISCOUNT (15)
+  const otherAddons = items.filter(
+    (it) => it.type !== "LIVRO_PRINCIPAL" && it.type !== "EBOOK"
+  );
+  const otherAddonUnits = otherAddons.reduce((acc, it) => acc + it.quantity, 0);
+  const otherAddonDiscount = mainBookQuantity > 0 ? otherAddonUnits * COMBO_DISCOUNT : 0;
+
+  const discount = ebookDiscount + otherAddonDiscount;
+  const discountedUnits = freeEbooksCount + (mainBookQuantity > 0 ? otherAddonUnits : 0);
+  const addonUnits = ebookQuantity + otherAddonUnits;
 
   return {
     subtotal: round2(subtotal),

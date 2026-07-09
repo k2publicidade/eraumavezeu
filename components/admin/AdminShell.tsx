@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { href: "/admin/pedidos", label: "Pedidos", icon: "🧾" },
   { href: "/admin/producao", label: "Produção", icon: "🎨" },
   { href: "/admin/produtos", label: "Produtos", icon: "📚" },
+  { href: "/admin/cupons", label: "Cupons", icon: "🎫" },
   { href: "/admin/clientes", label: "Clientes", icon: "👥" },
   { href: "/admin/mensagens", label: "Mensagens", icon: "💬" },
   { href: "/admin/conteudo", label: "Conteúdo", icon: "✏️" },

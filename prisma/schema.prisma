@@ -131,6 +131,9 @@ model Order {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   deliveredAt     DateTime?     // usado pelo cron de retenção LGPD
+  couponId        String?
+  coupon          Coupon?       @relation(fields: [couponId], references: [id])
+  couponDiscount  Decimal       @default(0) @db.Decimal(10, 2)
 
   items           OrderItem[]
   customization   Customization?
@@ -287,5 +290,29 @@ enum ContactStatus {
   LIDA
   RESPONDIDA
   ARQUIVADA
+}
+
+// ============================================================
+// Cupons de Desconto
+// ============================================================
+
+model Coupon {
+  id          String     @id @default(cuid())
+  code        String     @unique
+  type        CouponType
+  value       Decimal    @db.Decimal(10, 2)
+  maxUses     Int?       // null significa ilimitado
+  uses        Int        @default(0)
+  active      Boolean    @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  orders      Order[]
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED
 }
 

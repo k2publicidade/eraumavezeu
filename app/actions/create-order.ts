@@ -20,7 +20,7 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
   if (!parsed.success) {
     return { ok: false, error: "Dados inválidos — revise o formulário." };
   }
-  const { buyer, address, items, shippingMethod, shippingCost, paymentGateway } = parsed.data;
+  const { buyer, address, items, shippingMethod, shippingCost, paymentGateway, couponCode } = parsed.data;
 
   // Validação do frete no servidor (segurança contra manipulação de preço de frete)
   const validShippingOptions = calculateShippingOptions(address.state);
@@ -55,6 +55,41 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
     return { ok: false, error: "Um dos produtos não está mais disponível. Atualize o carrinho." };
   }
 
+  // Validação do cupom de desconto no servidor
+  let couponId: string | null = null;
+  let couponDiscount = 0;
+
+  if (couponCode) {
+    const formattedCode = couponCode.trim().toUpperCase();
+    const coupon = await db.coupon.findUnique({
+      where: { code: formattedCode },
+    });
+
+    if (!coupon || !coupon.active) {
+      return { ok: false, error: "O cupom informado é inválido ou não está mais ativo." };
+    }
+
+    if (coupon.expiresAt && new Date(coupon.expiresAt) < new Date()) {
+      return { ok: false, error: "O cupom informado já expirou." };
+    }
+
+    if (coupon.maxUses !== null && coupon.uses >= coupon.maxUses) {
+      return { ok: false, error: "O cupom informado atingiu o limite de usos." };
+    }
+
+    const productsRemainingValue = Math.max(0, draft.totals.subtotal - draft.totals.discount);
+    const valueNum = Number(coupon.value);
+
+    if (coupon.type === "PERCENTAGE") {
+      couponDiscount = Math.round(productsRemainingValue * (valueNum / 100) * 100) / 100;
+    } else {
+      couponDiscount = valueNum;
+    }
+
+    couponDiscount = Math.min(couponDiscount, productsRemainingValue);
+    couponId = coupon.id;
+  }
+
   // sessão é opcional — guest checkout mantém contato nos campos guest*
   const session = await auth().catch(() => null);
   const userId = session?.user?.id || null;
@@ -80,65 +115,78 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
     hdrs.get("x-real-ip") ||
     "unknown";
 
-  const finalTotal = draft.totals.total + (shippingCost || 0);
+  const finalTotal = Math.max(0, draft.totals.subtotal - draft.totals.discount - couponDiscount) + (shippingCost || 0);
 
   try {
-    const order = await db.order.create({
-      data: {
-        userId,
-        guestName: buyer.name,
-        guestEmail: buyer.email,
-        guestPhone: buyer.phone,
-        whatsappOptIn: buyer.whatsappOptIn,
-        subtotal: draft.totals.subtotal,
-        discount: draft.totals.discount,
-        shippingMethod: shippingMethod || "PAC",
-        shippingCost: shippingCost || 0,
-        total: finalTotal,
-        paymentGateway,
-        dedication: customization?.dedication || null,
-        items: { create: draft.items },
-        shippingAddress: {
-          create: {
-            name: buyer.name,
-            street: address.street,
-            number: address.number,
-            complement: address.complement || null,
-            district: address.district,
-            city: address.city,
-            state: address.state,
-            zipCode: address.zipCode,
+    const order = await db.$transaction(async (tx) => {
+      const createdOrder = await tx.order.create({
+        data: {
+          userId,
+          guestName: buyer.name,
+          guestEmail: buyer.email,
+          guestPhone: buyer.phone,
+          whatsappOptIn: buyer.whatsappOptIn,
+          subtotal: draft.totals.subtotal,
+          discount: draft.totals.discount,
+          couponId,
+          couponDiscount,
+          shippingMethod: shippingMethod || "PAC",
+          shippingCost: shippingCost || 0,
+          total: finalTotal,
+          paymentGateway,
+          dedication: customization?.dedication || null,
+          items: { create: draft.items },
+          shippingAddress: {
+            create: {
+              name: buyer.name,
+              street: address.street,
+              number: address.number,
+              complement: address.complement || null,
+              district: address.district,
+              city: address.city,
+              state: address.state,
+              zipCode: address.zipCode,
+            },
           },
-        },
-        ...(customization
-          ? {
-              customization: {
-                create: {
-                  childName: customization.childName,
-                  theme: customization.theme,
-                  genre: customization.genre,
-                  artStyle: customization.artStyle,
-                  favoriteColor: customization.favoriteColor,
-                  ageRange: customization.ageRange,
-                  photoKeys: customization.photoKeys,
-                  dedication: customization.dedication || null,
-                  aiPrompt,
-                  consentIp,
-                  consentAt: new Date(customization.consentAcceptedAt),
-                  consentTextVersion: customization.consentTextVersion,
+          ...(customization
+            ? {
+                customization: {
+                  create: {
+                    childName: customization.childName,
+                    theme: customization.theme,
+                    genre: customization.genre,
+                    artStyle: customization.artStyle,
+                    favoriteColor: customization.favoriteColor,
+                    ageRange: customization.ageRange,
+                    photoKeys: customization.photoKeys,
+                    dedication: customization.dedication || null,
+                    aiPrompt,
+                    consentIp,
+                    consentAt: new Date(customization.consentAcceptedAt),
+                    consentTextVersion: customization.consentTextVersion,
+                  },
                 },
-              },
-            }
-          : {}),
-        statusHistory: {
-          create: {
-            toStatus: "AGUARDANDO_PAGAMENTO",
-            changedBy: "system",
-            note: "Pedido criado no checkout",
+              }
+            : {}),
+          statusHistory: {
+            create: {
+              toStatus: "AGUARDANDO_PAGAMENTO",
+              changedBy: "system",
+              note: "Pedido criado no checkout",
+            },
           },
         },
-      },
-      select: { id: true },
+        select: { id: true },
+      });
+
+      if (couponId) {
+        await tx.coupon.update({
+          where: { id: couponId },
+          data: { uses: { increment: 1 } },
+        });
+      }
+
+      return createdOrder;
     });
 
     // comunicação é melhor-esforço — nunca falha um pedido já persistido

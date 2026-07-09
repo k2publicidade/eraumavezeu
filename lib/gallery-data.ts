@@ -65,7 +65,7 @@ export const GALLERY_SAMPLES: readonly GallerySample[] = [
   {
     id: "s3",
     theme: "robos",
-    title: "Lara e os Robôs",
+    title: "A Grande Missão de Lara",
     age: "6 anos",
     emoji: "🤖",
     coverImage: "/gallery/Lara/Lara2.png",

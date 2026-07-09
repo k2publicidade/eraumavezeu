@@ -13,8 +13,8 @@ export type GallerySample = {
   title: string;
   age: string;
   emoji: string;
-  beforeImage: string;
-  afterImage: string;
+  coverImage: string;
+  images: string[];
   tagline: string;
   description: string;
   bookTitle: string;
@@ -25,54 +25,101 @@ export const GALLERY_SAMPLES: readonly GallerySample[] = [
   {
     id: "s1",
     theme: "dinossauros",
-    title: "Theo e o T-Rex amigo",
+    title: "Bernardo e os Dinossauros",
     age: "4 anos",
     emoji: "🦖",
-    beforeImage: "/gallery/theo_before.png",
-    afterImage: "/gallery/theo_after.png",
-    tagline: "Uma amizade jurássica repleta de coragem e imaginação!",
-    description: "O pequeno Theo é apaixonado pela era dos dinossauros. A partir de fotos enviadas por seus pais, nossa IA capturou o olhar curioso e o sorriso expressivo de Theo para criar um personagem 3D estilo Pixar. Na história, ele faz amizade com um adorável filhote de T-Rex e se aventura por florestas pré-históricas.",
-    bookTitle: "Theo e a Grande Aventura Pré-Histórica",
-    quote: "E assim, com a ajuda de Theo, o T-Rex aprendeu que o maior poder de todos é um coração valente.",
+    coverImage: "/gallery/Bernardo/Bernardo2.png",
+    images: [
+      "/gallery/Bernardo/Bernardo2.png",
+      "/gallery/Bernardo/Bernardo3.png",
+      "/gallery/Bernardo/Bernardo1.png",
+      "/gallery/Bernardo/Bernardo4.png",
+      "/gallery/Bernardo/Bernardo5.png",
+      "/gallery/Bernardo/Bernardo6.png"
+    ],
+    tagline: "Uma viagem emocionante de volta ao tempo dos gigantes!",
+    description: "O pequeno Bernardo explora o mundo pré-histórico, fazendo amizade com criaturas gigantes e descobrindo a magia de um passado fascinante. Cada página reflete o espírito aventureiro e o sorriso radiante de Bernardo.",
+    bookTitle: "Aventura com Dinossauros",
+    quote: "Com passos corajosos e um coração cheio de curiosidade, Bernardo descobriu que até os maiores gigantes podem ser grandes amigos."
   },
   {
     id: "s2",
     theme: "princesas",
-    title: "Sofia no reino encantado",
+    title: "Sofia e o Reino da Luz",
     age: "5 anos",
     emoji: "👑",
-    beforeImage: "/gallery/sofia_before.png",
-    afterImage: "/gallery/sofia_after.png",
-    tagline: "Uma princesa moderna liderando com sabedoria e empatia.",
-    description: "Para a Sofia, queríamos retratar seus cachos marcantes e seu brilho carismático. Ela foi ilustrada em estilo aquarela clássico de contos de fadas, vestindo um lindo vestido rosa de realeza. No livro, a Princesa Sofia lidera uma missão para salvar as flores mágicas do reino.",
-    bookTitle: "Princesa Sofia e as Flores de Ouro",
-    quote: "Sofia sorriu, sabendo que a verdadeira magia reside na bondade com que tratamos os outros.",
+    coverImage: "/gallery/Sofia/Sofia2.png",
+    images: [
+      "/gallery/Sofia/Sofia2.png",
+      "/gallery/Sofia/Sofia3.png",
+      "/gallery/Sofia/Sofia1.png",
+      "/gallery/Sofia/Sofia4.png",
+      "/gallery/Sofia/Sofia5.png",
+      "/gallery/Sofia/Sofia6.png"
+    ],
+    tagline: "Uma princesa corajosa guiando seu reino com amor e luz!",
+    description: "Sofia descobre um reino mágico em apuros após as flores perderem seu brilho. Com sabedoria, bondade e um cetro mágico, ela lidera fadas e criaturas da floresta para trazer a luz de volta ao Reino da Luz.",
+    bookTitle: "A Princesa e o Reino da Luz",
+    quote: "Sofia sorriu, sabendo que a verdadeira realeza está no amor com que cuidamos do nosso mundo e de quem amamos."
   },
   {
     id: "s3",
     theme: "robos",
-    title: "Davi e os robôs do futuro",
-    age: "7 anos",
+    title: "Lara e os Robôs",
+    age: "6 anos",
     emoji: "🤖",
-    beforeImage: "/gallery/davi_before.png",
-    afterImage: "/gallery/davi_after.png",
-    tagline: "Engenharia espacial e diversão nas estrelas!",
-    description: "Davi é fascinado por ciências e usa óculos marcantes. A ilustração 3D capturou perfeitamente sua feição esperta e seus óculos. Ele se torna o capitão de uma nave e, ao lado de um simpático robô de lata, conserta o gerador solar da Cidade Flutuante.",
-    bookTitle: "Davi e os Defensores do Amanhã",
-    quote: "Com inteligência e trabalho em equipe, Davi e seu robô provaram que nenhuma engrenagem é pequena demais para ajudar.",
+    coverImage: "/gallery/Lara/Lara2.png",
+    images: [
+      "/gallery/Lara/Lara2.png",
+      "/gallery/Lara/Lara3.png",
+      "/gallery/Lara/Lara1.png",
+      "/gallery/Lara/Lara4.png",
+      "/gallery/Lara/Lara5.png",
+      "/gallery/Lara/Lara6.png"
+    ],
+    tagline: "Engenharia, amizade e muita tecnologia na floresta!",
+    description: "A inteligente Lara embarca em uma jornada tecnológica ao lado de simpáticos robôs e fadas da floresta. Juntos, eles decifram mistérios e consertam engrenagens mágicas.",
+    bookTitle: "A Grande Missão de Lara",
+    quote: "Lara apertou o último parafuso e sorriu. Com criatividade e amizade, ela provou que a tecnologia e a natureza andam sempre de mãos dadas."
   },
   {
     id: "s4",
+    theme: "trem",
+    title: "Noah e o Trem de Prata",
+    age: "5 anos",
+    emoji: "🚂",
+    coverImage: "/gallery/Noah/Noah2.png",
+    images: [
+      "/gallery/Noah/Noah2.png",
+      "/gallery/Noah/Noah3.png",
+      "/gallery/Noah/Noah1.png",
+      "/gallery/Noah/Noah4.png",
+      "/gallery/Noah/Noah5.png",
+      "/gallery/Noah/Noah6.png"
+    ],
+    tagline: "Uma viagem inesquecível sobre os trilhos da imaginação!",
+    description: "A bordo do lendário Trem de Prata, Noah viaja por montanhas majestosas guiando a locomotiva com seu mapa misterioso. Uma história de descoberta, velocidade e companheirismo.",
+    bookTitle: "The Secret of the Silver Train",
+    quote: "Noah olhou para o horizonte sabendo que, nos trilhos da vida, a melhor parte da viagem é quem está ao nosso lado."
+  },
+  {
+    id: "s5",
     theme: "floresta_encantada",
-    title: "Alice na floresta",
+    title: "Ravi e a Cachoeira Mágica",
     age: "3 anos",
     emoji: "🌳",
-    beforeImage: "/gallery/alice_before.png",
-    afterImage: "/gallery/alice_after.png",
-    tagline: "Uma jornada mágica entre luzes, fadas e criaturas falantes.",
-    description: "A pequena Alice adora marias-chiquinhas e bichinhos de pelúcia. Suas fotos sorrindo inspiraram uma ilustração lúdica e suave. Ela segue o caminho de borboletas luminosas para ajudar uma fada a reencontrar sua varinha de condão perdida.",
-    bookTitle: "Alice e o Mistério da Floresta Brilhante",
-    quote: "A cada passo dado por Alice, a floresta cantava com uma luz suave, revelando que a magia está em todo lugar.",
-  },
+    coverImage: "/gallery/Ravi/Ravi2.png",
+    images: [
+      "/gallery/Ravi/Ravi2.png",
+      "/gallery/Ravi/Ravi3.png",
+      "/gallery/Ravi/Ravi1.png",
+      "/gallery/Ravi/Ravi4.png",
+      "/gallery/Ravi/Ravi5.png",
+      "/gallery/Ravi/Ravi6.png"
+    ],
+    tagline: "Descobertas sob o arco-íris da floresta tropical!",
+    description: "O pequeno Ravi adora a natureza e embarca em uma trilha cheia de fadas e cachoeiras cristalinas. Ele aprende a ouvir a voz dos animais e a ver a magia escondida nas pequenas coisas.",
+    bookTitle: "Aventura na Cachoeira",
+    quote: "Ravi sentiu a brisa fresca da água cair e percebeu que a floresta é um lar mágico onde cada árvore conta uma história de amor."
+  }
 ] as const;
-

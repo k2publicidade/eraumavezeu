@@ -3,8 +3,8 @@
 import { useMemo, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import BeforeAfterSlider from "./BeforeAfterSlider";
 import { cn } from "@/lib/utils";
+import { BookOpen, Sparkles, Star } from "lucide-react";
 
 type Theme = { slug: string; label: string };
 type Sample = {
@@ -13,8 +13,8 @@ type Sample = {
   title: string;
   age: string;
   emoji: string;
-  beforeImage: string;
-  afterImage: string;
+  coverImage: string;
+  images: string[];
   tagline: string;
   description: string;
   bookTitle: string;
@@ -29,6 +29,7 @@ type Props = {
 export default function GalleryFilter({ themes, samples }: Props) {
   const [active, setActive] = useState<string>("todos");
   const [selectedSample, setSelectedSample] = useState<Sample | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
 
   // Filter samples based on selected theme
   const filtered = useMemo(() => {
@@ -51,6 +52,11 @@ export default function GalleryFilter({ themes, samples }: Props) {
   // Find theme label helper
   const getThemeLabel = (slug: string) => {
     return themes.find((t) => t.slug === slug)?.label || slug;
+  };
+
+  const handleOpenModal = (sample: Sample) => {
+    setSelectedSample(sample);
+    setActiveImageIndex(0);
   };
 
   return (
@@ -92,46 +98,25 @@ export default function GalleryFilter({ themes, samples }: Props) {
           {filtered.map((s) => (
             <article
               key={s.id}
-              onClick={() => setSelectedSample(s)}
+              onClick={() => handleOpenModal(s)}
               className="bg-white rounded-3xl overflow-hidden border border-gold/15 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col h-full"
             >
-              {/* IMAGE HOVER CROSS-FADE WRAPPER */}
-              <div className="aspect-square relative w-full overflow-hidden bg-cream-deep">
-                {/* AFTER IMAGE (Illustration - Default visible) */}
-                <div className="absolute inset-0 w-full h-full transition-opacity duration-500 opacity-100 group-hover:opacity-0 z-10">
-                  <Image
-                    src={s.afterImage}
-                    alt={`Ilustração do livro ${s.title}`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover"
-                    priority
-                  />
-                </div>
+              {/* IMAGE COVER WRAPPER */}
+              <div className="aspect-[3/4] relative w-full overflow-hidden bg-cream-deep">
+                <Image
+                  src={s.coverImage}
+                  alt={`Capa do livro ${s.title}`}
+                  fill
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  priority
+                />
 
-                {/* BEFORE IMAGE (Real Child - Visible on hover) */}
-                <div className="absolute inset-0 w-full h-full transition-opacity duration-500 opacity-0 group-hover:opacity-100 z-0">
-                  <Image
-                    src={s.beforeImage}
-                    alt={`Foto real de referência de ${s.title}`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                    className="object-cover"
-                  />
-                </div>
-
-                {/* FLOATING REAL PHOTO ROUND THUMBNAIL */}
-                <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm rounded-full p-1 pr-3 border border-gold/20 shadow-sm transition-transform group-hover:scale-105 duration-300">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden border border-gold">
-                    <Image
-                      src={s.beforeImage}
-                      alt="Foto da criança"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider">
-                    Antes
+                {/* HOVER OVERLAY BUTTON */}
+                <div className="absolute inset-0 bg-primary-dark/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
+                  <span className="bg-white/95 text-primary text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-md border border-gold/15 flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                    <BookOpen className="w-3.5 h-3.5" />
+                    Folhear Livro
                   </span>
                 </div>
 
@@ -142,19 +127,21 @@ export default function GalleryFilter({ themes, samples }: Props) {
               </div>
 
               {/* CARD INFO */}
-              <div className="p-5 flex flex-col flex-1">
-                <span className="text-[10px] font-bold text-gold-dark uppercase tracking-widest mb-1.5">
-                  {getThemeLabel(s.theme)}
-                </span>
-                <h3 className="font-serif text-base text-primary font-semibold group-hover:text-gold-dark transition-colors duration-300 leading-snug">
-                  {s.title}
-                </h3>
-                <p className="text-xs text-dark/60 mt-2 line-clamp-2 flex-1">
-                  {s.tagline}
-                </p>
+              <div className="p-5 flex flex-col flex-1 justify-between">
+                <div>
+                  <span className="text-[10px] font-bold text-gold-dark uppercase tracking-widest mb-1.5 block">
+                    {getThemeLabel(s.theme)}
+                  </span>
+                  <h3 className="font-serif text-base text-primary font-semibold group-hover:text-gold-dark transition-colors duration-300 leading-snug">
+                    {s.title}
+                  </h3>
+                  <p className="text-xs text-dark/60 mt-2 line-clamp-2">
+                    {s.tagline}
+                  </p>
+                </div>
                 <div className="mt-4 pt-3 border-t border-cream-deep flex items-center justify-between">
                   <span className="text-[11px] font-medium text-dark/50">
-                    Protagonista: {s.age}
+                    Idade: {s.age}
                   </span>
                   <span className="text-[11px] font-bold text-primary flex items-center gap-1 group-hover:text-gold transition-colors">
                     Ver detalhes <span className="transition-transform group-hover:translate-x-0.5">→</span>
@@ -168,9 +155,15 @@ export default function GalleryFilter({ themes, samples }: Props) {
 
       {/* DETAIL MODAL (LIGHTBOX) */}
       {selectedSample && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-dark/60 backdrop-blur-md transition-all duration-300 overflow-y-auto">
+        <div 
+          onClick={() => setSelectedSample(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-dark/60 backdrop-blur-md transition-all duration-300 overflow-y-auto"
+        >
           {/* Modal Container */}
-          <div className="bg-cream max-w-4xl w-full rounded-3xl overflow-hidden shadow-xl border border-gold/20 grid grid-cols-1 md:grid-cols-2 relative max-h-[92vh] md:max-h-[85vh]">
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-cream max-w-4xl w-full rounded-3xl overflow-hidden shadow-xl border border-gold/20 grid grid-cols-1 md:grid-cols-2 relative max-h-[92vh] md:max-h-[85vh]"
+          >
             
             {/* CLOSE BUTTON */}
             <button
@@ -190,14 +183,62 @@ export default function GalleryFilter({ themes, samples }: Props) {
               </svg>
             </button>
 
-            {/* LEFT SIDE: SLIDER */}
-            <div className="p-4 md:p-6 bg-cream-light flex items-center justify-center border-b md:border-b-0 md:border-r border-gold/10">
-              <div className="w-full max-w-sm md:max-w-md relative">
-                <BeforeAfterSlider
-                  beforeImage={selectedSample.beforeImage}
-                  afterImage={selectedSample.afterImage}
-                  className="shadow-md"
+            {/* LEFT SIDE: CAROUSEL VIEWER */}
+            <div className="p-4 md:p-6 bg-cream-light flex flex-col justify-center border-b md:border-b-0 md:border-r border-gold/10 min-h-[350px] md:min-h-0">
+              <div className="w-full relative aspect-[3/4] max-w-xs md:max-w-sm mx-auto bg-white rounded-2xl border border-gold/15 shadow-sm overflow-hidden flex items-center justify-center">
+                <Image
+                  src={selectedSample.images[activeImageIndex]}
+                  alt={`${selectedSample.title} - Página ${activeImageIndex + 1}`}
+                  fill
+                  className="object-cover transition-opacity duration-300"
+                  sizes="(max-width: 768px) 100vw, 400px"
+                  priority
                 />
+
+                {/* Left/Right Buttons inside image */}
+                <button
+                  onClick={() => setActiveImageIndex((prev) => (prev === 0 ? selectedSample.images.length - 1 : prev - 1))}
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-primary flex items-center justify-center border border-gold/15 transition-all shadow-sm z-20 active:scale-90"
+                  aria-label="Anterior"
+                >
+                  ←
+                </button>
+                <button
+                  onClick={() => setActiveImageIndex((prev) => (prev === selectedSample.images.length - 1 ? 0 : prev + 1))}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-primary flex items-center justify-center border border-gold/15 transition-all shadow-sm z-20 active:scale-90"
+                  aria-label="Próximo"
+                >
+                  →
+                </button>
+
+                {/* Page indicator */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-primary/75 backdrop-blur-xs text-cream text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                  {activeImageIndex + 1} / {selectedSample.images.length}
+                </div>
+              </div>
+
+              {/* Thumbnails Row */}
+              <div className="flex gap-1.5 justify-center mt-4 overflow-x-auto py-1 max-w-xs md:max-w-sm mx-auto scrollbar-none">
+                {selectedSample.images.map((img, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setActiveImageIndex(index)}
+                    className={cn(
+                      "relative w-9 h-12 rounded-md overflow-hidden border transition-all flex-shrink-0",
+                      activeImageIndex === index 
+                        ? "border-gold ring-1 ring-gold shadow-sm scale-105" 
+                        : "border-cream-deep/30 opacity-60 hover:opacity-100"
+                    )}
+                  >
+                    <Image
+                      src={img}
+                      alt={`Página ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      sizes="36px"
+                    />
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -225,8 +266,9 @@ export default function GalleryFilter({ themes, samples }: Props) {
 
                 {/* Transform Description */}
                 <div className="space-y-4 text-sm text-dark/80 leading-relaxed mb-6">
-                  <h4 className="font-serif text-sm font-bold text-primary uppercase tracking-wider">
-                    Como a foto se transformou:
+                  <h4 className="font-serif text-sm font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-gold" />
+                    Sobre o livro personalizado:
                   </h4>
                   <p>{selectedSample.description}</p>
                 </div>
@@ -252,7 +294,7 @@ export default function GalleryFilter({ themes, samples }: Props) {
                   <span className="transition-transform group-hover:translate-x-1 font-bold text-gold">→</span>
                 </Link>
                 <p className="text-[10px] text-dark/40 text-center">
-                  Comece agora e veja a prévia 3D do seu livro em minutos
+                  Comece agora e veja a prévia do seu livro em minutos
                 </p>
               </div>
 

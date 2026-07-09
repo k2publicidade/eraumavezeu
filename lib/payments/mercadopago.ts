@@ -73,7 +73,7 @@ export class MercadoPagoGateway implements PaymentGateway {
         });
 
         if (pixResponse && pixResponse.id) {
-          const transData = pixResponse.point_of_integration?.transaction_data;
+          const transData = (pixResponse as any).point_of_interaction?.transaction_data || (pixResponse as any).point_of_integration?.transaction_data;
           if (transData) {
             pixQrCode = transData.qr_code;
             pixQrCodeBase64 = transData.qr_code_base64;

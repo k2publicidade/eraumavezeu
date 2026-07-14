@@ -29,7 +29,11 @@ function useHydrated() {
   return hydrated;
 }
 
-export default function CheckoutView() {
+export default function CheckoutView({
+  whatsappUpdatesEnabled = false,
+}: {
+  whatsappUpdatesEnabled?: boolean;
+}) {
   const allowSimulatedGateway = process.env.NODE_ENV !== "production";
   const hydrated = useHydrated();
   const router = useRouter();
@@ -113,7 +117,7 @@ export default function CheckoutView() {
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      buyer: { name: "", email: "", phone: "", whatsappOptIn: true },
+      buyer: { name: "", email: "", phone: "", whatsappOptIn: false },
       address: {
         zipCode: "",
         street: "",
@@ -269,7 +273,8 @@ export default function CheckoutView() {
         </h1>
         <p className="mt-3 text-dark/70 leading-relaxed">
           Confirme seus dados e o endereço de entrega. Ao registrar o pedido,
-          você segue para o pagamento seguro e recebe as atualizações pelo WhatsApp.
+          você segue para o pagamento seguro e recebe as atualizações por e-mail
+          {whatsappUpdatesEnabled ? " e, se desejar, pelo WhatsApp" : ""}.
         </p>
 
         <form onSubmit={onSubmit} noValidate>
@@ -321,16 +326,18 @@ export default function CheckoutView() {
                 </span>
               )}
             </label>
-            <label className="flex items-end gap-2 pb-2">
-              <input
-                {...register("buyer.whatsappOptIn")}
-                type="checkbox"
-                className="h-4 w-4 accent-primary"
-              />
-              <span className="text-sm text-dark/70">
-                Quero receber atualizações do pedido pelo WhatsApp
-              </span>
-            </label>
+            {whatsappUpdatesEnabled && (
+              <label className="flex min-h-11 items-center gap-3 self-end pb-1">
+                <input
+                  {...register("buyer.whatsappOptIn")}
+                  type="checkbox"
+                  className="h-6 w-6 accent-primary"
+                />
+                <span className="text-sm text-dark/70">
+                  Quero receber atualizações do pedido pelo WhatsApp
+                </span>
+              </label>
+            )}
           </fieldset>
 
           <fieldset className="mt-8 grid md:grid-cols-2 gap-4" disabled={isSubmitting}>

@@ -12,10 +12,16 @@ export const metadata: Metadata = {
 };
 
 export default function CheckoutPage() {
+  const whatsappUpdatesEnabled = Boolean(
+    process.env.EVOLUTION_API_URL &&
+      process.env.EVOLUTION_API_KEY &&
+      process.env.EVOLUTION_INSTANCE,
+  );
+
   return (
     <section className="py-10 md:py-16 bg-cream-warm min-h-[70vh]">
       <div className="container mx-auto px-4 max-w-6xl">
-        <CheckoutView />
+        <CheckoutView whatsappUpdatesEnabled={whatsappUpdatesEnabled} />
       </div>
     </section>
   );

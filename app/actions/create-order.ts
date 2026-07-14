@@ -6,10 +6,10 @@ import { db } from "@/lib/db";
 import { notifyOrderCreated } from "@/lib/notifications/order-created";
 import { buildOrderDraft, orderCodeOf, type DbProduct } from "@/lib/orders/build-order";
 import { checkoutSchema } from "@/lib/validators/order";
-import { gerarPromptIA } from "@/lib/wizard/prompt";
 import type { ProductType } from "@/lib/cart/types";
 import { getPaymentGateway } from "@/lib/payments/gateway-registry";
 import { calculateShippingOptions } from "@/lib/shipping";
+import { buildProductionBrief } from "@/lib/product-customization";
 
 export type CreateOrderResult =
   | { ok: true; orderId: string; orderCode: string; paymentUrl?: string }
@@ -21,6 +21,10 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
     return { ok: false, error: "Dados inválidos — revise o formulário." };
   }
   const { buyer, address, items, shippingMethod, shippingCost, paymentGateway, couponCode } = parsed.data;
+
+  if (process.env.NODE_ENV === "production" && paymentGateway === "SIMULADO") {
+    return { ok: false, error: "Forma de pagamento indisponível." };
+  }
 
   // Validação do frete no servidor (segurança contra manipulação de preço de frete)
   const validShippingOptions = calculateShippingOptions(address.state);
@@ -47,6 +51,18 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
     type: p.type as ProductType,
     price: Number(p.price),
   }));
+
+  const productBySlug = new Map(dbProducts.map((product) => [product.slug, product]));
+  for (const item of items) {
+    const product = productBySlug.get(item.slug);
+    if (!product) continue;
+    if (item.customizations.length !== item.quantity) {
+      return { ok: false, error: `Preencha uma ficha de personalização para cada unidade de ${product.name}.` };
+    }
+    if (item.customizations.some((customization) => customization.productType !== product.type)) {
+      return { ok: false, error: `A ficha de ${product.name} não corresponde ao produto comprado.` };
+    }
+  }
 
   let draft;
   try {
@@ -94,19 +110,7 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
   const session = await auth().catch(() => null);
   const userId = session?.user?.id || null;
 
-  const customization = items.find((i) => i.customization)?.customization ?? null;
-  const aiPrompt = customization
-    ? gerarPromptIA({
-        theme: customization.theme,
-        genre: customization.genre,
-        artStyle: customization.artStyle,
-        favoriteColor: customization.favoriteColor,
-        ageRange: customization.ageRange,
-        childName: customization.childName,
-        dedication: customization.dedication,
-        photoCount: customization.photoKeys.length,
-      })
-    : null;
+  const firstCustomization = items.flatMap((item) => item.customizations)[0] ?? null;
 
   // IP do consentimento LGPD — registrado junto do aceite
   const hdrs = headers();
@@ -134,8 +138,7 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
           shippingCost: shippingCost || 0,
           total: finalTotal,
           paymentGateway,
-          dedication: customization?.dedication || null,
-          items: { create: draft.items },
+          dedication: firstCustomization?.dedication || null,
           shippingAddress: {
             create: {
               name: buyer.name,
@@ -148,26 +151,6 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
               zipCode: address.zipCode,
             },
           },
-          ...(customization
-            ? {
-                customization: {
-                  create: {
-                    childName: customization.childName,
-                    theme: customization.theme,
-                    genre: customization.genre,
-                    artStyle: customization.artStyle,
-                    favoriteColor: customization.favoriteColor,
-                    ageRange: customization.ageRange,
-                    photoKeys: customization.photoKeys,
-                    dedication: customization.dedication || null,
-                    aiPrompt,
-                    consentIp,
-                    consentAt: new Date(customization.consentAcceptedAt),
-                    consentTextVersion: customization.consentTextVersion,
-                  },
-                },
-              }
-            : {}),
           statusHistory: {
             create: {
               toStatus: "AGUARDANDO_PAGAMENTO",
@@ -178,6 +161,40 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
         },
         select: { id: true },
       });
+
+      for (let itemIndex = 0; itemIndex < draft.items.length; itemIndex += 1) {
+        const draftItem = draft.items[itemIndex];
+        const requestedItem = items[itemIndex];
+        if (!draftItem || !requestedItem) continue;
+        await tx.orderItem.create({
+          data: {
+            orderId: createdOrder.id,
+            ...draftItem,
+            customizations: {
+              create: requestedItem.customizations.map((customization, unitIndex) => ({
+                unitIndex,
+                productType: customization.productType,
+                childName: customization.childName,
+                childAge: customization.childAge,
+                childGender: customization.childGender,
+                favoriteColor: customization.favoriteColor,
+                theme: customization.theme,
+                storyGenre: customization.storyGenre || null,
+                artStyle: customization.artStyle || null,
+                lineStyle: customization.lineStyle || null,
+                dedication: customization.dedication || null,
+                notes: customization.notes || null,
+                photoKeys: customization.photoKeys,
+                aiPrompt: buildProductionBrief(customization),
+                consentIp,
+                consentAt: new Date(customization.consentAcceptedAt),
+                consentTextVersion: customization.consentTextVersion,
+                confidentialityAt: new Date(customization.confidentialityAcceptedAt),
+              })),
+            },
+          },
+        });
+      }
 
       if (couponId) {
         await tx.coupon.update({

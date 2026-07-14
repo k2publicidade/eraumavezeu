@@ -19,6 +19,12 @@ export async function GET() {
       include: {
         shippingAddress: true,
         customization: true,
+        items: {
+          include: {
+            product: { select: { name: true } },
+            customizations: { orderBy: { unitIndex: "asc" } },
+          },
+        },
       },
     });
 
@@ -43,6 +49,7 @@ export async function GET() {
       "Tema",
       "Dedicatoria",
       "Prompt de IA",
+      "Fichas por Produto",
     ];
 
     // Helper para escapar strings no formato CSV
@@ -58,6 +65,21 @@ export async function GET() {
     const csvRows = orders.map((o) => {
       const address = o.shippingAddress;
       const custom = o.customization;
+      const itemForms = o.items.flatMap((item) =>
+        item.customizations.map((form) =>
+          [
+            `${item.product.name} (unidade ${form.unitIndex + 1})`,
+            `crianca: ${form.childName}`,
+            `idade: ${form.childAge}`,
+            `tema: ${form.theme}`,
+            form.storyGenre ? `genero: ${form.storyGenre}` : "",
+            form.artStyle ? `estilo: ${form.artStyle}` : "",
+            form.lineStyle ? `traco: ${form.lineStyle}` : "",
+            form.dedication ? `dedicatoria: ${form.dedication}` : "",
+            form.notes ? `observacoes: ${form.notes}` : "",
+          ].filter(Boolean).join(" | "),
+        ),
+      ).join(" || ");
       
       const fullAddress = address 
         ? `${address.street}, ${address.number}${address.complement ? ` - ${address.complement}` : ""}` 
@@ -83,6 +105,7 @@ export async function GET() {
         escapeCsv(custom?.theme),
         escapeCsv(custom?.dedication),
         escapeCsv(custom?.aiPrompt),
+        escapeCsv(itemForms),
       ];
     });
 

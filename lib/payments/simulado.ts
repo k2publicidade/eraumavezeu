@@ -1,10 +1,11 @@
 import type { PaymentGateway, OrderWithDetails, PaymentResponse, WebhookResult } from "./types";
+import { getSiteUrl } from "@/lib/site-url";
 
 export class SimulatedGateway implements PaymentGateway {
   name = "SIMULADO";
 
   async createPayment(order: OrderWithDetails): Promise<PaymentResponse> {
-    const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+    const baseUrl = getSiteUrl();
     const paymentUrl = `${baseUrl}/checkout/simulado?orderId=${order.id}`;
 
     return {

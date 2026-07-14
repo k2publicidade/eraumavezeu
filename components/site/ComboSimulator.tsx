@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useCartStore } from "@/lib/cart/store";
+import { COMBO_DISCOUNT } from "@/lib/cart/types";
 import type { CatalogProduct } from "@/lib/products";
 
 interface ComboSimulatorProps {
@@ -38,11 +40,11 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
   const addonsSubtotal = selectedAddonList.reduce((acc, a) => acc + a.price, 0);
   const subtotal = bookPrice + addonsSubtotal;
   
-  // E-book is included (free) when book is purchased. Other addons get 15 BRL discount.
+  // E-book is included for free. Other addons use the shared cart discount rule.
   const selectedEbook = selectedAddonList.find((a) => a.type === "EBOOK");
   const ebookDiscount = selectedEbook ? selectedEbook.price : 0;
   const otherAddonsCount = selectedAddonList.filter((a) => a.type !== "EBOOK").length;
-  const otherDiscount = otherAddonsCount * 15;
+  const otherDiscount = otherAddonsCount * COMBO_DISCOUNT;
   const discount = ebookDiscount + otherDiscount;
   const total = Math.max(subtotal - discount, 0);
 
@@ -102,14 +104,14 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
   return (
     <div className="bg-white rounded-[24px] border border-cream-deep/20 shadow-premium p-5 md:p-7 max-w-4xl mx-auto overflow-hidden">
       <div className="text-center max-w-xl mx-auto mb-6 space-y-1">
-        <span className="text-[9px] font-bold text-gold uppercase tracking-[0.2em] block">
+        <span className="text-xs font-bold text-gold uppercase tracking-[0.16em] block">
           Simulador de Preço
         </span>
         <h3 className="font-serif text-2xl text-primary font-medium">
           Monte seu Combo Mágico
         </h3>
-        <p className="text-[11px] text-dark/65 leading-normal">
-          Selecione itens extras e veja o desconto acumulando em tempo real. Cada adicional reduz <strong className="text-gold font-bold">R$ 15,00</strong> do valor final!
+        <p className="text-sm text-dark/70 leading-relaxed">
+          Selecione itens extras e veja o desconto acumulando em tempo real. Cada adicional reduz <strong className="text-gold-dark font-bold">{formatBRL(COMBO_DISCOUNT)}</strong> do valor final.
         </p>
       </div>
 
@@ -126,35 +128,37 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
                 <h4 className="font-serif text-xs font-bold text-primary truncate">
                   {mainProduct.name}
                 </h4>
-                <span className="bg-primary/10 text-primary text-[7px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full">
+                <span className="bg-primary/10 text-primary text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full">
                   Item Base Obrigatório
                 </span>
               </div>
-              <p className="text-[9px] text-dark/50 truncate">Livro físico personalizado de capa dura (30x21 cm)</p>
+              <p className="text-xs text-dark/65 truncate">Livro físico personalizado de capa dura (30x21 cm)</p>
             </div>
             <div className="text-right">
               <span className="font-serif text-xs font-bold text-primary">
                 {formatBRL(bookPrice)}
               </span>
             </div>
-            <div className="w-4 h-4 flex items-center justify-center rounded bg-primary text-cream text-[9px] flex-shrink-0">
+            <div className="w-6 h-6 flex items-center justify-center rounded bg-primary text-cream text-xs flex-shrink-0">
               ✓
             </div>
           </div>
 
           {/* Addons List */}
           <div className="space-y-2">
-            <span className="text-[8px] font-bold text-dark/45 uppercase tracking-wider block px-1">
+            <span className="text-xs font-bold text-dark/65 uppercase tracking-wide block px-1">
               Selecione os Adicionais Mágicos:
             </span>
 
             {addons.map((a) => {
               const isChecked = selectedAddons.includes(a.id);
               return (
-                <div
+                <button
+                  type="button"
                   key={a.id}
                   onClick={() => toggleAddon(a.id)}
-                  className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer select-none transition-all duration-300 ${
+                  aria-pressed={isChecked}
+                  className={`flex min-h-16 w-full items-center gap-3 p-3 rounded-xl border text-left cursor-pointer select-none transition-colors duration-300 ${
                     isChecked
                       ? "bg-gold/5 border-gold shadow-sm"
                       : "bg-white border-cream-deep/15 hover:border-gold/30"
@@ -165,35 +169,35 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-serif text-xs font-bold text-primary truncate">{a.name}</h4>
-                      <span className="bg-gold/10 text-gold text-[7px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded-full">
+                      <span className="font-serif text-sm font-bold text-primary truncate">{a.name}</span>
+                      <span className="bg-gold/10 text-gold-dark text-xs font-bold uppercase tracking-wide px-2 py-0.5 rounded-full">
                         {getAddonLabel(a.type)}
                       </span>
                     </div>
-                    <p className="text-[9px] text-dark/50 truncate">
+                    <p className="text-xs text-dark/65 truncate">
                       {PRODUCT_BRIEF_DESCRIPTIONS[a.type] ?? a.description}
                     </p>
                   </div>
                   <div className="text-right pr-1 flex-shrink-0">
                     <div className="flex flex-col items-end">
                       <span className="font-serif text-xs font-bold text-primary">
-                        {a.type === "EBOOK" ? "Grátis" : formatBRL(a.price - 15)}
+                        {a.type === "EBOOK" ? "Grátis" : formatBRL(a.price - COMBO_DISCOUNT)}
                       </span>
-                      <span className="text-[8px] text-dark/35 line-through">
+                      <span className="text-xs text-dark/55 line-through">
                         {formatBRL(a.price)}
                       </span>
                     </div>
                   </div>
                   <div
-                    className={`w-4 h-4 flex items-center justify-center rounded border flex-shrink-0 transition-all ${
+                    className={`w-6 h-6 flex items-center justify-center rounded border flex-shrink-0 transition-colors ${
                       isChecked
                         ? "bg-gold border-gold text-cream animate-scale-up"
                         : "border-cream-deep/30 bg-white"
                     }`}
                   >
-                    {isChecked && <span className="text-[9px] font-bold">✓</span>}
+                    {isChecked && <span className="text-xs font-bold">✓</span>}
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>
@@ -205,7 +209,7 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
             Resumo do Combo
           </h4>
 
-          <div className="space-y-2.5 text-xs text-dark/70">
+          <div className="space-y-2.5 text-sm text-dark/75">
             <div className="flex justify-between">
               <span>Subtotal do Combo</span>
               <span className="font-medium text-primary">
@@ -214,7 +218,7 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
             </div>
             
             {discount > 0 && (
-              <div className="flex justify-between text-gold font-bold bg-gold/5 px-2 py-1 rounded border border-gold/10 text-[11px]">
+              <div className="flex justify-between text-gold-dark font-bold bg-gold/5 px-2 py-1 rounded border border-gold/10 text-xs">
                 <span>Desconto Especial Combo</span>
                 <span>-{formatBRL(discount)}</span>
               </div>
@@ -226,7 +230,7 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
                 <span className="font-serif text-xl font-bold text-primary block">
                   {formatBRL(total)}
                 </span>
-                <span className="text-[9px] text-dark/40 block">ou 6x sem juros</span>
+                <span className="text-xs text-dark/60 block">ou 6x sem juros</span>
               </div>
             </div>
           </div>
@@ -234,30 +238,31 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
           <div className="space-y-2 pt-2">
             {selectedAddons.length > 0 && (
               <button
+                type="button"
                 onClick={handleAddSelectedToCart}
-                className="w-full bg-gold text-cream hover:bg-gold-light active:scale-[0.98] py-2.5 rounded-full font-bold uppercase tracking-wider text-[10px] shadow-sm transition-all duration-300 flex items-center justify-center gap-1.5"
+                className="w-full min-h-11 bg-gold-dark text-white hover:bg-gold active:scale-[0.98] py-3 rounded-full font-bold uppercase tracking-wide text-xs shadow-sm transition-colors duration-300 flex items-center justify-center gap-1.5"
               >
                 <span>Adicionar Adicionais ao Carrinho</span>
                 <span>✨</span>
               </button>
             )}
 
-            <a
+            <Link
               href="/personalizar"
-              className="w-full bg-primary text-cream hover:bg-primary-light active:scale-[0.98] py-2.5 rounded-full font-bold uppercase tracking-wider text-[10px] shadow-sm transition-all duration-300 block text-center"
+              className="w-full min-h-11 bg-primary text-cream hover:bg-primary-light active:scale-[0.98] py-3 rounded-full font-bold uppercase tracking-wide text-xs shadow-sm transition-colors duration-300 flex items-center justify-center text-center"
             >
               Personalizar meu Livro →
-            </a>
+            </Link>
           </div>
 
           {isSuccess && (
-            <div className="text-center text-[9px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200/50 p-2 rounded-lg animate-fade-in">
+            <div role="status" aria-live="polite" className="text-center text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/50 p-2 rounded-lg animate-fade-in">
               🎉 Adicionais inseridos! Personalize o livro principal para validar o desconto.
             </div>
           )}
 
-          <p className="text-[8px] text-dark/45 text-center leading-normal">
-            * Desconto de R$ 15,00 por adicional ativado com o Livro Capa Dura no carrinho.
+          <p className="text-xs text-dark/60 text-center leading-relaxed">
+            * Desconto de {formatBRL(COMBO_DISCOUNT)} por adicional ativado com o Livro Capa Dura no carrinho.
           </p>
         </div>
       </div>

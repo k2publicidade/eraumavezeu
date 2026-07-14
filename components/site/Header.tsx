@@ -1,11 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { NAV_ITEMS } from "@/lib/site-config";
 import { getSiteSettings } from "@/lib/site-content";
 import { auth } from "@/lib/auth";
 import CartBadge from "./CartBadge";
 import MobileNav from "./MobileNav";
 import UserMenu from "./UserMenu";
+import DesktopNavLinks from "./DesktopNavLinks";
 
 export default async function Header() {
   const settings = await getSiteSettings();
@@ -38,19 +38,11 @@ export default async function Header() {
         </Link>
 
         {/* Navegação desktop */}
-        <nav className="hidden md:flex items-center gap-6" aria-label="Navegação principal">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-dark/80 hover:text-primary transition-colors duration-200 text-xs font-semibold uppercase tracking-[0.1em] relative after:absolute after:bottom-[-4px] after:left-0 after:h-0.5 after:w-0 after:bg-gold after:transition-all after:duration-300 hover:after:w-full"
-            >
-              {item.label}
-            </Link>
-          ))}
+        <nav className="hidden xl:flex items-center gap-6" aria-label="Navegação principal">
+          <DesktopNavLinks />
           <Link
             href={settings.primaryCtaHref}
-            className="bg-primary text-cream hover:bg-primary-light hover:scale-105 active:scale-95 transition-all duration-300 rounded-full px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] flex items-center gap-2 shadow-md"
+            className="flex min-h-11 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] text-cream shadow-md transition-all duration-300 hover:bg-primary-light active:scale-[0.98]"
           >
             <span>{settings.primaryCtaLabel}</span>
             <span aria-hidden="true" className="text-gold">→</span>
@@ -65,7 +57,7 @@ export default async function Header() {
         </nav>
 
         {/* Mobile: carrinho + hambúrguer */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 xl:hidden">
           <CartBadge />
           <MobileNav
             siteName={settings.siteName}

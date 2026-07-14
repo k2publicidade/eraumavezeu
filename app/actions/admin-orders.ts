@@ -84,6 +84,14 @@ export async function updateOrderStatus(
             }),
           ]
         : []),
+      ...(delivered
+        ? [
+            db.orderItemCustomization.updateMany({
+              where: { orderItem: { orderId } },
+              data: { photosExpireAt: photosExpireAtFrom(deliveredAt!) },
+            }),
+          ]
+        : []),
     ]);
   } catch (err) {
     console.error("updateOrderStatus failed", err);
@@ -222,6 +230,10 @@ const simulatePaymentSchema = z.object({
 export async function simulatePaymentApproval(
   input: unknown,
 ): Promise<AdminActionResult> {
+  if (process.env.NODE_ENV === "production") {
+    return { ok: false, error: "Simulação indisponível em produção." };
+  }
+
   const admin = await getAdminUser();
   if (!admin) return { ok: false, error: "Acesso negado." };
 
@@ -285,4 +297,3 @@ export async function simulatePaymentApproval(
 
   return { ok: true };
 }
-

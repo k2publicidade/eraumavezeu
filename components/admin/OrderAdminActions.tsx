@@ -172,7 +172,7 @@ export default function OrderAdminActions({
         </p>
       </div>
 
-      {currentStatus === "AGUARDANDO_PAGAMENTO" && (
+      {process.env.NODE_ENV !== "production" && currentStatus === "AGUARDANDO_PAGAMENTO" && (
         <div className="border-t border-gold/20 pt-4">
           <h3 className="font-medium text-amber-800">Simulação de Vendas</h3>
           <button

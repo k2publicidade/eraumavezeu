@@ -4,6 +4,7 @@ import { formatBRL } from "@/lib/format";
 import { CONTACT_EMAIL } from "@/lib/site-config";
 import { sendMessage } from "@/lib/whatsapp";
 import { initWhatsAppFromEnv } from "@/lib/whatsapp-evolution";
+import { getSiteUrl } from "@/lib/site-url";
 
 // ativa Evolution se as envs existirem; sem elas o stub só loga
 initWhatsAppFromEnv();
@@ -32,7 +33,7 @@ function buyerWhatsAppText(data: OrderNotificationData): string {
 }
 
 function teamEmailHtml(data: OrderNotificationData): string {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+  const baseUrl = getSiteUrl();
   const itemRows = data.items
     .map((it) => `<li>${it.quantity}x ${it.name} — ${formatBRL(it.lineTotal)}</li>`)
     .join("");

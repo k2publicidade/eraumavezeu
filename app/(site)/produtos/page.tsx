@@ -9,6 +9,7 @@ import MagicStars from "@/components/effects/MagicStars";
 import ProductGallery from "@/components/site/ProductGallery";
 import ComboSimulator from "@/components/site/ComboSimulator";
 import FloatingMagicElements from "@/components/effects/FloatingMagicElements";
+import { COMBO_DISCOUNT } from "@/lib/cart/types";
 
 export const metadata: Metadata = {
   title: "Nossos Produtos | Era Uma Vez, Eu",
@@ -84,7 +85,7 @@ export default async function ProdutosPage() {
 
         <div className="container mx-auto px-4 max-w-3xl relative z-10 space-y-4">
           <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-3 py-1.5 rounded-full">
-            <span className="text-[10px] text-primary font-bold uppercase tracking-[0.15em] flex items-center gap-1.5">
+            <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.15em] text-primary">
               <span>✨</span> Coleção Premium <span>✨</span>
             </span>
           </div>
@@ -92,7 +93,7 @@ export default async function ProdutosPage() {
             Nossa Coleção Completa
           </h1>
           <p className="text-sm md:text-base text-dark/70 max-w-2xl mx-auto leading-relaxed font-body">
-            Monte o kit perfeito para sua criança. Ganhe <strong className="text-gold font-bold">R$ 15,00 de desconto</strong> em cada item adicional comprado junto com o livro físico capa dura.
+            Monte o kit perfeito para sua criança. Ganhe <strong className="text-gold-dark font-bold">{formatBRL(COMBO_DISCOUNT)} de desconto</strong> em cada item adicional comprado junto com o livro físico capa dura.
           </p>
         </div>
       </section>
@@ -112,7 +113,7 @@ export default async function ProdutosPage() {
               {/* Product Info */}
               <div className="space-y-4 min-w-0">
                 <div className="space-y-2">
-                  <span className="font-body text-[10px] font-bold text-gold uppercase tracking-[0.2em] block">
+                  <span className="block font-body text-xs font-bold uppercase tracking-[0.2em] text-gold">
                     Nosso Campeão de Vendas
                   </span>
                   <h2 className="font-serif text-3xl md:text-4xl text-primary leading-tight font-medium">
@@ -124,7 +125,7 @@ export default async function ProdutosPage() {
                 </div>
 
                 <div className="border-t border-b border-cream-deep/20 py-4 space-y-3">
-                  <span className="text-[9px] font-bold text-primary uppercase tracking-wider block">
+                  <span className="block text-xs font-bold uppercase tracking-wider text-primary">
                     Destaques de Qualidade:
                   </span>
                   <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-dark/85 font-body">
@@ -151,7 +152,7 @@ export default async function ProdutosPage() {
 
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-2">
                   <div className="space-y-0.5 font-body">
-                    <span className="text-[9px] text-dark/45 uppercase tracking-wider block font-bold">Preço Especial</span>
+                    <span className="block text-xs font-bold uppercase tracking-wider text-dark/65">Preço Especial</span>
                     <div className="flex items-baseline gap-2">
                       {mainProduct.priceOld && (
                         <span className="text-xs text-dark/35 line-through">
@@ -162,7 +163,7 @@ export default async function ProdutosPage() {
                         {formatBRL(mainProduct.price)}
                       </span>
                     </div>
-                    <span className="text-[9px] text-emerald-600 font-semibold block">
+                    <span className="block text-xs font-semibold text-emerald-700">
                       Ou até 6x sem juros no cartão
                     </span>
                   </div>
@@ -186,7 +187,7 @@ export default async function ProdutosPage() {
           {/* 3. ADDON PRODUCTS GRID */}
           <div className="space-y-8">
             <div className="text-center space-y-1">
-              <span className="text-[9px] font-bold text-gold uppercase tracking-[0.2em] block">
+              <span className="block text-xs font-bold uppercase tracking-[0.2em] text-gold">
                 Completando a Magia
               </span>
               <h3 className="font-serif text-2xl md:text-3xl text-primary font-medium">
@@ -218,16 +219,16 @@ export default async function ProdutosPage() {
                   <div className="flex-1 flex flex-col justify-between space-y-3 min-w-0">
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="bg-gold/10 border border-gold/25 px-2 py-0.5 rounded-full text-[7px] font-bold text-gold uppercase tracking-wider">
+                        <span className="bg-gold/10 border border-gold/25 px-2 py-0.5 rounded-full text-xs font-bold text-gold uppercase tracking-wider">
                           {PRODUCT_BADGES[p.type] ?? "Adicional"}
                         </span>
                         {p.type === "EBOOK" ? (
-                          <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
+                          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
                             Grátis no Combo
                           </span>
                         ) : (
-                          <span className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
-                            - R$ 15 no Combo
+                          <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100/50">
+                            - {formatBRL(COMBO_DISCOUNT)} no Combo
                           </span>
                         )}
                       </div>
@@ -236,14 +237,14 @@ export default async function ProdutosPage() {
                         {p.name}
                       </h4>
 
-                      <p className="text-[10px] text-dark/60 leading-relaxed font-body">
+                      <p className="text-sm text-dark/70 leading-relaxed font-body">
                         {p.description}
                       </p>
 
                       {/* Key bullet features */}
                       <ul className="space-y-1 pt-1.5 border-t border-cream-deep/15 font-body">
                         {(PRODUCT_BULLETS[p.type] ?? []).map((bullet, idx) => (
-                          <li key={idx} className="flex items-start gap-1 text-[9px] text-dark/75">
+                          <li key={idx} className="flex items-start gap-1 text-xs text-dark/75">
                             <span className="text-gold font-bold">✓</span>
                             <span>{bullet}</span>
                           </li>
@@ -253,14 +254,14 @@ export default async function ProdutosPage() {
 
                     <div className="pt-2 border-t border-cream-deep/20 flex items-center justify-between gap-3">
                       <div className="flex flex-col font-body">
-                        <span className="text-[7px] text-dark/40 uppercase tracking-wider block font-bold">
+                        <span className="text-xs text-dark/65 uppercase tracking-wider block font-bold">
                           {p.type === "EBOOK" ? "No Combo / Avulso" : "Combo / Avulso"}
                         </span>
                         <div className="flex items-baseline gap-1">
                           <span className="font-serif text-base font-bold text-primary">
-                            {p.type === "EBOOK" ? "Grátis" : formatBRL(p.price - 15)}
+                            {p.type === "EBOOK" ? "Grátis" : formatBRL(Math.max(p.price - COMBO_DISCOUNT, 0))}
                           </span>
-                          <span className="text-[9px] text-dark/35 line-through">
+                          <span className="text-xs text-dark/55 line-through">
                             {formatBRL(p.price)}
                           </span>
                         </div>
@@ -274,7 +275,7 @@ export default async function ProdutosPage() {
                           type: p.type,
                           price: p.price,
                         }}
-                        className="bg-primary text-cream hover:bg-primary-light active:scale-95 px-4 py-2 rounded-full font-bold uppercase tracking-wider text-[9px] shadow-sm hover:shadow-md transition-all duration-300"
+                        className="min-h-11 rounded-full bg-primary px-4 py-3 text-xs font-bold uppercase tracking-wider text-cream shadow-sm transition-all duration-300 hover:bg-primary-light hover:shadow-md active:scale-[0.98]"
                       />
                     </div>
                   </div>
@@ -291,7 +292,7 @@ export default async function ProdutosPage() {
 
             <div className="relative z-10 max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6 items-center">
               <div className="space-y-3">
-                <span className="text-[9px] font-bold text-gold uppercase tracking-[0.25em] block">
+                <span className="block text-xs font-bold uppercase tracking-[0.25em] text-gold">
                   Qualidade Garantida
                 </span>
                 <h4 className="font-serif text-2xl md:text-3xl text-cream font-medium leading-tight">
@@ -305,28 +306,28 @@ export default async function ProdutosPage() {
               <div className="grid grid-cols-2 gap-4 border-t lg:border-t-0 lg:border-l border-white/10 pt-4 lg:pt-0 lg:pl-6 font-body">
                 <div className="space-y-1">
                   <h5 className="font-serif text-xs font-bold text-gold">Impressão Premium</h5>
-                  <p className="text-[9px] text-cream/65 leading-normal">
+                  <p className="text-xs text-cream/75 leading-normal">
                     Cores vibrantes em papel couché importado fosco (170g).
                   </p>
                 </div>
                 
                 <div className="space-y-1">
                   <h5 className="font-serif text-xs font-bold text-gold">Laminado Antirrisco</h5>
-                  <p className="text-[9px] text-cream/65 leading-normal">
+                  <p className="text-xs text-cream/75 leading-normal">
                     Película protetora que resiste a dedinhos sujos e pequenos acidentes.
                   </p>
                 </div>
 
                 <div className="space-y-1">
                   <h5 className="font-serif text-xs font-bold text-gold">Encadernação Forte</h5>
-                  <p className="text-[9px] text-cream/65 leading-normal">
+                  <p className="text-xs text-cream/75 leading-normal">
                     Páginas costuradas e coladas para impedir folhas soltas.
                   </p>
                 </div>
 
                 <div className="space-y-1">
                   <h5 className="font-serif text-xs font-bold text-gold">Envio Protegido</h5>
-                  <p className="text-[9px] text-cream/65 leading-normal">
+                  <p className="text-xs text-cream/75 leading-normal">
                     Embalagem rígida especial para garantir entrega perfeita.
                   </p>
                 </div>

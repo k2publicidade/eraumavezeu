@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Header from "@/components/site/Header";
 import WhatsAppFloatingButton from "@/components/site/WhatsAppFloatingButton";
+import SkipLink from "@/components/site/SkipLink";
 
 const Wizard = dynamic(() => import("@/components/wizard/Wizard"), {
   ssr: false,
@@ -21,8 +22,9 @@ export const metadata: Metadata = {
 export default function PersonalizarPage() {
   return (
     <>
+      <SkipLink />
       <Header />
-      <main className="min-h-screen bg-light py-10 md:py-16 px-4">
+      <main id="conteudo-principal" tabIndex={-1} className="min-h-screen bg-light py-10 md:py-16 px-4">
         <div className="container mx-auto">
           <h1 className="font-serif text-3xl md:text-5xl text-center text-dark mb-2">
             Vamos criar o livro
@@ -39,4 +41,3 @@ export default function PersonalizarPage() {
     </>
   );
 }
-

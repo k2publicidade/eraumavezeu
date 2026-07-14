@@ -33,7 +33,7 @@ export default function CartView({ crossSellProducts }: Props) {
   const [shippingHint, setShippingHint] = useState<string | null>(null);
 
   if (!hydrated) {
-    return <div className="text-center py-20 text-dark/60">Carregando…</div>;
+    return <div role="status" className="text-center py-20 text-dark/60">Carregando…</div>;
   }
 
   const totals = getTotals();
@@ -75,7 +75,7 @@ export default function CartView({ crossSellProducts }: Props) {
               <button
                 type="button"
                 aria-label={`Diminuir quantidade de ${item.name}`}
-                className="w-9 h-9 hover:bg-gold/20 transition-colors duration-150 text-primary font-medium"
+                className="w-11 h-11 hover:bg-gold/20 transition-colors duration-150 text-primary font-medium"
                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
               >
                 −
@@ -84,7 +84,7 @@ export default function CartView({ crossSellProducts }: Props) {
               <button
                 type="button"
                 aria-label={`Aumentar quantidade de ${item.name}`}
-                className="w-9 h-9 hover:bg-gold/20 transition-colors duration-150 text-primary font-medium"
+                className="w-11 h-11 hover:bg-gold/20 transition-colors duration-150 text-primary font-medium"
                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
               >
                 +
@@ -97,7 +97,7 @@ export default function CartView({ crossSellProducts }: Props) {
               type="button"
               aria-label={`Remover ${item.name}`}
               onClick={() => removeItem(item.id)}
-              className="text-dark/35 hover:text-fox-dark transition-colors duration-150 text-xl leading-none px-2"
+              className="flex h-11 w-11 items-center justify-center rounded-full text-dark/60 hover:bg-fox/10 hover:text-fox-dark transition-colors duration-150 text-xl leading-none"
             >
               ×
             </button>
@@ -179,7 +179,7 @@ export default function CartView({ crossSellProducts }: Props) {
               placeholder="00000-000"
               value={cep}
               onChange={(e) => setCep(e.target.value.replace(/\D/g, "").slice(0, 8))}
-              className="flex-1 px-3 py-2 rounded-lg border-2 border-gold/25 bg-cream focus:border-primary focus:outline-none text-sm"
+              className="min-h-11 flex-1 px-3 py-2 rounded-lg border-2 border-gold/25 bg-cream focus:border-primary focus:outline-none text-sm placeholder:text-dark/65"
             />
             <button
               type="button"
@@ -190,13 +190,13 @@ export default function CartView({ crossSellProducts }: Props) {
                     : "Digite um CEP válido (8 dígitos).",
                 )
               }
-              className="px-4 py-2 rounded-lg border-2 border-gold/30 text-sm text-primary hover:border-primary hover:bg-gold/10 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="min-h-11 px-4 py-2 rounded-lg border-2 border-gold/30 text-sm font-semibold text-primary hover:border-primary hover:bg-gold/10 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
-              OK
+              Calcular
             </button>
           </div>
           {shippingHint && (
-            <p className="mt-2 text-xs text-dark/55">{shippingHint}</p>
+            <p role="status" aria-live="polite" className="mt-2 text-sm text-dark/70">{shippingHint}</p>
           )}
         </div>
 

@@ -10,6 +10,10 @@ interface PageProps {
 }
 
 export default async function SimulatedCheckoutPage({ searchParams }: PageProps) {
+  if (process.env.NODE_ENV === "production") {
+    notFound();
+  }
+
   const orderId = searchParams.orderId;
   if (!orderId) {
     notFound();

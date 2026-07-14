@@ -8,6 +8,10 @@ import type { PaymentStatus, OrderStatus } from "@prisma/client";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  if (process.env.NODE_ENV === "production") {
+    return new Response("Not found", { status: 404 });
+  }
+
   const gateway = new SimulatedGateway();
   const result = await gateway.processWebhook(req);
 

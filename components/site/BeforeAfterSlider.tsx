@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -22,57 +22,6 @@ export default function BeforeAfterSlider({
   aspectRatio = "square",
 }: Props) {
   const [sliderPosition, setSliderPosition] = useState<number>(50);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleMove = useCallback((clientX: number) => {
-    if (!containerRef.current) return;
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(percentage);
-  }, []);
-
-  const onMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      // Allow hover-scrub when not dragging, or drag-scrub when mouse is down
-      handleMove(e.clientX);
-    },
-    [handleMove]
-  );
-
-  const onTouchMove = useCallback(
-    (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        handleMove(e.touches[0].clientX);
-      }
-    },
-    [handleMove]
-  );
-
-  useEffect(() => {
-    const handleTouchMove = (e: TouchEvent) => {
-      if (isDragging) {
-        onTouchMove(e);
-      }
-    };
-
-    const handleTouchEnd = () => {
-      setIsDragging(false);
-    };
-
-    if (isDragging) {
-      window.addEventListener("touchmove", handleTouchMove, { passive: false });
-      window.addEventListener("touchend", handleTouchEnd);
-      window.addEventListener("touchcancel", handleTouchEnd);
-    }
-
-    return () => {
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("touchend", handleTouchEnd);
-      window.removeEventListener("touchcancel", handleTouchEnd);
-    };
-  }, [isDragging, onTouchMove]);
 
   const aspectClass = {
     square: "aspect-square",
@@ -82,15 +31,22 @@ export default function BeforeAfterSlider({
 
   return (
     <div
-      ref={containerRef}
-      onMouseMove={onMouseMove}
-      onTouchStart={() => setIsDragging(true)}
       className={cn(
         "relative select-none overflow-hidden rounded-2xl border border-gold/15 bg-cream-deep shadow-md group cursor-ew-resize",
         aspectClass,
         className
       )}
     >
+      <input
+        type="range"
+        min={0}
+        max={100}
+        value={sliderPosition}
+        onChange={(event) => setSliderPosition(Number(event.target.value))}
+        aria-label={`Comparar ${beforeLabel} e ${afterLabel}`}
+        aria-valuetext={`${Math.round(sliderPosition)}% da imagem ${afterLabel}`}
+        className="absolute inset-0 z-30 h-full w-full cursor-ew-resize opacity-0"
+      />
       {/* BEFORE IMAGE (Real Child Photo - Base) */}
       <div className="absolute inset-0 w-full h-full">
         <Image
@@ -134,7 +90,7 @@ export default function BeforeAfterSlider({
         style={{ left: `${sliderPosition}%` }}
       >
         {/* HANDLE BUTTON */}
-        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-gold hover:bg-gold-light text-primary shadow-lg border-2 border-cream flex items-center justify-center transition-all duration-150 scale-100 group-hover:scale-110 active:scale-95">
+        <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-11 h-11 rounded-full bg-gold text-primary shadow-lg border-2 border-cream flex items-center justify-center transition-transform duration-150 scale-100 group-hover:scale-105">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -156,7 +112,7 @@ export default function BeforeAfterSlider({
       {/* SUBTLE INTERACTION HINT OVERLAY */}
       <div className="absolute inset-x-0 top-4 text-center pointer-events-none transition-opacity duration-500 opacity-100 group-hover:opacity-0">
         <span className="inline-block rounded-full bg-dark/40 backdrop-blur-md px-3 py-1 text-[11px] font-medium text-white shadow-sm">
-          Passe o mouse ou arraste para ver a transformação
+          Arraste ou use as setas do teclado para comparar
         </span>
       </div>
     </div>

@@ -182,7 +182,7 @@ export default async function ParaTodasOcasioesPage() {
 
                 {/* Subtopics bullet suggestions */}
                 <div className="pt-3 mt-4 border-t border-cream-deep/15">
-                  <ul className="space-y-1 text-[9px] text-dark/50 font-body">
+                  <ul className="space-y-1 text-xs text-dark/70 font-body">
                     {o.bullets.map((b, idx) => (
                       <li key={idx} className="flex items-center gap-1.5">
                         <span className="text-gold font-bold">✓</span>
@@ -227,7 +227,7 @@ export default async function ParaTodasOcasioesPage() {
                   <h4 className="font-serif text-sm font-bold text-primary pt-2">
                     {s.title}
                   </h4>
-                  <p className="text-[10px] text-dark/60 leading-relaxed font-body">
+                  <p className="text-sm text-dark/70 leading-relaxed font-body">
                     {s.desc}
                   </p>
                 </div>

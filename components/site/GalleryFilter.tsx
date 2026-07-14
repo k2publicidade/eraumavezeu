@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { BookOpen, Sparkles, Star } from "lucide-react";
+import { BookOpen, Sparkles } from "lucide-react";
+import { useModalFocus } from "@/lib/hooks/use-modal-focus";
 
 type Theme = { slug: string; label: string };
 type Sample = {
@@ -30,6 +31,9 @@ export default function GalleryFilter({ themes, samples }: Props) {
   const [active, setActive] = useState<string>("todos");
   const [selectedSample, setSelectedSample] = useState<Sample | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const modalTriggerRef = useRef<HTMLButtonElement | null>(null);
 
   // Filter samples based on selected theme
   const filtered = useMemo(() => {
@@ -37,24 +41,23 @@ export default function GalleryFilter({ themes, samples }: Props) {
     return samples.filter((s) => s.theme === active);
   }, [active, samples]);
 
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (selectedSample) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [selectedSample]);
+  const closeModal = useCallback(() => setSelectedSample(null), []);
+
+  useModalFocus({
+    isOpen: selectedSample !== null,
+    onClose: closeModal,
+    containerRef: modalRef,
+    initialFocusRef: closeButtonRef,
+    returnFocusRef: modalTriggerRef,
+  });
 
   // Find theme label helper
   const getThemeLabel = (slug: string) => {
     return themes.find((t) => t.slug === slug)?.label || slug;
   };
 
-  const handleOpenModal = (sample: Sample) => {
+  const handleOpenModal = (sample: Sample, trigger: HTMLButtonElement) => {
+    modalTriggerRef.current = trigger;
     setSelectedSample(sample);
     setActiveImageIndex(0);
   };
@@ -95,12 +98,17 @@ export default function GalleryFilter({ themes, samples }: Props) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filtered.map((s) => (
+          {filtered.map((s, index) => (
             <article
               key={s.id}
-              onClick={() => handleOpenModal(s)}
-              className="bg-white rounded-3xl overflow-hidden border border-gold/15 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 cursor-pointer group flex flex-col h-full"
+              className="relative bg-white rounded-2xl overflow-hidden border border-gold/15 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full"
             >
+              <button
+                type="button"
+                onClick={(event) => handleOpenModal(s, event.currentTarget)}
+                className="absolute inset-0 z-30 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                aria-label={`Ver detalhes e páginas de ${s.title}`}
+              />
               {/* IMAGE COVER WRAPPER */}
               <div className="aspect-[3/4] relative w-full overflow-hidden bg-cream-deep">
                 <Image
@@ -109,12 +117,12 @@ export default function GalleryFilter({ themes, samples }: Props) {
                   fill
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  priority
+                  priority={index < 4}
                 />
 
                 {/* HOVER OVERLAY BUTTON */}
                 <div className="absolute inset-0 bg-primary-dark/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
-                  <span className="bg-white/95 text-primary text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded-full shadow-md border border-gold/15 flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                  <span className="flex min-h-11 translate-y-2 items-center gap-1.5 rounded-full border border-gold/15 bg-white/95 px-4 py-3 text-xs font-bold uppercase tracking-wider text-primary shadow-md transition-transform duration-300 group-hover:translate-y-0">
                     <BookOpen className="w-3.5 h-3.5" />
                     Folhear Livro
                   </span>
@@ -129,7 +137,7 @@ export default function GalleryFilter({ themes, samples }: Props) {
               {/* CARD INFO */}
               <div className="p-5 flex flex-col flex-1 justify-between">
                 <div>
-                  <span className="text-[10px] font-bold text-gold-dark uppercase tracking-widest mb-1.5 block">
+                  <span className="mb-1.5 block text-xs font-bold uppercase tracking-widest text-gold-dark">
                     {getThemeLabel(s.theme)}
                   </span>
                   <h3 className="font-serif text-base text-primary font-semibold group-hover:text-gold-dark transition-colors duration-300 leading-snug">
@@ -156,19 +164,25 @@ export default function GalleryFilter({ themes, samples }: Props) {
       {/* DETAIL MODAL (LIGHTBOX) */}
       {selectedSample && (
         <div 
-          onClick={() => setSelectedSample(null)}
+          onClick={closeModal}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-dark/60 backdrop-blur-md transition-all duration-300 overflow-y-auto"
         >
           {/* Modal Container */}
           <div 
+            ref={modalRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="gallery-dialog-title"
+            tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
-            className="bg-cream max-w-4xl w-full rounded-3xl overflow-hidden shadow-xl border border-gold/20 grid grid-cols-1 md:grid-cols-2 relative max-h-[92vh] md:max-h-[85vh]"
+            className="bg-cream max-w-4xl w-full rounded-2xl overflow-hidden shadow-xl border border-gold/20 grid grid-cols-1 md:grid-cols-2 relative max-h-[92vh] md:max-h-[85vh]"
           >
             
             {/* CLOSE BUTTON */}
             <button
-              onClick={() => setSelectedSample(null)}
-              className="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-white/95 border border-gold/15 shadow-sm flex items-center justify-center text-primary hover:text-gold hover:scale-105 active:scale-95 transition-all duration-200"
+              ref={closeButtonRef}
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-30 w-11 h-11 rounded-full bg-white/95 border border-gold/15 shadow-sm flex items-center justify-center text-primary hover:text-gold active:scale-95 transition-colors duration-200"
               aria-label="Fechar detalhes"
             >
               <svg
@@ -192,27 +206,26 @@ export default function GalleryFilter({ themes, samples }: Props) {
                   fill
                   className="object-cover transition-opacity duration-300"
                   sizes="(max-width: 768px) 100vw, 400px"
-                  priority
                 />
 
                 {/* Left/Right Buttons inside image */}
                 <button
                   onClick={() => setActiveImageIndex((prev) => (prev === 0 ? selectedSample.images.length - 1 : prev - 1))}
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-primary flex items-center justify-center border border-gold/15 transition-all shadow-sm z-20 active:scale-90"
+                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 hover:bg-white text-primary flex items-center justify-center border border-gold/15 transition-colors shadow-sm z-20 active:scale-95"
                   aria-label="Anterior"
                 >
                   ←
                 </button>
                 <button
                   onClick={() => setActiveImageIndex((prev) => (prev === selectedSample.images.length - 1 ? 0 : prev + 1))}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-primary flex items-center justify-center border border-gold/15 transition-all shadow-sm z-20 active:scale-90"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 hover:bg-white text-primary flex items-center justify-center border border-gold/15 transition-colors shadow-sm z-20 active:scale-95"
                   aria-label="Próximo"
                 >
                   →
                 </button>
 
                 {/* Page indicator */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-primary/75 backdrop-blur-xs text-cream text-[9px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-primary/85 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-cream backdrop-blur-xs">
                   {activeImageIndex + 1} / {selectedSample.images.length}
                 </div>
               </div>
@@ -223,8 +236,10 @@ export default function GalleryFilter({ themes, samples }: Props) {
                   <button
                     key={index}
                     onClick={() => setActiveImageIndex(index)}
+                    aria-label={`Mostrar página ${index + 1}`}
+                    aria-pressed={activeImageIndex === index}
                     className={cn(
-                      "relative w-9 h-12 rounded-md overflow-hidden border transition-all flex-shrink-0",
+                      "relative w-11 h-14 rounded-md overflow-hidden border transition-all flex-shrink-0",
                       activeImageIndex === index 
                         ? "border-gold ring-1 ring-gold shadow-sm scale-105" 
                         : "border-cream-deep/30 opacity-60 hover:opacity-100"
@@ -248,16 +263,16 @@ export default function GalleryFilter({ themes, samples }: Props) {
                 {/* Header Metadata */}
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-xl">{selectedSample.emoji}</span>
-                  <span className="text-[10px] font-bold text-gold-dark uppercase tracking-widest bg-gold/10 px-2.5 py-1 rounded-full border border-gold/10">
+                  <span className="rounded-full border border-gold/10 bg-gold/10 px-2.5 py-1 text-xs font-bold uppercase tracking-widest text-gold-dark">
                     Tema: {getThemeLabel(selectedSample.theme)}
                   </span>
-                  <span className="text-[10px] font-bold text-primary/75 uppercase tracking-widest bg-primary/5 px-2.5 py-1 rounded-full border border-primary/5">
+                  <span className="rounded-full border border-primary/5 bg-primary/5 px-2.5 py-1 text-xs font-bold uppercase tracking-widest text-primary/75">
                     {selectedSample.age}
                   </span>
                 </div>
 
                 {/* Story Info */}
-                <h3 className="font-serif text-2xl md:text-3xl text-primary font-bold leading-tight mb-1">
+                  <h3 id="gallery-dialog-title" className="font-serif text-2xl md:text-3xl text-primary font-bold leading-tight mb-1">
                   {selectedSample.bookTitle}
                 </h3>
                 <p className="font-sans text-sm text-gold-dark font-medium italic mb-6">
@@ -274,7 +289,7 @@ export default function GalleryFilter({ themes, samples }: Props) {
                 </div>
 
                 {/* Quote / Book Excerpt */}
-                <div className="bg-rose-pale border-l-2 border-gold rounded-r-2xl p-4 mb-6 italic relative overflow-hidden">
+                <div className="bg-rose-pale border border-gold/25 rounded-xl p-4 mb-6 italic relative overflow-hidden">
                   <span className="absolute -top-2 -left-1 text-5xl text-gold/20 font-serif pointer-events-none select-none">
                     &ldquo;
                   </span>
@@ -293,7 +308,7 @@ export default function GalleryFilter({ themes, samples }: Props) {
                   <span>Personalizar este tema</span>
                   <span className="transition-transform group-hover:translate-x-1 font-bold text-gold">→</span>
                 </Link>
-                <p className="text-[10px] text-dark/40 text-center">
+                <p className="text-xs text-dark/65 text-center">
                   Comece agora e veja a prévia do seu livro em minutos
                 </p>
               </div>

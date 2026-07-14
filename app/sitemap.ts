@@ -13,6 +13,7 @@ const PUBLIC_ROUTES = [
   "quem-somos",
   "contato",
   "privacidade",
+  "termos",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

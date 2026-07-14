@@ -7,6 +7,7 @@ import {
   MAX_PHOTOS,
   THEMES,
 } from "@/lib/wizard/types";
+import { productCustomizationSchema } from "@/lib/product-customization";
 
 // extrai os slugs dos catálogos do wizard como tuple para z.enum —
 // evita drift entre as opções do wizard e a validação do servidor
@@ -31,6 +32,7 @@ export const checkoutItemSchema = z.object({
   slug: z.string().min(1),
   quantity: z.number().int().min(1).max(10),
   customization: customizationSnapshotSchema.optional(),
+  customizations: z.array(productCustomizationSchema).max(10).default([]),
 });
 
 const onlyDigits = (s: string) => s.replace(/\D/g, "");

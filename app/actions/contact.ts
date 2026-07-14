@@ -16,8 +16,13 @@ const contactSchema = z.object({
 
 const statusSchema = z.nativeEnum(ContactStatus);
 
-export async function submitContactMessage(prevState: any, formData: FormData) {
+export async function submitContactMessage(_prevState: unknown, formData: FormData) {
   try {
+    // Honeypot invisível para reduzir spam automatizado sem criar atrito humano.
+    if (String(formData.get("website") ?? "").trim()) {
+      return { success: true, error: null };
+    }
+
     const raw = {
       name: formData.get("name"),
       email: formData.get("email"),

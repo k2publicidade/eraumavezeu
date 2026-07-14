@@ -8,8 +8,8 @@ export default async function WhatsAppFloatingButton() {
       href={buildWhatsappHref(settings)}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Falar no WhatsApp"
-      className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+      aria-label="Falar com a equipe no WhatsApp (abre em nova aba)"
+      className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-30 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-105 active:scale-95 transition-transform focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
     >
       <svg
         width="28"

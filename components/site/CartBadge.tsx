@@ -15,7 +15,7 @@ export default function CartBadge() {
     <Link
       href="/carrinho"
       aria-label={`Carrinho${count > 0 ? ` com ${count} itens` : ""}`}
-      className="relative inline-flex items-center justify-center w-10 h-10 rounded-full border border-primary/20 hover:border-primary transition"
+      className="relative inline-flex items-center justify-center w-11 h-11 rounded-full border border-primary/20 hover:border-primary hover:bg-primary/5 transition-colors"
     >
       <svg
         width="18"

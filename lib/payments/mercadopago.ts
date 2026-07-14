@@ -2,6 +2,7 @@ import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import crypto from "crypto";
 import type { PaymentGateway, OrderWithDetails, PaymentResponse, WebhookResult } from "./types";
 import { orderCodeOf } from "@/lib/orders/build-order";
+import { getSiteUrl } from "@/lib/site-url";
 
 const accessToken = process.env.MP_ACCESS_TOKEN || "";
 
@@ -20,7 +21,7 @@ export class MercadoPagoGateway implements PaymentGateway {
       return { success: false, error: "Token de acesso do Mercado Pago não configurado." };
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+    const baseUrl = getSiteUrl();
 
     try {
       const preferenceItems = order.items.map((it) => {
@@ -116,10 +117,10 @@ export class MercadoPagoGateway implements PaymentGateway {
       if (isHttpLocalhost) {
         console.warn(
           "\n[MERCADO PAGO - ALERTA DE CONFIGURAÇÃO]\n" +
-          "Identificamos que NEXT_PUBLIC_URL está configurada como HTTP local (localhost).\n" +
+          "Identificamos que a URL pública está configurada como HTTP local (localhost).\n" +
           "O Mercado Pago exige obrigatoriamente protocolo HTTPS para as URLs de retorno (back_urls e webhook).\n" +
           "Para testar localmente, utilize uma ferramenta de túnel (ex: ngrok, localtunnel) e defina a variável:\n" +
-          "NEXT_PUBLIC_URL=\"https://seu-subdominio.ngrok-free.app\"\n"
+          "NEXT_PUBLIC_SITE_URL=\"https://seu-subdominio.ngrok-free.app\"\n"
         );
       }
       

@@ -38,6 +38,8 @@ export default function PhotoStep() {
           value={childName}
           onChange={(e) => setChildName(e.target.value)}
           maxLength={30}
+          required
+          autoComplete="off"
           placeholder="Ex.: Sofia"
           className="input-field"
         />
@@ -55,7 +57,7 @@ export default function PhotoStep() {
             onChange={(e) =>
               e.target.checked ? acceptConsent() : revokeConsent()
             }
-            className="mt-1 h-5 w-5 accent-primary flex-shrink-0"
+            className="mt-0.5 h-6 w-6 accent-primary flex-shrink-0"
             aria-required="true"
             aria-describedby="consent-hint"
           />
@@ -106,7 +108,7 @@ export default function PhotoStep() {
                 {/* Preview com marca d'água via API para conformidade com LGPD */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={`/api/watermark?url=${encodeURIComponent(p.url)}`}
+                  src={`/api/watermark?key=${encodeURIComponent(p.fileKey)}`}
                   alt={p.name}
                   className="w-full h-full object-cover"
                 />
@@ -114,7 +116,7 @@ export default function PhotoStep() {
                   type="button"
                   aria-label={`Remover ${p.name}`}
                   onClick={() => removePhoto(p.fileKey)}
-                  className="absolute top-1 right-1 w-7 h-7 rounded-full bg-white/95 text-dark hover:bg-red-500 hover:text-white transition flex items-center justify-center text-sm font-bold shadow"
+                  className="absolute right-1.5 top-1.5 flex h-11 w-11 items-center justify-center rounded-full bg-white/95 text-lg font-bold text-dark shadow transition hover:bg-red-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                 >
                   ×
                 </button>
@@ -151,19 +153,19 @@ export default function PhotoStep() {
         )}
 
         {!canUpload && (
-          <p className="text-sm text-dark/55 italic">
+          <p role="status" className="text-sm text-dark/70 italic">
             Aceite o termo acima para liberar o envio de fotos.
           </p>
         )}
 
         {remaining === 0 && (
-          <p className="text-sm text-forest font-medium">
+          <p role="status" className="text-sm text-forest font-medium">
             Limite de {MAX_PHOTOS} fotos atingido.
           </p>
         )}
 
         {uploadError && (
-          <p className="mt-3 text-sm text-fox-dark font-medium">{uploadError}</p>
+          <p role="alert" className="mt-3 text-sm text-red-700 font-medium">{uploadError}</p>
         )}
       </div>
     </div>

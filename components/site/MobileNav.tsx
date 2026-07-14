@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import { NAV_ITEMS } from "@/lib/site-config";
+import { useModalFocus } from "@/lib/hooks/use-modal-focus";
 
 type MobileNavProps = {
   siteName: string;
@@ -25,24 +26,29 @@ export default function MobileNav({
   userEmail = "",
 }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const openButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeMenu = useCallback(() => setIsOpen(false), []);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [isOpen]);
+  useModalFocus({
+    isOpen,
+    onClose: closeMenu,
+    containerRef: dialogRef,
+    initialFocusRef: closeButtonRef,
+    returnFocusRef: openButtonRef,
+  });
 
   return (
-    <div className="md:hidden">
+    <div className="xl:hidden">
       <button
+        ref={openButtonRef}
         type="button"
         aria-label="Abrir menu"
         aria-expanded={isOpen}
+        aria-controls="menu-mobile"
         onClick={() => setIsOpen(true)}
-        className="text-primary p-2 -mr-2 hover:text-primary-light transition-colors"
+        className="flex h-11 w-11 items-center justify-center rounded-full text-primary hover:bg-primary/5 hover:text-primary-light transition-colors"
       >
         <svg
           width="24"
@@ -63,19 +69,23 @@ export default function MobileNav({
 
       {isOpen && (
         <div
+          id="menu-mobile"
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label="Menu principal"
+          tabIndex={-1}
           className="fixed inset-0 bg-cream z-50 flex flex-col overflow-y-auto"
         >
           {/* Header do menu mobile */}
           <div className="flex items-center justify-between px-4 h-20 border-b border-gold/25 shrink-0">
             <span className="font-serif text-xl text-primary">{siteName}</span>
             <button
+              ref={closeButtonRef}
               type="button"
               aria-label="Fechar menu"
-              onClick={() => setIsOpen(false)}
-              className="text-primary p-2 -mr-2 hover:text-primary-light transition-colors"
+              onClick={closeMenu}
+              className="flex h-11 w-11 items-center justify-center rounded-full text-primary hover:bg-primary/5 hover:text-primary-light transition-colors"
             >
               <svg
                 width="24"
@@ -100,8 +110,8 @@ export default function MobileNav({
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setIsOpen(false)}
-                className="font-serif text-lg text-primary hover:text-primary-light py-2.5 border-b border-gold/15 transition-colors"
+                onClick={closeMenu}
+                className="flex min-h-12 items-center border-b border-gold/15 py-3 font-serif text-lg text-primary hover:text-primary-light transition-colors"
               >
                 {item.label}
               </Link>
@@ -112,42 +122,42 @@ export default function MobileNav({
                 {isAdmin && (
                   <Link
                     href="/admin"
-                    onClick={() => setIsOpen(false)}
-                    className="font-serif text-lg text-gold hover:text-gold-dark py-2.5 border-b border-gold/15 transition-colors flex items-center gap-2"
+                    onClick={closeMenu}
+                    className="flex min-h-12 items-center gap-2 border-b border-gold/15 py-3 font-serif text-lg text-gold hover:text-gold-dark transition-colors"
                   >
-                    <span>📊</span> Painel Administrativo
+                    <span aria-hidden="true">📊</span> Painel Administrativo
                   </Link>
                 )}
                 <Link
                   href="/pedidos"
-                  onClick={() => setIsOpen(false)}
-                  className="font-serif text-lg text-primary hover:text-primary-light py-2.5 border-b border-gold/15 transition-colors flex items-center gap-2"
+                  onClick={closeMenu}
+                  className="flex min-h-12 items-center gap-2 border-b border-gold/15 py-3 font-serif text-lg text-primary hover:text-primary-light transition-colors"
                 >
-                  <span>🧾</span> Meus Pedidos
+                  <span aria-hidden="true">🧾</span> Meus Pedidos
                 </Link>
                 <button
                   onClick={() => {
-                    setIsOpen(false);
+                    closeMenu();
                     signOut({ callbackUrl: "/" });
                   }}
-                  className="font-serif text-lg text-red-600 hover:text-red-800 py-2.5 border-b border-gold/15 transition-colors text-left flex items-center gap-2"
+                  className="flex min-h-12 items-center gap-2 border-b border-gold/15 py-3 text-left font-serif text-lg text-red-700 hover:text-red-900 transition-colors"
                 >
-                  <span>🚪</span> Sair da Conta
+                  <span aria-hidden="true">🚪</span> Sair da Conta
                 </button>
               </>
             ) : (
               <Link
                 href="/login"
-                onClick={() => setIsOpen(false)}
-                className="font-serif text-lg text-primary hover:text-primary-light py-2.5 border-b border-gold/15 transition-colors flex items-center gap-2"
+                onClick={closeMenu}
+                className="flex min-h-12 items-center gap-2 border-b border-gold/15 py-3 font-serif text-lg text-primary hover:text-primary-light transition-colors"
               >
-                <span>🔑</span> Entrar na Conta
+                <span aria-hidden="true">🔑</span> Entrar na Conta
               </Link>
             )}
 
             <Link
               href={primaryCtaHref}
-              onClick={() => setIsOpen(false)}
+              onClick={closeMenu}
               className="btn-primary-lg mt-6 text-center"
             >
               {primaryCtaLabel}

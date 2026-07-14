@@ -86,10 +86,11 @@ export default function FAQInteractive({ items, whatsappNumber }: FAQInteractive
         <div className="relative">
           <input
             type="text"
+            aria-label="Pesquisar perguntas frequentes"
             placeholder="Pesquisar dúvidas..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-cream-deep/30 bg-white/70 text-xs placeholder:text-dark/45 focus:border-gold focus:bg-white focus:outline-none transition-all"
+            className="w-full min-h-11 pl-10 pr-16 py-3 rounded-xl border border-cream-deep/30 bg-white/70 text-sm placeholder:text-dark/65 focus:border-gold focus:bg-white focus:outline-none transition-colors"
           />
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-dark/40">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
@@ -98,8 +99,10 @@ export default function FAQInteractive({ items, whatsappNumber }: FAQInteractive
           </div>
           {searchQuery && (
             <button
+              type="button"
+              aria-label="Limpar pesquisa"
               onClick={() => setSearchQuery("")}
-              className="absolute inset-y-0 right-3 flex items-center text-dark/35 hover:text-dark/60 text-xs font-bold"
+              className="absolute inset-y-0 right-1 flex min-w-11 items-center justify-center text-dark/60 hover:text-primary text-xs font-bold"
             >
               Limpar
             </button>
@@ -115,11 +118,13 @@ export default function FAQInteractive({ items, whatsappNumber }: FAQInteractive
             return (
               <button
                 key={cat.id}
+                type="button"
+                aria-pressed={isActive}
                 onClick={() => {
                   setActiveCategory(cat.id);
                   setOpenItemId(null); // Reset open item on category change
                 }}
-                className={`flex-shrink-0 flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border transition-all text-xs font-semibold select-none ${
+                className={`min-h-11 flex-shrink-0 flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl border transition-colors text-sm font-semibold select-none ${
                   isActive
                     ? "bg-primary border-primary text-cream shadow-sm"
                     : "bg-white border-cream-deep/20 text-dark/70 hover:border-gold/30 hover:text-dark"
@@ -127,7 +132,7 @@ export default function FAQInteractive({ items, whatsappNumber }: FAQInteractive
               >
                 <span>{cat.label}</span>
                 <span
-                  className={`text-[9px] px-2 py-0.5 rounded-full ${
+                  className={`text-xs px-2 py-0.5 rounded-full ${
                     isActive ? "bg-white/20 text-cream" : "bg-cream-deep/30 text-dark/65"
                   }`}
                 >
@@ -157,11 +162,16 @@ export default function FAQInteractive({ items, whatsappNumber }: FAQInteractive
                 >
                   {/* Question Button */}
                   <button
+                    id={`faq-question-${item.id}`}
+                    type="button"
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${item.id}`}
                     onClick={() => toggleItem(item.id)}
-                    className="w-full text-left px-5 py-4 flex items-center justify-between gap-4 font-serif text-sm font-bold text-primary hover:bg-gold/5 transition-all select-none"
+                    className="w-full min-h-14 text-left px-5 py-4 flex items-center justify-between gap-4 font-serif text-base font-bold text-primary hover:bg-gold/5 transition-colors select-none"
                   >
                     <span>{item.question}</span>
                     <div
+                      aria-hidden="true"
                       className={`w-6 h-6 rounded-full border border-cream-deep/25 flex items-center justify-center text-xs transition-transform duration-300 ${
                         isOpen ? "rotate-180 border-gold/40 text-gold bg-gold/5" : "text-dark/45"
                       }`}
@@ -172,16 +182,16 @@ export default function FAQInteractive({ items, whatsappNumber }: FAQInteractive
                     </div>
                   </button>
 
-                  {/* Answer Container (Smooth Height Transition) */}
-                  <div
-                    className={`transition-all duration-300 ease-in-out ${
-                      isOpen ? "max-h-[300px] border-t border-cream-deep/15" : "max-h-0"
-                    }`}
-                  >
-                    <div className="p-5 text-xs text-dark/75 leading-relaxed font-body">
+                  {isOpen && (
+                    <div
+                      id={`faq-answer-${item.id}`}
+                      role="region"
+                      aria-labelledby={`faq-question-${item.id}`}
+                      className="border-t border-cream-deep/15 p-5 text-sm text-dark/80 leading-relaxed font-body animate-fade-up"
+                    >
                       {item.answer}
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
@@ -200,7 +210,7 @@ export default function FAQInteractive({ items, whatsappNumber }: FAQInteractive
               href={`https://wa.me/${whatsappNumber}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#25D366] text-white hover:bg-[#20BA56] active:scale-95 px-5 py-2.5 rounded-full font-bold uppercase tracking-wider text-[10px] shadow-sm transition-all"
+              className="inline-flex min-h-11 items-center gap-2 rounded-full bg-[#187B3D] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all hover:bg-[#126533] active:scale-[0.98]"
             >
               <span>Perguntar no WhatsApp</span>
               <span>💬</span>

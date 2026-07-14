@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
-import { User, LogOut, LayoutDashboard, ShoppingBag, ChevronDown } from "lucide-react";
+import { LogOut, LayoutDashboard, ShoppingBag, ChevronDown } from "lucide-react";
 
 interface UserMenuProps {
   isLoggedIn: boolean;
@@ -15,6 +15,7 @@ interface UserMenuProps {
 export default function UserMenu({ isLoggedIn, isAdmin, userName, userEmail }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -23,9 +24,17 @@ export default function UserMenu({ isLoggedIn, isAdmin, userName, userEmail }: U
         setIsOpen(false);
       }
     }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        buttonRef.current?.focus();
+      }
+    }
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
 
@@ -33,7 +42,7 @@ export default function UserMenu({ isLoggedIn, isAdmin, userName, userEmail }: U
     return (
       <Link
         href="/login"
-        className="text-dark/80 hover:text-primary transition-colors duration-200 text-xs font-semibold uppercase tracking-[0.1em] hover:underline hover:underline-offset-4"
+        className="inline-flex min-h-11 items-center text-xs font-semibold uppercase tracking-[0.1em] text-dark/80 transition-colors duration-200 hover:text-primary hover:underline hover:underline-offset-4"
       >
         Entrar
       </Link>
@@ -52,10 +61,13 @@ export default function UserMenu({ isLoggedIn, isAdmin, userName, userEmail }: U
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 rounded-full border border-gold/30 bg-white/60 p-1 pr-3 hover:bg-white hover:border-gold/60 transition-all duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        className="flex min-h-11 items-center gap-2 rounded-full border border-gold/30 bg-white/60 p-1 pr-3 hover:bg-white hover:border-gold/60 transition-colors duration-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+        aria-label={`Abrir menu da conta de ${userName || userEmail}`}
         aria-haspopup="true"
         aria-expanded={isOpen}
+        aria-controls="menu-da-conta"
       >
         <div className="w-8 h-8 rounded-full bg-primary text-cream flex items-center justify-center text-xs font-bold ring-2 ring-gold/20">
           {initials}
@@ -67,28 +79,28 @@ export default function UserMenu({ isLoggedIn, isAdmin, userName, userEmail }: U
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 rounded-2xl border border-gold/20 bg-white p-2 shadow-lg z-50 animate-fade-up">
+        <div id="menu-da-conta" className="absolute right-0 mt-2 w-56 rounded-2xl border border-gold/20 bg-white p-2 shadow-lg z-50 animate-fade-up">
           <div className="px-4 py-2.5 border-b border-gold/10">
             <p className="text-xs font-bold text-primary truncate">{userName || "Usuário"}</p>
-            <p className="text-[10px] text-dark/50 truncate mt-0.5">{userEmail}</p>
+            <p className="mt-0.5 truncate text-xs text-dark/65">{userEmail}</p>
           </div>
           <div className="py-1">
             {isAdmin && (
               <Link
                 href="/admin"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wider text-dark/85 hover:bg-gold/10 hover:text-primary transition-all duration-200"
+                className="flex min-h-11 items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wider text-dark/85 hover:bg-gold/10 hover:text-primary transition-all duration-200"
               >
-                <LayoutDashboard className="w-4 h-4 text-gold" />
+                <LayoutDashboard aria-hidden="true" className="w-4 h-4 text-gold" />
                 Painel Admin
               </Link>
             )}
             <Link
               href="/pedidos"
               onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wider text-dark/85 hover:bg-gold/10 hover:text-primary transition-all duration-200"
+              className="flex min-h-11 items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wider text-dark/85 hover:bg-gold/10 hover:text-primary transition-all duration-200"
             >
-              <ShoppingBag className="w-4 h-4 text-gold" />
+              <ShoppingBag aria-hidden="true" className="w-4 h-4 text-gold" />
               Meus Pedidos
             </Link>
           </div>
@@ -98,9 +110,9 @@ export default function UserMenu({ isLoggedIn, isAdmin, userName, userEmail }: U
                 setIsOpen(false);
                 signOut({ callbackUrl: "/" });
               }}
-              className="w-full flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-wider text-red-600 hover:bg-red-50 transition-all duration-200 text-left"
+              className="flex min-h-11 w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider text-red-700 transition-all duration-200 hover:bg-red-50"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut aria-hidden="true" className="w-4 h-4" />
               Sair
             </button>
           </div>

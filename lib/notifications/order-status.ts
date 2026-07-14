@@ -3,6 +3,7 @@ import { sendEmail } from "@/lib/email";
 import { statusLabelOf, type OrderStatusValue } from "@/lib/orders/status";
 import { sendMessage } from "@/lib/whatsapp";
 import { initWhatsAppFromEnv } from "@/lib/whatsapp-evolution";
+import { getSiteUrl } from "@/lib/site-url";
 
 initWhatsAppFromEnv();
 
@@ -49,7 +50,7 @@ export async function notifyOrderStatusChanged(
   const firstName = data.buyerName.trim().split(/\s+/)[0] || "cliente";
   const label = statusLabelOf(data.toStatus);
   const message = statusMessage(data);
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+  const baseUrl = getSiteUrl();
 
   const tasks: { label: string; run: () => Promise<{ ok: boolean; error?: string }> }[] = [
     {

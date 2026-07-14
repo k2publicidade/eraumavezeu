@@ -78,7 +78,7 @@
     content: "";
     position: absolute;
     top: 0;
-    left: -150%;
+    left: 0;
     width: 60%;
     height: 100%;
     background: linear-gradient(
@@ -87,13 +87,13 @@
       rgba(212, 168, 67, 0.45) 50%,
       transparent 100%
     );
-    transform: skewX(-25deg);
+    transform: translateX(-180%) skewX(-25deg);
+    transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
     pointer-events: none;
   }
 
   .btn-primary:hover::after {
-    left: 150%;
-    transition: left 0.9s cubic-bezier(0.23, 1, 0.32, 1);
+    transform: translateX(320%) skewX(-25deg);
   }
 
   /* Botão primário grande — hero/CTA section */
@@ -178,7 +178,7 @@
   .input-field {
     @apply w-full px-4 py-3 rounded-xl
            border-2 border-primary/15 bg-cream-light
-           text-dark placeholder:text-dark/40
+           text-dark placeholder:text-dark/65
            focus:border-primary focus:outline-none focus:bg-white
            transition-colors duration-200;
   }
@@ -241,14 +241,11 @@
 
 /* Scroll Reveal Engine classes */
 .reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(18px);
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .reveal-on-scroll.revealed {
-  opacity: 1;
   transform: translateY(0);
 }
 
@@ -568,4 +565,3 @@
   pointer-events: none;
   z-index: 5;
 }
-

@@ -14,6 +14,7 @@ import {
   render,
 } from "@react-email/components";
 import { type OrderStatusValue, statusLabelOf } from "@/lib/orders/status";
+import { getSiteUrl } from "@/lib/site-url";
 
 // Paleta da marca
 const NAVY = "#1E3A5F";
@@ -105,7 +106,7 @@ export function OrderStatusEmail({
   const firstName = buyerName.trim().split(/\s+/)[0] || "cliente";
   const label = statusLabelOf(toStatus);
   const details = getStatusDetails(toStatus, trackingCode);
-  const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:3000";
+  const baseUrl = getSiteUrl();
   const trackUrl = `${baseUrl}/pedido/${orderId}`;
 
   return (

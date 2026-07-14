@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const result = await purgeExpiredPhotos({
+  const legacyResult = await purgeExpiredPhotos({
     findExpired: (now) =>
       db.customization.findMany({
         where: {
@@ -34,6 +34,32 @@ export async function GET(req: Request) {
       });
     },
   });
+
+  const itemResult = await purgeExpiredPhotos({
+    findExpired: async (now) => {
+      const rows = await db.orderItemCustomization.findMany({
+        where: {
+          photosExpireAt: { lte: now },
+          NOT: { photoKeys: { isEmpty: true } },
+        },
+        select: { id: true, photoKeys: true },
+      });
+      return rows.map((row) => ({ orderId: row.id, photoKeys: row.photoKeys }));
+    },
+    deleteFiles: deletePhotoFiles,
+    clearPhotoKeys: async (id) => {
+      await db.orderItemCustomization.update({
+        where: { id },
+        data: { photoKeys: [] },
+      });
+    },
+  });
+
+  const result = {
+    purged: legacyResult.purged + itemResult.purged,
+    photosDeleted: legacyResult.photosDeleted + itemResult.photosDeleted,
+    failures: legacyResult.failures + itemResult.failures,
+  };
 
   console.log(
     `[lgpd:purge] purged=${result.purged} photos=${result.photosDeleted} failures=${result.failures}`,

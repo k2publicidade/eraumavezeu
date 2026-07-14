@@ -52,6 +52,10 @@ prisma/*.db-journal
 # misc
 *.tsbuildinfo
 next-env.d.ts
+tmp/
+.pnpm-store/
+.codex/
+.impeccable/
 
 # GSD / Claude tooling — artefatos locais
 .claude/
@@ -72,3 +76,4 @@ app/**/CLAUDE.md
 prompt_claude_code_eraumavezeu*.md
 
 .vercel
+.env*

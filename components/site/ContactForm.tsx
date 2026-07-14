@@ -45,9 +45,10 @@ export default function ContactForm() {
 
   if (feedback?.type === "success") {
     return (
-      <div className="rounded-3xl border border-gold/20 bg-cream-light p-8 text-center shadow-sm animate-fade-up">
+      <div role="status" aria-live="polite" className="rounded-3xl border border-gold/20 bg-cream-light p-8 text-center shadow-sm animate-fade-up">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-forest/15 text-forest-dark border border-forest/30">
           <svg
+            aria-hidden="true"
             className="h-8 w-8"
             fill="none"
             viewBox="0 0 24 24"
@@ -57,8 +58,8 @@ export default function ContactForm() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="mt-6 font-serif text-2xl text-primary font-semibold">Contato Enviado!</h3>
-        <p className="mt-4 text-sm text-dark/70 leading-relaxed max-w-sm mx-auto">
+        <h3 className="mt-6 font-serif text-2xl text-primary font-semibold">Contato enviado</h3>
+        <p className="mt-4 text-base text-dark/75 leading-relaxed max-w-sm mx-auto">
           {feedback.message}
         </p>
         <button
@@ -77,13 +78,17 @@ export default function ContactForm() {
       action={handleSubmit}
       className="rounded-3xl border border-gold/25 bg-cream-light p-6 shadow-sm space-y-5 animate-fade-up"
     >
+      <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+        <label htmlFor="contact-website">Não preencha este campo</label>
+        <input id="contact-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
       <h2 className="font-serif text-2xl text-primary font-semibold">Envie uma mensagem</h2>
-      <p className="text-xs text-dark/60 leading-relaxed">
+      <p className="text-sm text-dark/70 leading-relaxed">
         Preencha o formulário abaixo e nossa equipe retornará o contato o mais rápido possível.
       </p>
 
       {feedback?.type === "error" && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-900 leading-relaxed">
+        <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900 leading-relaxed">
           ⚠️ {feedback.message}
         </div>
       )}
@@ -164,14 +169,14 @@ export default function ContactForm() {
       >
         {isPending ? (
           <>
-            <svg className="animate-spin h-4.5 w-4.5 text-white" fill="none" viewBox="0 0 24 24">
+            <svg aria-hidden="true" className="animate-spin h-4.5 w-4.5 text-white" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
             <span>Enviando...</span>
           </>
         ) : (
-          <span>Enviar Mensagem ✨</span>
+          <span>Enviar mensagem ✨</span>
         )}
       </button>
     </form>

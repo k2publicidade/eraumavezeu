@@ -4,8 +4,11 @@ import { SimulatedGateway } from "./simulado";
 
 const gateways: Record<string, PaymentGateway> = {
   MERCADOPAGO: new MercadoPagoGateway(),
-  SIMULADO: new SimulatedGateway(),
 };
+
+if (process.env.NODE_ENV !== "production") {
+  gateways.SIMULADO = new SimulatedGateway();
+}
 
 /**
  * Retorna a instância do gateway de pagamento correspondente.

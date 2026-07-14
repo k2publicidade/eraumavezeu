@@ -11,70 +11,88 @@ export default function HeroScrollVideo() {
 
   useEffect(() => {
     const video = videoRef.current;
-    
-    // Check if the video is already loaded or has metadata (e.g. from cache)
-    if (video && video.readyState >= 1) {
-      setIsLoaded(true);
-    }
+    if (!video) return;
 
-    if (video) {
-      sectionRef.current = video.closest("section");
-    }
+    if (video.readyState >= 1) setIsLoaded(true);
+    sectionRef.current = video.closest("section");
 
     const handleScroll = () => {
       const scrollY = window.scrollY;
-      
-      // Calculate dynamic scroll range based on the section's actual height
-      // This maps the animation progress perfectly to the visibility window of the Hero banner
       const scrollRange = sectionRef.current ? sectionRef.current.offsetHeight : 800;
       const progress = Math.min(Math.max(scrollY / scrollRange, 0), 1);
       progressRef.current = progress;
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll, { passive: true });
-    // Initial check
-    handleScroll();
-
-    let animationFrameId: number;
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let animationFrameId: number | null = null;
+    let isVisible = false;
 
     const updateVideoTime = () => {
-      const currentVideo = videoRef.current;
-      if (currentVideo) {
-        // Automatically mark as loaded if the video readyState is active
-        if (currentVideo.readyState >= 1) {
-          setIsLoaded(true);
-          
-          const duration = currentVideo.duration;
-          const validDuration = (duration && isFinite(duration) && !isNaN(duration)) ? duration : 3.0;
-          
-          // Subtract a tiny fraction to avoid seeking beyond the duration
-          const targetTime = progressRef.current * (validDuration - 0.02);
+      if (!isVisible || motionQuery.matches) {
+        animationFrameId = null;
+        return;
+      }
 
-          // Smoothly interpolate current time to target time (lerp factor: 0.15 for snappier feedback)
-          currentTimeRef.current = currentTimeRef.current + (targetTime - currentTimeRef.current) * 0.15;
+      const duration = video.duration;
+      const validDuration = duration && Number.isFinite(duration) ? duration : 3;
+      const targetTime = progressRef.current * (validDuration - 0.02);
+      currentTimeRef.current += (targetTime - currentTimeRef.current) * 0.15;
 
-          // Prevent decoder thrashing by only seeking if the browser has finished the previous seek
-          // and there is a meaningful time difference to apply.
-          const delta = Math.abs(currentTimeRef.current - currentVideo.currentTime);
-          if (!currentVideo.seeking && delta > 0.015) {
-            try {
-              currentVideo.currentTime = Math.min(Math.max(currentTimeRef.current, 0), validDuration - 0.02);
-            } catch (e) {
-              // Prevent crashes on initial load if seeking is temporarily unavailable
-            }
-          }
+      const delta = Math.abs(currentTimeRef.current - video.currentTime);
+      if (video.readyState >= 1 && !video.seeking && delta > 0.015) {
+        try {
+          video.currentTime = Math.min(
+            Math.max(currentTimeRef.current, 0),
+            validDuration - 0.02,
+          );
+        } catch {
+          // Some browsers temporarily reject seeks while metadata settles.
         }
       }
+
       animationFrameId = requestAnimationFrame(updateVideoTime);
     };
 
-    animationFrameId = requestAnimationFrame(updateVideoTime);
+    const startAnimation = () => {
+      if (!isVisible || motionQuery.matches || animationFrameId !== null) return;
+      animationFrameId = requestAnimationFrame(updateVideoTime);
+    };
+
+    const stopAnimation = () => {
+      if (animationFrameId !== null) cancelAnimationFrame(animationFrameId);
+      animationFrameId = null;
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          handleScroll();
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      },
+      { rootMargin: "120px 0px", threshold: 0.01 },
+    );
+
+    const handleMotionPreference = () => {
+      if (motionQuery.matches) stopAnimation();
+      else startAnimation();
+    };
+
+    observer.observe(video);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll, { passive: true });
+    motionQuery.addEventListener("change", handleMotionPreference);
+    handleScroll();
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleScroll);
-      cancelAnimationFrame(animationFrameId);
+      motionQuery.removeEventListener("change", handleMotionPreference);
+      stopAnimation();
     };
   }, []);
 
@@ -88,7 +106,7 @@ export default function HeroScrollVideo() {
       <video
         ref={videoRef}
         src="/bg_hero.webm"
-        preload="auto"
+        preload="metadata"
         muted
         playsInline
         webkit-playsinline="true"
@@ -102,9 +120,9 @@ export default function HeroScrollVideo() {
 
       {/* Loader placeholder overlay */}
       {!isLoaded && (
-        <div className="absolute inset-0 bg-[#FFF8E8] flex flex-col items-center justify-center gap-3">
+        <div className="absolute inset-0 bg-cream-warm flex flex-col items-center justify-center gap-3">
           <div className="w-10 h-10 rounded-full border-[3px] border-gold/20 border-t-primary animate-spin" />
-          <p className="text-[11px] text-primary/70 font-semibold tracking-wide uppercase">
+          <p className="text-xs text-primary/75 font-semibold tracking-wide">
             Carregando cenário mágico...
           </p>
         </div>

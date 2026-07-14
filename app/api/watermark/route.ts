@@ -1,14 +1,33 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
+import { getSignedPhotoUrls } from "@/lib/uploadthing-server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const MAX_DIMENSION = 1200;
+const MAX_SOURCE_BYTES = 10 * 1024 * 1024;
+const FETCH_TIMEOUT_MS = 8_000;
 const WATERMARK_TEXT = "ERA UMA VEZ EU";
 
+const ALLOWED_IMAGE_HOSTS = ["utfs.io", "ufs.sh", "uploadthing.com"];
+
+function isAllowedImageUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return (
+      url.protocol === "https:" &&
+      ALLOWED_IMAGE_HOSTS.some(
+        (host) => url.hostname === host || url.hostname.endsWith(`.${host}`),
+      )
+    );
+  } catch {
+    return false;
+  }
+}
+
 /**
- * GET /api/watermark?url=<uploadthing-url>
+ * GET /api/watermark?key=<uploadthing-file-key>
  *
  * Resize + watermark + return JPEG stream. Usado para previews públicos
  * de fotos que originalmente estão em bucket privado.
@@ -17,14 +36,27 @@ const WATERMARK_TEXT = "ERA UMA VEZ EU";
  */
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const imageUrl = searchParams.get("url");
+  const fileKey = searchParams.get("key");
+  if (!fileKey || !/^[A-Za-z0-9._~-]{8,300}$/.test(fileKey)) {
+    return NextResponse.json({ error: "valid key required" }, { status: 400 });
+  }
+
+  const [signedPhoto] = await getSignedPhotoUrls([fileKey]);
+  const imageUrl = signedPhoto?.url;
   if (!imageUrl) {
-    return NextResponse.json({ error: "url required" }, { status: 400 });
+    return NextResponse.json({ error: "source unavailable" }, { status: 404 });
+  }
+  if (!isAllowedImageUrl(imageUrl)) {
+    return NextResponse.json({ error: "source not allowed" }, { status: 502 });
   }
 
   let upstream: Response;
   try {
-    upstream = await fetch(imageUrl);
+    upstream = await fetch(imageUrl, {
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
   } catch {
     return NextResponse.json({ error: "fetch failed" }, { status: 502 });
   }
@@ -34,7 +66,15 @@ export async function GET(req: Request) {
       { status: upstream.status },
     );
   }
+  const contentType = upstream.headers.get("content-type") ?? "";
+  const contentLength = Number(upstream.headers.get("content-length") ?? 0);
+  if (!contentType.startsWith("image/") || contentLength > MAX_SOURCE_BYTES) {
+    return NextResponse.json({ error: "invalid source" }, { status: 415 });
+  }
   const buf = Buffer.from(await upstream.arrayBuffer());
+  if (buf.byteLength > MAX_SOURCE_BYTES) {
+    return NextResponse.json({ error: "source too large" }, { status: 413 });
+  }
 
   const meta = await sharp(buf).metadata();
   let w = meta.width ?? MAX_DIMENSION;

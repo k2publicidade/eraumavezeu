@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -13,6 +13,11 @@ import { formatBRL } from "@/lib/format";
 import { checkoutSchema } from "@/lib/validators/order";
 import { calculateShippingOptions } from "@/lib/shipping";
 import { validateCoupon } from "@/app/actions/coupons";
+import ProductCustomizationForms, {
+  buildCustomizationUnits,
+  type CustomizationUnit,
+} from "@/components/checkout/ProductCustomizationForms";
+import { productCustomizationSchema, toCustomizationPayload } from "@/lib/product-customization";
 
 // buyer + address + paymentGateway vêm do form; items entram programaticamente do carrinho
 const formSchema = checkoutSchema.pick({ buyer: true, address: true, paymentGateway: true });
@@ -25,6 +30,7 @@ function useHydrated() {
 }
 
 export default function CheckoutView() {
+  const allowSimulatedGateway = process.env.NODE_ENV !== "production";
   const hydrated = useHydrated();
   const router = useRouter();
   const items = useCartStore((s) => s.items);
@@ -33,6 +39,10 @@ export default function CheckoutView() {
   const totals = hydrated ? getTotals() : { subtotal: 0, discount: 0, total: 0, discountedUnits: 0 };
 
   const [serverError, setServerError] = useState<string | null>(null);
+  const [checkoutStep, setCheckoutStep] = useState<"customization" | "details">("customization");
+  const [customizationUnits, setCustomizationUnits] = useState<CustomizationUnit[]>([]);
+  const [showCustomizationErrors, setShowCustomizationErrors] = useState(false);
+  const customizationSignature = useRef("");
   const [cepLoading, setCepLoading] = useState(false);
   const [selectedMethod, setSelectedMethod] = useState<string>("PAC");
   const [selectedCost, setSelectedCost] = useState<number>(0);
@@ -120,6 +130,29 @@ export default function CheckoutView() {
   const watchedState = watch("address.state");
 
   useEffect(() => {
+    if (!hydrated) return;
+    const signature = items.map((item) => `${item.id}:${item.quantity}`).join("|");
+    if (signature !== customizationSignature.current) {
+      customizationSignature.current = signature;
+      setCustomizationUnits(buildCustomizationUnits(items));
+      setCheckoutStep("customization");
+    }
+  }, [hydrated, items]);
+
+  function continueToDetails() {
+    setShowCustomizationErrors(true);
+    const allValid = customizationUnits.length > 0 && customizationUnits.every((unit) =>
+      productCustomizationSchema.safeParse(toCustomizationPayload(unit.draft)).success,
+    );
+    if (!allValid) {
+      requestAnimationFrame(() => document.querySelector("[role='alert']")?.scrollIntoView({ behavior: "smooth", block: "center" }));
+      return;
+    }
+    setCheckoutStep("details");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  useEffect(() => {
     if (watchedState && watchedState.length === 2) {
       const options = calculateShippingOptions(watchedState);
       setShippingOptions(options);
@@ -168,6 +201,10 @@ export default function CheckoutView() {
         slug: it.slug,
         quantity: it.quantity,
         customization: it.customization,
+        customizations: customizationUnits
+          .filter((unit) => unit.itemId === it.id)
+          .sort((a, b) => a.unitIndex - b.unitIndex)
+          .map((unit) => toCustomizationPayload(unit.draft)),
       })),
       shippingMethod: selectedMethod,
       shippingCost: selectedCost,
@@ -202,16 +239,37 @@ export default function CheckoutView() {
     );
   }
 
+  if (checkoutStep === "customization") {
+    return (
+      <div className="mx-auto max-w-4xl">
+        <ProductCustomizationForms
+          units={customizationUnits}
+          onChange={setCustomizationUnits}
+          showErrors={showCustomizationErrors}
+        />
+        <div className="mt-8 flex flex-col-reverse gap-3 border-t border-gold/25 pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <Link href="/carrinho" className="btn-ghost justify-center">Voltar ao carrinho</Link>
+          <button type="button" onClick={continueToDetails} className="btn-primary-lg justify-center">
+            Continuar para entrega e pagamento
+          </button>
+        </div>
+        <p className="mt-4 text-center text-xs leading-relaxed text-dark/55">
+          Seus dados ficam vinculados a este pedido e são usados somente para produzir os itens personalizados.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-8">
       <section className="card-premium p-6 md:p-8">
-        <p className="badge-gold">Quase lá!</p>
+        <p className="text-sm font-semibold text-forest">Etapa 2 de 2</p>
         <h1 className="mt-4 font-serif text-3xl md:text-4xl text-primary">
           Dados para finalizar o pedido
         </h1>
         <p className="mt-3 text-dark/70 leading-relaxed">
-          Confirme seus dados e o endereço de entrega. Depois do registro do pedido,
-          nossa equipe envia o link de pagamento e acompanha tudo com você pelo WhatsApp.
+          Confirme seus dados e o endereço de entrega. Ao registrar o pedido,
+          você segue para o pagamento seguro e recebe as atualizações pelo WhatsApp.
         </p>
 
         <form onSubmit={onSubmit} noValidate>
@@ -225,9 +283,10 @@ export default function CheckoutView() {
                 autoComplete="name"
                 placeholder="Ex.: Mariana Souza"
                 aria-invalid={!!errors.buyer?.name}
+                aria-describedby={errors.buyer?.name ? "buyer-name-error" : undefined}
               />
               {errors.buyer?.name && (
-                <span className="mt-1 block text-xs text-red-600">Informe seu nome completo.</span>
+                <span id="buyer-name-error" className="mt-1 block text-xs text-red-700">Informe seu nome completo.</span>
               )}
             </label>
             <label className="block">
@@ -239,9 +298,10 @@ export default function CheckoutView() {
                 autoComplete="email"
                 placeholder="voce@email.com"
                 aria-invalid={!!errors.buyer?.email}
+                aria-describedby={errors.buyer?.email ? "buyer-email-error" : undefined}
               />
               {errors.buyer?.email && (
-                <span className="mt-1 block text-xs text-red-600">E-mail inválido.</span>
+                <span id="buyer-email-error" className="mt-1 block text-xs text-red-700">E-mail inválido.</span>
               )}
             </label>
             <label className="block">
@@ -253,9 +313,10 @@ export default function CheckoutView() {
                 autoComplete="tel-national"
                 placeholder="(11) 99999-9999"
                 aria-invalid={!!errors.buyer?.phone}
+                aria-describedby={errors.buyer?.phone ? "buyer-phone-error" : undefined}
               />
               {errors.buyer?.phone && (
-                <span className="mt-1 block text-xs text-red-600">
+                <span id="buyer-phone-error" className="mt-1 block text-xs text-red-700">
                   Telefone inválido — use DDD + número.
                 </span>
               )}
@@ -288,9 +349,10 @@ export default function CheckoutView() {
                 placeholder="00000-000"
                 onBlur={handleCepBlur}
                 aria-invalid={!!errors.address?.zipCode}
+                aria-describedby={errors.address?.zipCode ? "address-zipcode-error" : undefined}
               />
               {errors.address?.zipCode && (
-                <span className="mt-1 block text-xs text-red-600">CEP inválido.</span>
+                <span id="address-zipcode-error" className="mt-1 block text-xs text-red-700">CEP inválido.</span>
               )}
             </label>
             <label className="block">
@@ -301,9 +363,10 @@ export default function CheckoutView() {
                 autoComplete="address-line1"
                 placeholder="Rua das Histórias"
                 aria-invalid={!!errors.address?.street}
+                aria-describedby={errors.address?.street ? "address-street-error" : undefined}
               />
               {errors.address?.street && (
-                <span className="mt-1 block text-xs text-red-600">Informe a rua.</span>
+                <span id="address-street-error" className="mt-1 block text-xs text-red-700">Informe a rua.</span>
               )}
             </label>
             <label className="block">
@@ -313,9 +376,10 @@ export default function CheckoutView() {
                 className="input-field mt-1"
                 placeholder="123"
                 aria-invalid={!!errors.address?.number}
+                aria-describedby={errors.address?.number ? "address-number-error" : undefined}
               />
               {errors.address?.number && (
-                <span className="mt-1 block text-xs text-red-600">Informe o número.</span>
+                <span id="address-number-error" className="mt-1 block text-xs text-red-700">Informe o número.</span>
               )}
             </label>
             <label className="block">
@@ -333,9 +397,10 @@ export default function CheckoutView() {
                 className="input-field mt-1"
                 placeholder="Jardim Encantado"
                 aria-invalid={!!errors.address?.district}
+                aria-describedby={errors.address?.district ? "address-district-error" : undefined}
               />
               {errors.address?.district && (
-                <span className="mt-1 block text-xs text-red-600">Informe o bairro.</span>
+                <span id="address-district-error" className="mt-1 block text-xs text-red-700">Informe o bairro.</span>
               )}
             </label>
             <label className="block">
@@ -346,9 +411,10 @@ export default function CheckoutView() {
                 autoComplete="address-level2"
                 placeholder="São Paulo"
                 aria-invalid={!!errors.address?.city}
+                aria-describedby={errors.address?.city ? "address-city-error" : undefined}
               />
               {errors.address?.city && (
-                <span className="mt-1 block text-xs text-red-600">Informe a cidade.</span>
+                <span id="address-city-error" className="mt-1 block text-xs text-red-700">Informe a cidade.</span>
               )}
             </label>
             <label className="block">
@@ -359,9 +425,10 @@ export default function CheckoutView() {
                 maxLength={2}
                 placeholder="SP"
                 aria-invalid={!!errors.address?.state}
+                aria-describedby={errors.address?.state ? "address-state-error" : undefined}
               />
               {errors.address?.state && (
-                <span className="mt-1 block text-xs text-red-600">UF inválida — ex.: SP.</span>
+                <span id="address-state-error" className="mt-1 block text-xs text-red-700">UF inválida — ex.: SP.</span>
               )}
             </label>
           </fieldset>
@@ -434,8 +501,8 @@ export default function CheckoutView() {
                 </div>
               </label>
 
-              {/* Gateway Simulado */}
-              <label
+              {/* Gateway simulado aparece apenas em desenvolvimento. */}
+              {allowSimulatedGateway && <label
                 className={`flex items-start gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
                   watch("paymentGateway") === "SIMULADO"
                     ? "border-primary bg-white shadow-md shadow-gold/10"
@@ -454,7 +521,7 @@ export default function CheckoutView() {
                     Simule a aprovação ou cancelamento do pagamento instantaneamente.
                   </span>
                 </div>
-              </label>
+              </label>}
             </div>
           </fieldset>
 
@@ -464,13 +531,26 @@ export default function CheckoutView() {
             </p>
           )}
 
+          <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row">
+          <button
+            type="button"
+            onClick={() => {
+              setCheckoutStep("customization");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="btn-ghost flex-1 justify-center"
+            disabled={isSubmitting}
+          >
+            Revisar personalização
+          </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="btn-primary-lg mt-8 w-full justify-center disabled:opacity-60 disabled:cursor-not-allowed"
+            className="btn-primary-lg flex-1 justify-center disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Registrando pedido…" : "Confirmar pedido →"}
           </button>
+          </div>
           <p className="mt-3 text-center text-xs text-dark/55">
             {watch("paymentGateway") === "SIMULADO"
               ? "Ambiente de Testes ativo. Você será redirecionado para a tela de simulação de pagamento após confirmar."

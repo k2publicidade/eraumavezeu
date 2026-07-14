@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Image from "next/image";
 
 const PAGES = [
@@ -49,35 +49,40 @@ export default function InteractiveBook() {
     setCurrentSpread(0);
   }, []);
 
-  // Keyboard navigation support
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const activeEl = document.activeElement;
-      // Skip keyboard turning if user is typing in a form input/textarea
-      if (
-        activeEl &&
-        (activeEl.tagName === "INPUT" ||
-          activeEl.tagName === "TEXTAREA" ||
-          activeEl.getAttribute("contenteditable") === "true")
-      ) {
-        return;
-      }
+  const handleBookKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (["BUTTON", "A", "INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) {
+      return;
+    }
 
-      if (e.key === "ArrowRight") {
-        nextPage();
-      } else if (e.key === "ArrowLeft") {
-        prevPage();
-      } else if (e.key === "Escape") {
-        resetBook();
-      }
-    };
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      nextPage();
+    } else if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      prevPage();
+    } else if (event.key === "Escape") {
+      resetBook();
+    }
+  };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [nextPage, prevPage, resetBook]);
+  const activatePage = (
+    event: React.KeyboardEvent<HTMLDivElement>,
+    action: () => void,
+  ) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      action();
+    }
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full select-none">
+    <div
+      className="flex flex-col items-center justify-center w-full select-none"
+      onKeyDown={handleBookKeyDown}
+      role="group"
+      aria-label="Demonstração interativa do livro"
+    >
       {/* 3D Viewport with Perspective */}
       <div className="book-viewport">
         {/* Book Container with Rotations */}
@@ -117,6 +122,9 @@ export default function InteractiveBook() {
                 <div
                   key={i}
                   className="book-cover-front"
+                  role="button"
+                  tabIndex={currentSpread <= 1 ? 0 : -1}
+                  aria-label={currentSpread === 0 ? "Abrir o livro" : "Voltar para a capa"}
                   style={{
                     transform: `rotateY(${rotation}deg)`,
                     zIndex: zIndex,
@@ -130,6 +138,9 @@ export default function InteractiveBook() {
                       prevPage();
                     }
                   }}
+                  onKeyDown={(event) =>
+                    activatePage(event, currentSpread === 0 ? nextPage : prevPage)
+                  }
                 >
                   {/* Lado externo da capa (Ilustração da capa) */}
                   <div className="book-cover-face-front">
@@ -165,6 +176,9 @@ export default function InteractiveBook() {
               <div
                 key={i}
                 className="absolute inset-0 cursor-pointer"
+                role="button"
+                tabIndex={i === currentSpread || i === currentSpread - 1 ? 0 : -1}
+                aria-label={isFlipped ? "Voltar uma página" : "Avançar uma página"}
                 style={{
                   transformStyle: "preserve-3d",
                   transformOrigin: "left center",
@@ -180,6 +194,9 @@ export default function InteractiveBook() {
                     nextPage();
                   }
                 }}
+                onKeyDown={(event) =>
+                  activatePage(event, isFlipped ? prevPage : nextPage)
+                }
               >
                 {/* Front Face (shows right page, e.g. Page 3, 5, 7...) */}
                 <div className="book-page-sheet-front">
@@ -219,8 +236,9 @@ export default function InteractiveBook() {
       <div className="flex flex-col items-center gap-4 mt-6 w-full max-w-xs sm:max-w-sm px-4">
         {currentSpread === 0 ? (
           <button
+            type="button"
             onClick={nextPage}
-            className="bg-primary text-cream hover:bg-primary-light active:scale-95 px-8 py-3.5 rounded-full font-bold uppercase tracking-wider text-xs flex items-center gap-2.5 shadow-lg hover:shadow-xl transition-all duration-300 font-sans"
+            className="min-h-11 bg-primary text-cream hover:bg-primary-light active:scale-[0.98] px-8 py-3.5 rounded-full font-bold uppercase tracking-wider text-xs flex items-center gap-2.5 shadow-lg hover:shadow-xl transition-all duration-300 font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
           >
             <span>Folhear Livro Mágico</span>
             <span className="text-gold">✨</span>
@@ -228,8 +246,10 @@ export default function InteractiveBook() {
         ) : (
           <div className="flex items-center justify-between w-full gap-4">
             <button
+              type="button"
               onClick={prevPage}
-              className="bg-primary text-cream hover:bg-primary-light active:scale-95 px-4 py-2.5 rounded-full font-bold uppercase tracking-wider text-[10px] flex items-center gap-1.5 shadow transition-all duration-300 font-sans"
+              aria-label="Voltar uma página"
+              className="min-h-11 bg-primary text-cream hover:bg-primary-light active:scale-[0.98] px-4 py-2.5 rounded-full font-bold tracking-wide text-xs flex items-center gap-1.5 shadow transition-all duration-300 font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
             >
               <span>← Voltar</span>
             </button>
@@ -242,15 +262,18 @@ export default function InteractiveBook() {
 
             {currentSpread < 11 ? (
               <button
+                type="button"
                 onClick={nextPage}
-                className="bg-primary text-cream hover:bg-primary-light active:scale-95 px-4 py-2.5 rounded-full font-bold uppercase tracking-wider text-[10px] flex items-center gap-1.5 shadow transition-all duration-300 font-sans"
+                aria-label="Avançar uma página"
+                className="min-h-11 bg-primary text-cream hover:bg-primary-light active:scale-[0.98] px-4 py-2.5 rounded-full font-bold tracking-wide text-xs flex items-center gap-1.5 shadow transition-all duration-300 font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2"
               >
                 <span>Avançar →</span>
               </button>
             ) : (
               <button
+                type="button"
                 onClick={resetBook}
-                className="bg-gold text-primary hover:bg-gold-light active:scale-95 px-4 py-2.5 rounded-full font-bold uppercase tracking-wider text-[10px] flex items-center gap-1.5 shadow transition-all duration-300 font-sans font-extrabold"
+                className="min-h-11 bg-gold text-primary hover:bg-gold-light active:scale-[0.98] px-4 py-2.5 rounded-full font-extrabold tracking-wide text-xs flex items-center gap-1.5 shadow transition-all duration-300 font-sans focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
                 <span>Recomeçar ↺</span>
               </button>
@@ -260,7 +283,14 @@ export default function InteractiveBook() {
 
         {/* Dynamic Progress Bar */}
         {currentSpread > 0 && (
-          <div className="w-full h-1.5 bg-primary/10 rounded-full overflow-hidden mt-1">
+          <div
+            className="w-full h-1.5 bg-primary/10 rounded-full overflow-hidden mt-1"
+            role="progressbar"
+            aria-label="Progresso da leitura"
+            aria-valuemin={0}
+            aria-valuemax={11}
+            aria-valuenow={currentSpread}
+          >
             <div 
               className="h-full bg-gold transition-all duration-500 ease-out"
               style={{ width: `${(currentSpread / 11) * 100}%` }}
@@ -268,7 +298,7 @@ export default function InteractiveBook() {
           </div>
         )}
 
-        <p className="text-[9px] font-semibold uppercase tracking-wider text-dark/45 text-center font-sans">
+        <p className="text-xs font-medium tracking-wide text-dark/65 text-center font-sans">
           {currentSpread === 0 
             ? "Clique na capa ou no botão para abrir" 
             : "Use setas do teclado ou clique nas páginas para folhear"}

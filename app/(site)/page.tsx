@@ -343,7 +343,7 @@ export default async function HomePage() {
                 className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-1.5 rounded-full animate-fade-up mx-auto"
                 style={{ animationDelay: "50ms", animationFillMode: "both" }}
               >
-                <span className="text-[10px] text-primary font-bold uppercase tracking-wider">✦ 100% Personalizado</span>
+                <span className="text-xs text-primary font-bold uppercase tracking-wider">✦ 100% Personalizado</span>
               </div>
 
               <h1 
@@ -456,16 +456,72 @@ export default async function HomePage() {
       </section>
 
       {/* 3. FEATURED BOOK SECTION ("Livro em Destaque") */}
-      <section className="py-24 bg-cream reveal-on-scroll">
+      <section className="py-20 md:py-24 bg-cream reveal-on-scroll">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-16 items-center max-w-5xl mx-auto">
-            {/* Book standing mockup (Interactive 3D Flip) */}
-            <div className="flex justify-center relative w-full overflow-visible">
-              {/* Botanical leaves details */}
-              <div className="absolute -left-10 top-0 text-5xl opacity-15 pointer-events-none select-none">🍃</div>
-              <div className="absolute -right-10 bottom-0 text-5xl opacity-15 pointer-events-none select-none">🌿</div>
-              
-              <InteractiveBook />
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] gap-14 lg:gap-10 xl:gap-16 items-center max-w-7xl mx-auto">
+            {/* Real child to story bridge + interactive book */}
+            <div className="relative isolate mx-auto w-full max-w-[740px] overflow-visible">
+              <div
+                aria-hidden="true"
+                className="absolute left-[5%] right-[12%] bottom-24 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent"
+              />
+
+              <div className="relative sm:grid sm:grid-cols-[170px_minmax(0,1fr)] lg:grid-cols-[180px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)] sm:items-center">
+                <figure className="absolute left-0 top-[170px] z-20 w-32 sm:relative sm:left-auto sm:top-auto sm:w-auto sm:-mr-10 lg:-mr-12 xl:-mr-10 sm:mt-10 sm:self-center">
+                  <figcaption className="absolute left-1 top-0 -translate-y-full flex items-center gap-2 whitespace-nowrap rounded-sm bg-cream/95 px-2 py-1 text-xs font-semibold text-primary sm:bg-transparent sm:px-0 sm:py-0 sm:text-primary/75">
+                    <span className="h-px w-5 bg-gold" aria-hidden="true" />
+                    Bernardo, na vida real
+                  </figcaption>
+                  <Image
+                    src="/be.png"
+                    alt="Bernardo sorrindo e segurando o livro personalizado Aventura com Dinossauros"
+                    width={400}
+                    height={667}
+                    sizes="(max-width: 639px) 128px, (max-width: 1023px) 170px, (max-width: 1279px) 180px, 220px"
+                    className="h-auto w-full drop-shadow-[0_14px_12px_rgba(27,42,74,0.12)]"
+                  />
+                </figure>
+
+                <div className="relative z-10 min-w-0">
+                  <InteractiveBook />
+                </div>
+              </div>
+
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 150 80"
+                fill="none"
+                className="pointer-events-none absolute left-[24%] sm:left-[25%] lg:left-[24%] xl:left-[27%] top-[36%] sm:top-[34%] z-30 h-14 w-[24%] sm:h-16 sm:w-[23%] lg:w-[22%]"
+              >
+                <path
+                  d="M8 64C42 18 88 14 137 39"
+                  stroke="#FAF7F2"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  opacity="0.92"
+                />
+                <path
+                  d="M8 64C42 18 88 14 137 39"
+                  stroke="#D4A843"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M125 25L140 40L120 44"
+                  stroke="#FAF7F2"
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  opacity="0.92"
+                />
+                <path
+                  d="M125 25L140 40L120 44"
+                  stroke="#D4A843"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
 
             {/* Description details */}
@@ -479,15 +535,15 @@ export default async function HomePage() {
               <div className="grid grid-cols-3 gap-4 pt-2">
                 <div className="bg-white/60 p-3 rounded-2xl border border-cream-deep/40 text-center shadow-sm">
                   <span className="block text-lg select-none">📖</span>
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mt-1">Capa dura</span>
+                  <span className="mt-1 block text-xs font-bold uppercase tracking-wider text-primary">Capa dura</span>
                 </div>
                 <div className="bg-white/60 p-3 rounded-2xl border border-cream-deep/40 text-center shadow-sm">
                   <span className="block text-lg select-none">🎨</span>
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mt-1">Arte por IA</span>
+                  <span className="mt-1 block text-xs font-bold uppercase tracking-wider text-primary">Arte por IA</span>
                 </div>
                 <div className="bg-white/60 p-3 rounded-2xl border border-cream-deep/40 text-center shadow-sm">
                   <span className="block text-lg select-none">✨</span>
-                  <span className="text-[10px] font-bold text-primary uppercase tracking-wider block mt-1">Exclusivo</span>
+                  <span className="mt-1 block text-xs font-bold uppercase tracking-wider text-primary">Exclusivo</span>
                 </div>
               </div>
 
@@ -636,7 +692,7 @@ export default async function HomePage() {
 
                   {/* Badges & Name */}
                   <div className="text-center">
-                    <span className="bg-gold/10 border border-gold/25 px-2 py-0.5 rounded-full text-[8px] font-bold text-gold uppercase tracking-wider mb-1.5 inline-block">
+                    <span className="bg-gold/10 border border-gold/25 px-2 py-0.5 rounded-full text-xs font-bold text-gold uppercase tracking-wider mb-1.5 inline-block">
                       {PRODUCT_BADGES[p.type] ?? "Adicional"}
                     </span>
                     <h3 className="font-serif text-sm font-bold text-primary leading-tight group-hover:text-gold transition-colors duration-300 truncate">
@@ -645,7 +701,7 @@ export default async function HomePage() {
                   </div>
 
                   {/* Bullet features list */}
-                  <ul className="text-[10px] text-dark/70 space-y-1 py-3 border-t border-cream-deep/15 text-left font-body mt-3">
+                  <ul className="text-xs text-dark/75 space-y-1 py-3 border-t border-cream-deep/15 text-left font-body mt-3">
                     {(PRODUCT_FEATURES[p.type] ?? []).map((f, idx) => (
                       <li key={idx} className="flex items-start gap-1">
                         <span className="text-gold font-bold flex-shrink-0">✓</span>
@@ -661,27 +717,27 @@ export default async function HomePage() {
                   <div className="flex flex-col text-center font-body">
                     {p.type !== "LIVRO_PRINCIPAL" ? (
                       <>
-                        <span className="text-[8px] text-dark/40 uppercase tracking-wider block font-bold">
+                        <span className="text-xs text-dark/65 uppercase tracking-wider block font-bold">
                           {p.type === "EBOOK" ? "No Combo / Avulso" : "Combo / Avulso"}
                         </span>
                         <div className="flex items-baseline justify-center gap-1.5">
                           <span className="text-sm font-bold text-primary">
                             {p.type === "EBOOK" ? "Grátis" : formatBRL(Number(p.price) - 15)}
                           </span>
-                          <span className="text-[10px] text-dark/35 line-through">
+                          <span className="text-xs text-dark/55 line-through">
                             {formatBRL(Number(p.price))}
                           </span>
                         </div>
-                        <span className="text-[8px] text-emerald-600 font-semibold block mt-0.5">
+                        <span className="text-xs text-emerald-700 font-semibold block mt-0.5">
                           {p.type === "EBOOK" ? "Incluso com o Livro Capa Dura" : "R$ 15 de desconto acumulado"}
                         </span>
                       </>
                     ) : (
                       <>
-                        <span className="text-[8px] text-dark/40 uppercase tracking-wider block font-bold">Preço Especial</span>
+                        <span className="text-xs text-dark/65 uppercase tracking-wider block font-bold">Preço Especial</span>
                         <div className="flex items-baseline justify-center gap-1.5">
                           {p.priceOld && (
-                            <span className="text-[10px] text-dark/35 line-through">
+                            <span className="text-xs text-dark/55 line-through">
                               {formatBRL(Number(p.priceOld))}
                             </span>
                           )}
@@ -689,7 +745,7 @@ export default async function HomePage() {
                             {formatBRL(Number(p.price))}
                           </span>
                         </div>
-                        <span className="text-[8px] text-emerald-600 font-semibold block mt-0.5">
+                        <span className="text-xs text-emerald-700 font-semibold block mt-0.5">
                           6x sem juros no cartão
                         </span>
                       </>
@@ -700,7 +756,7 @@ export default async function HomePage() {
                   {p.type === "LIVRO_PRINCIPAL" ? (
                     <Link
                       href="/personalizar"
-                      className="w-full bg-primary text-cream hover:bg-primary-light active:scale-95 py-2 rounded-full font-bold uppercase tracking-wider text-[9px] text-center shadow-sm transition-all duration-300 block"
+                      className="block min-h-11 w-full rounded-full bg-primary px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-cream shadow-sm transition-all duration-300 hover:bg-primary-light active:scale-[0.98]"
                     >
                       Personalizar Livro
                     </Link>
@@ -713,7 +769,7 @@ export default async function HomePage() {
                         type: p.type,
                         price: p.price,
                       }}
-                      className="w-full bg-primary text-cream hover:bg-primary-light active:scale-95 py-2 rounded-full font-bold uppercase tracking-wider text-[9px] text-center shadow-sm transition-all duration-300 block"
+                      className="block min-h-11 w-full rounded-full bg-primary px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-cream shadow-sm transition-all duration-300 hover:bg-primary-light active:scale-[0.98]"
                     />
                   )}
                 </div>

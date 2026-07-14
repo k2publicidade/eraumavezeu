@@ -10,11 +10,14 @@ function formatDate(d: Date): string {
 }
 
 export default async function AdminProductionPage() {
-  const [productionOrders, expiringPhotos] = await Promise.all([
+  const [productionOrders, legacyExpiringPhotos, itemExpiringPhotos] = await Promise.all([
     db.order.findMany({
       where: { status: { in: ["PAGAMENTO_CONFIRMADO", "EM_PRODUCAO", "AGUARDANDO_ENVIO"] } },
       orderBy: { createdAt: "asc" },
-      include: { customization: true, items: { include: { product: true } } },
+      include: {
+        customization: true,
+        items: { include: { product: true, customizations: { orderBy: { unitIndex: "asc" } } } },
+      },
       take: 100,
     }),
     db.customization.findMany({
@@ -23,7 +26,36 @@ export default async function AdminProductionPage() {
       take: 20,
       include: { order: { select: { id: true, guestName: true, status: true } } },
     }),
+    db.orderItemCustomization.findMany({
+      where: { photosExpireAt: { not: null } },
+      orderBy: { photosExpireAt: "asc" },
+      take: 20,
+      include: {
+        orderItem: {
+          select: {
+            order: { select: { id: true, guestName: true, status: true } },
+          },
+        },
+      },
+    }),
   ]);
+
+  const expiringPhotos = [
+    ...legacyExpiringPhotos.map((custom) => ({
+      id: custom.id,
+      orderId: custom.orderId,
+      guestName: custom.order.guestName,
+      photoCount: custom.photoKeys.length,
+      expiresAt: custom.photosExpireAt,
+    })),
+    ...itemExpiringPhotos.map((custom) => ({
+      id: custom.id,
+      orderId: custom.orderItem.order.id,
+      guestName: custom.orderItem.order.guestName,
+      photoCount: custom.photoKeys.length,
+      expiresAt: custom.photosExpireAt,
+    })),
+  ].sort((a, b) => (a.expiresAt?.getTime() ?? 0) - (b.expiresAt?.getTime() ?? 0)).slice(0, 20);
 
   return (
     <div className="space-y-8">
@@ -36,23 +68,34 @@ export default async function AdminProductionPage() {
       <section className="rounded-3xl border border-gold/25 bg-cream-light p-6">
         <h2 className="font-serif text-2xl text-primary">Fila de produção</h2>
         <div className="mt-5 grid gap-4">
-          {productionOrders.map((order) => (
+          {productionOrders.map((order) => {
+            const forms = order.items.flatMap((item) => item.customizations);
+            return (
             <Link key={order.id} href={`/admin/pedidos/${order.id}`} className="rounded-2xl border border-gold/20 bg-cream p-4 transition hover:border-primary/40">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="font-medium text-primary">Pedido #{orderCodeOf(order.id)} · {order.guestName ?? "Cliente"}</p>
-                  <p className="mt-1 text-sm text-dark/60">{order.customization ? `${order.customization.childName} · ${order.customization.theme} · ${order.customization.artStyle}` : "Sem personalização vinculada"}</p>
+                  <p className="mt-1 text-sm text-dark/60">
+                    {forms.length > 0
+                      ? forms.map((form) => `${form.childName} · ${form.theme}`).join(" | ")
+                      : order.customization
+                        ? `${order.customization.childName} · ${order.customization.theme} · ${order.customization.artStyle}`
+                        : "Sem personalização vinculada"}
+                  </p>
                   <p className="mt-1 text-xs text-dark/45">Criado em {formatDate(order.createdAt)} · {order.items.map((item) => `${item.quantity}x ${item.product.name}`).join(", ")}</p>
                 </div>
                 <span className="w-fit rounded-full border border-gold/30 bg-cream-light px-3 py-1 text-xs text-primary">{statusLabelOf(order.status)}</span>
               </div>
-              {order.customization?.aiPrompt ? (
+              {forms.length > 0 && forms.every((form) => form.aiPrompt) ? (
+                <p className="mt-3 line-clamp-2 rounded-xl bg-white/60 p-3 text-xs text-dark/60">{forms.length} {forms.length === 1 ? "ficha pronta" : "fichas prontas"} para produção.</p>
+              ) : order.customization?.aiPrompt ? (
                 <p className="mt-3 line-clamp-2 rounded-xl bg-white/60 p-3 text-xs text-dark/60">{order.customization.aiPrompt}</p>
               ) : (
                 <p className="mt-3 rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700">Prompt de IA ausente — revisar personalização.</p>
               )}
             </Link>
-          ))}
+            );
+          })}
           {productionOrders.length === 0 && <p className="rounded-2xl bg-cream p-6 text-center text-dark/55">Nenhum pedido na fila.</p>}
         </div>
       </section>
@@ -74,9 +117,9 @@ export default async function AdminProductionPage() {
               {expiringPhotos.map((custom) => (
                 <tr key={custom.id} className="border-b border-gold/15 last:border-0">
                   <td className="px-3 py-3"><Link href={`/admin/pedidos/${custom.orderId}`} className="text-primary hover:underline">#{orderCodeOf(custom.orderId)}</Link></td>
-                  <td className="px-3 py-3">{custom.order.guestName ?? "Cliente"}</td>
-                  <td className="px-3 py-3">{custom.photoKeys.length}</td>
-                  <td className="px-3 py-3">{custom.photosExpireAt ? formatDate(custom.photosExpireAt) : "—"}</td>
+                  <td className="px-3 py-3">{custom.guestName ?? "Cliente"}</td>
+                  <td className="px-3 py-3">{custom.photoCount}</td>
+                  <td className="px-3 py-3">{custom.expiresAt ? formatDate(custom.expiresAt) : "—"}</td>
                 </tr>
               ))}
             </tbody>

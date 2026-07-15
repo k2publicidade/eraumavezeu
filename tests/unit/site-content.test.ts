@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { BOOK_COVER_SHOWCASE_MEDIA } from "@/lib/gallery-data";
 import {
   DEFAULT_FAQ_ITEMS,
   DEFAULT_SITE_SETTINGS,
@@ -6,6 +7,18 @@ import {
   resolveFaqItems,
   resolveSiteSettings,
 } from "@/lib/site-content";
+
+describe("book cover showcase", () => {
+  it("exibe as cinco capas reais no carrossel do livro principal", () => {
+    expect(BOOK_COVER_SHOWCASE_MEDIA).toEqual([
+      "/gallery/Bernardo/Bernardo2.png",
+      "/gallery/Sofia/Sofia2.png",
+      "/gallery/Lara/Lara2.png",
+      "/gallery/Noah/Noah2.png",
+      "/gallery/Ravi/Ravi2.png",
+    ]);
+  });
+});
 
 describe("site content settings", () => {
   it("uses safe defaults when no database records exist", () => {

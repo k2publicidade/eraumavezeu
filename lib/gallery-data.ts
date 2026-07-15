@@ -220,3 +220,5 @@ export const PRODUCT_SHOWCASE_MEDIA = {
       .flatMap((product) => product.images),
   ),
 } as const;
+
+export const BOOK_COVER_SHOWCASE_MEDIA = GALLERY_SAMPLES.map((sample) => sample.coverImage);

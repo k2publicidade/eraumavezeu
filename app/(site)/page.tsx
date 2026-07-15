@@ -9,7 +9,7 @@ import FloatingMagicElements from "@/components/effects/FloatingMagicElements";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import HeroScrollVideo from "@/components/site/HeroScrollVideo";
 import ProductMediaCarousel from "@/components/site/ProductMediaCarousel";
-import { PRODUCT_SHOWCASE_MEDIA } from "@/lib/gallery-data";
+import { BOOK_COVER_SHOWCASE_MEDIA, PRODUCT_SHOWCASE_MEDIA } from "@/lib/gallery-data";
 import { COMBO_DISCOUNT } from "@/lib/cart/types";
 
 export const metadata: Metadata = {
@@ -193,14 +193,6 @@ const WHY_US_BG = [
   "bg-[#F5EBFF]", // light purple
   "bg-[#FFF2E0]", // light orange
 ];
-
-const PRODUCT_MOCKUPS: Record<string, string> = {
-  LIVRO_PRINCIPAL: "/livro/Era Uma Vez - Bernardo_Página_01.jpg",
-  EBOOK: "/produtos/ebook.png",
-  LIVRO_COLORIR: "/produtos/Bernardo Colorir1.png",
-  QUEBRA_CABECA: "/produtos/Bernardo Quebra Cabeça.png",
-  CARTELA_ADESIVOS: "/produtos/Bernardo Adesivo.png",
-};
 
 const PRODUCT_BADGES: Record<string, string> = {
   LIVRO_PRINCIPAL: "Item Estrela",
@@ -622,7 +614,7 @@ export default async function HomePage() {
                   <ProductMediaCarousel
                     images={
                       p.type === "LIVRO_PRINCIPAL"
-                        ? [PRODUCT_MOCKUPS.LIVRO_PRINCIPAL]
+                        ? BOOK_COVER_SHOWCASE_MEDIA
                         : PRODUCT_SHOWCASE_MEDIA[p.type]
                     }
                     productName={p.name}

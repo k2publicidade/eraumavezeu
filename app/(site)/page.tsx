@@ -9,6 +9,9 @@ import InteractiveBook from "@/components/site/InteractiveBook";
 import FloatingMagicElements from "@/components/effects/FloatingMagicElements";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import HeroScrollVideo from "@/components/site/HeroScrollVideo";
+import ProductMediaCarousel from "@/components/site/ProductMediaCarousel";
+import { PRODUCT_SHOWCASE_MEDIA } from "@/lib/gallery-data";
+import { COMBO_DISCOUNT } from "@/lib/cart/types";
 
 export const metadata: Metadata = {
   title: "Livros infantis personalizados com IA",
@@ -668,7 +671,7 @@ export default async function HomePage() {
               <div className="w-10 h-0.5 bg-gradient-to-l from-transparent to-gold/60" />
             </div>
             <p className="text-xs text-dark/60 mt-3 font-body">
-              Monte o combo perfeito: adicionais ganham <strong className="text-gold font-bold">R$ 15 de desconto</strong> quando comprados junto com o livro físico capa dura.
+              Monte o combo perfeito: adicionais ganham <strong className="font-bold text-gold-dark">{formatBRL(COMBO_DISCOUNT)} de desconto</strong> quando comprados junto com o livro físico capa dura.
             </p>
           </div>
 
@@ -679,16 +682,15 @@ export default async function HomePage() {
                 className="bg-white rounded-[24px] border border-cream-deep/20 shadow-premium p-4 flex flex-col justify-between hover:-translate-y-1.5 hover:shadow-xl transition-all duration-300 group"
               >
                 <div>
-                  {/* Product Mockup Image Container */}
-                  <div className="relative w-full aspect-[4/3] bg-cream/35 rounded-xl overflow-hidden mb-3 flex items-center justify-center p-1.5 group-hover:scale-[1.01] transition-transform duration-500">
-                    <Image
-                      src={PRODUCT_MOCKUPS[p.type] ?? "/book_cover.png"}
-                      alt={p.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 200px"
-                    />
-                  </div>
+                  <ProductMediaCarousel
+                    images={
+                      p.type === "LIVRO_PRINCIPAL"
+                        ? [PRODUCT_MOCKUPS.LIVRO_PRINCIPAL]
+                        : PRODUCT_SHOWCASE_MEDIA[p.type]
+                    }
+                    productName={p.name}
+                    className="mb-4"
+                  />
 
                   {/* Badges & Name */}
                   <div className="text-center">
@@ -722,14 +724,14 @@ export default async function HomePage() {
                         </span>
                         <div className="flex items-baseline justify-center gap-1.5">
                           <span className="text-sm font-bold text-primary">
-                            {p.type === "EBOOK" ? "Grátis" : formatBRL(Number(p.price) - 15)}
+                            {p.type === "EBOOK" ? "Grátis" : formatBRL(Number(p.price) - COMBO_DISCOUNT)}
                           </span>
                           <span className="text-xs text-dark/55 line-through">
                             {formatBRL(Number(p.price))}
                           </span>
                         </div>
                         <span className="text-xs text-emerald-700 font-semibold block mt-0.5">
-                          {p.type === "EBOOK" ? "Incluso com o Livro Capa Dura" : "R$ 15 de desconto acumulado"}
+                          {p.type === "EBOOK" ? "Incluso com o Livro Capa Dura" : `${formatBRL(COMBO_DISCOUNT)} de desconto no combo`}
                         </span>
                       </>
                     ) : (

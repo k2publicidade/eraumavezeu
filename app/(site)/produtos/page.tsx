@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { getActiveProducts } from "@/lib/products";
 import { getSiteSettings } from "@/lib/site-content";
@@ -7,9 +6,11 @@ import AddToCartButton from "@/components/cart/AddToCartButton";
 import ScrollRevealTrigger from "@/components/effects/ScrollRevealTrigger";
 import MagicStars from "@/components/effects/MagicStars";
 import ProductGallery from "@/components/site/ProductGallery";
+import ProductMediaCarousel from "@/components/site/ProductMediaCarousel";
 import ComboSimulator from "@/components/site/ComboSimulator";
 import FloatingMagicElements from "@/components/effects/FloatingMagicElements";
 import { COMBO_DISCOUNT } from "@/lib/cart/types";
+import { PRODUCT_SHOWCASE_MEDIA } from "@/lib/gallery-data";
 
 export const metadata: Metadata = {
   title: "Nossos Produtos | Era Uma Vez, Eu",
@@ -25,13 +26,6 @@ function formatBRL(value: number) {
     currency: "BRL",
   }).format(value);
 }
-
-const PRODUCT_MOCKUPS: Record<string, string> = {
-  EBOOK: "/produtos/ebook.png",
-  LIVRO_COLORIR: "/produtos/Bernardo Colorir1.png",
-  QUEBRA_CABECA: "/produtos/Bernardo Quebra Cabeça.png",
-  CARTELA_ADESIVOS: "/produtos/Bernardo Adesivo.png",
-};
 
 const PRODUCT_BADGES: Record<string, string> = {
   EBOOK: "Prático & Digital",
@@ -185,7 +179,7 @@ export default async function ProdutosPage() {
           </div>
 
           {/* 3. ADDON PRODUCTS GRID */}
-          <div className="space-y-8">
+          <div id="produtos-adicionais" className="scroll-mt-24 space-y-8">
             <div className="text-center space-y-1">
               <span className="block text-xs font-bold uppercase tracking-[0.2em] text-gold">
                 Completando a Magia
@@ -199,21 +193,20 @@ export default async function ProdutosPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {addonProducts.map((p) => (
+              {addonProducts.map((p) => {
+                const showcaseImages = PRODUCT_SHOWCASE_MEDIA[p.type];
+
+                return (
                 <div
                   key={p.id}
-                  className="reveal-on-scroll bg-white rounded-[24px] border border-cream-deep/20 p-4 sm:p-5 shadow-premium hover:shadow-xl hover:border-gold/30 transition-all duration-500 flex flex-col sm:flex-row gap-4 group animate-fade-in"
+                  className="reveal-on-scroll group flex flex-col gap-5 rounded-2xl bg-white p-4 ring-1 ring-primary/10 transition-colors duration-300 hover:ring-gold/50 sm:p-5 lg:flex-row"
                 >
-                  {/* Product Mockup Image */}
-                  <div className="relative w-full sm:w-[130px] aspect-[4/3] sm:aspect-square bg-cream/35 rounded-xl overflow-hidden shadow-sm flex-shrink-0 flex items-center justify-center p-1.5 group-hover:scale-[1.02] transition-transform duration-500">
-                    <Image
-                      src={PRODUCT_MOCKUPS[p.type] ?? "/book_cover.png"}
-                      alt={p.name}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 130px"
-                    />
-                  </div>
+                  <ProductMediaCarousel
+                    images={showcaseImages.length > 0 ? showcaseImages : p.images}
+                    productName={p.name}
+                    showThumbnails
+                    className="mx-auto w-full max-w-[250px] flex-none lg:w-[190px]"
+                  />
 
                   {/* Info Column */}
                   <div className="flex-1 flex flex-col justify-between space-y-3 min-w-0">
@@ -280,7 +273,8 @@ export default async function ProdutosPage() {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import type { ProductType } from "@/lib/cart/types";
+import { PRODUCT_SHOWCASE_MEDIA } from "@/lib/gallery-data";
 
 export type CatalogProduct = {
   id: string;
@@ -22,7 +23,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 249.9,
     priceOld: 299.9,
     type: "LIVRO_PRINCIPAL",
-    images: [],
+    images: [...PRODUCT_SHOWCASE_MEDIA.LIVRO_PRINCIPAL],
   },
   {
     id: "fallback-ebook",
@@ -33,7 +34,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 79.9,
     priceOld: null,
     type: "EBOOK",
-    images: [],
+    images: [...PRODUCT_SHOWCASE_MEDIA.EBOOK],
   },
   {
     id: "fallback-livro-colorir",
@@ -44,7 +45,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 99.9,
     priceOld: null,
     type: "LIVRO_COLORIR",
-    images: [],
+    images: [...PRODUCT_SHOWCASE_MEDIA.LIVRO_COLORIR],
   },
   {
     id: "fallback-quebra-cabeca",
@@ -55,7 +56,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 79.9,
     priceOld: null,
     type: "QUEBRA_CABECA",
-    images: [],
+    images: [...PRODUCT_SHOWCASE_MEDIA.QUEBRA_CABECA],
   },
   {
     id: "fallback-cartela-adesivos",
@@ -66,7 +67,7 @@ export const FALLBACK_PRODUCTS: CatalogProduct[] = [
     price: 69.9,
     priceOld: null,
     type: "CARTELA_ADESIVOS",
-    images: [],
+    images: [...PRODUCT_SHOWCASE_MEDIA.CARTELA_ADESIVOS],
   },
 ];
 

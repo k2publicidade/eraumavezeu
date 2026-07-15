@@ -50,6 +50,14 @@ export default function GaleriaPage() {
       {/* FILTER & GALLERY GRID SECTION */}
       <section className="py-16 md:py-20 relative z-10">
         <div className="container mx-auto px-4">
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <h2 className="font-serif text-2xl font-semibold text-primary md:text-3xl">
+              Veja a história e tudo que pode acompanhar o presente
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-dark/70 md:text-base">
+              Abra cada exemplo para folhear o livro e conhecer o livro de colorir, o quebra-cabeça, a cartela de adesivos e o e-book disponíveis para aquele tema.
+            </p>
+          </div>
           <GalleryFilter
             themes={GALLERY_THEMES}
             samples={GALLERY_SAMPLES}

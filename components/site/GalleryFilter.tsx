@@ -4,32 +4,39 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { BookOpen, Sparkles } from "lucide-react";
+import {
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Images,
+  Palette,
+  Puzzle,
+  Sparkles,
+  Sticker,
+  X,
+} from "lucide-react";
 import { useModalFocus } from "@/lib/hooks/use-modal-focus";
+import type { GallerySample } from "@/lib/gallery-data";
 
 type Theme = { slug: string; label: string };
-type Sample = {
-  id: string;
-  theme: string;
-  title: string;
-  age: string;
-  emoji: string;
-  coverImage: string;
-  images: string[];
-  tagline: string;
-  description: string;
-  bookTitle: string;
-  quote: string;
-};
-
 type Props = {
   themes: readonly Theme[];
-  samples: readonly Sample[];
+  samples: readonly GallerySample[];
 };
+
+const collectionIcons = {
+  book: BookOpen,
+  EBOOK: Download,
+  LIVRO_COLORIR: Palette,
+  QUEBRA_CABECA: Puzzle,
+  CARTELA_ADESIVOS: Sticker,
+} as const;
 
 export default function GalleryFilter({ themes, samples }: Props) {
   const [active, setActive] = useState<string>("todos");
-  const [selectedSample, setSelectedSample] = useState<Sample | null>(null);
+  const [selectedSample, setSelectedSample] = useState<GallerySample | null>(null);
+  const [activeCollectionId, setActiveCollectionId] = useState("book");
   const [activeImageIndex, setActiveImageIndex] = useState<number>(0);
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -56,16 +63,57 @@ export default function GalleryFilter({ themes, samples }: Props) {
     return themes.find((t) => t.slug === slug)?.label || slug;
   };
 
-  const handleOpenModal = (sample: Sample, trigger: HTMLButtonElement) => {
+  const handleOpenModal = (sample: GallerySample, trigger: HTMLButtonElement) => {
     modalTriggerRef.current = trigger;
     setSelectedSample(sample);
+    setActiveCollectionId("book");
     setActiveImageIndex(0);
+  };
+
+  const selectedCollections = selectedSample
+    ? [
+        {
+          id: "book",
+          label: "Livro personalizado",
+          shortLabel: "Livro",
+          description: "Capa e cenas internas da história personalizada.",
+          images: selectedSample.images,
+        },
+        ...selectedSample.additionalProducts.map((product) => ({
+          id: product.type,
+          label: product.label,
+          shortLabel: product.shortLabel,
+          description: product.description,
+          images: product.images,
+        })),
+      ]
+    : [];
+  const activeCollection =
+    selectedCollections.find((collection) => collection.id === activeCollectionId) ??
+    selectedCollections[0];
+  const activeImages = activeCollection?.images ?? [];
+
+  const selectCollection = (collectionId: string) => {
+    setActiveCollectionId(collectionId);
+    setActiveImageIndex(0);
+  };
+
+  const showPreviousImage = () => {
+    setActiveImageIndex((previous) =>
+      previous === 0 ? activeImages.length - 1 : previous - 1,
+    );
+  };
+
+  const showNextImage = () => {
+    setActiveImageIndex((previous) =>
+      previous === activeImages.length - 1 ? 0 : previous + 1,
+    );
   };
 
   return (
     <>
       {/* FILTER TABS */}
-      <div className="flex flex-wrap gap-2 justify-center mb-12 max-w-4xl mx-auto px-2">
+      <div className="mx-auto mb-12 flex max-w-4xl flex-wrap justify-center gap-2 px-2" aria-label="Filtrar histórias por tema">
         {themes.map((t) => {
           const isActive = t.slug === active;
           return (
@@ -75,7 +123,7 @@ export default function GalleryFilter({ themes, samples }: Props) {
               onClick={() => setActive(t.slug)}
               aria-pressed={isActive}
               className={cn(
-                "px-5 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 border",
+                "min-h-11 rounded-full border px-5 py-2.5 text-sm font-semibold transition-[background-color,color,border-color,transform] duration-300",
                 isActive
                   ? "bg-primary text-cream border-primary shadow-md scale-105"
                   : "bg-cream-light text-primary/75 border-gold/15 hover:border-gold hover:text-primary hover:bg-white"
@@ -97,17 +145,17 @@ export default function GalleryFilter({ themes, samples }: Props) {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {filtered.map((s, index) => (
             <article
               key={s.id}
-              className="relative bg-white rounded-2xl overflow-hidden border border-gold/15 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full"
+              className="group relative flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-md"
             >
               <button
                 type="button"
                 onClick={(event) => handleOpenModal(s, event.currentTarget)}
                 className="absolute inset-0 z-30 rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
-                aria-label={`Ver detalhes e páginas de ${s.title}`}
+                aria-label={`Ver o livro e os produtos adicionais de ${s.title}`}
               />
               {/* IMAGE COVER WRAPPER */}
               <div className="aspect-[3/4] relative w-full overflow-hidden bg-cream-deep">
@@ -124,7 +172,7 @@ export default function GalleryFilter({ themes, samples }: Props) {
                 <div className="absolute inset-0 bg-primary-dark/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
                   <span className="flex min-h-11 translate-y-2 items-center gap-1.5 rounded-full border border-gold/15 bg-white/95 px-4 py-3 text-xs font-bold uppercase tracking-wider text-primary shadow-md transition-transform duration-300 group-hover:translate-y-0">
                     <BookOpen className="w-3.5 h-3.5" />
-                    Folhear Livro
+                    Ver livro e adicionais
                   </span>
                 </div>
 
@@ -146,6 +194,18 @@ export default function GalleryFilter({ themes, samples }: Props) {
                   <p className="text-xs text-dark/60 mt-2 line-clamp-2">
                     {s.tagline}
                   </p>
+                  <div className="mt-4 flex items-center gap-2" aria-label={`${s.additionalProducts.length} produtos adicionais disponíveis`}>
+                    <div className="flex -space-x-2" aria-hidden="true">
+                      {s.additionalProducts.slice(0, 4).map((product) => (
+                        <span key={product.type} className="relative h-9 w-9 overflow-hidden rounded-full bg-cream ring-2 ring-white">
+                          <Image src={product.images[0]} alt="" fill className="object-cover" sizes="36px" />
+                        </span>
+                      ))}
+                    </div>
+                    <span className="text-xs font-semibold leading-tight text-primary/75">
+                      Livro + {s.additionalProducts.length} adicionais
+                    </span>
+                  </div>
                 </div>
                 <div className="mt-4 pt-3 border-t border-cream-deep flex items-center justify-between">
                   <span className="text-[11px] font-medium text-dark/50">
@@ -165,7 +225,7 @@ export default function GalleryFilter({ themes, samples }: Props) {
       {selectedSample && (
         <div 
           onClick={closeModal}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary-dark/60 backdrop-blur-md transition-all duration-300 overflow-y-auto"
+          className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-primary-dark/75 p-0 backdrop-blur-sm sm:items-center sm:p-4"
         >
           {/* Modal Container */}
           <div 
@@ -175,93 +235,123 @@ export default function GalleryFilter({ themes, samples }: Props) {
             aria-labelledby="gallery-dialog-title"
             tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
-            className="bg-cream max-w-4xl w-full rounded-2xl overflow-hidden shadow-xl border border-gold/20 grid grid-cols-1 md:grid-cols-2 relative max-h-[92vh] md:max-h-[85vh]"
+            className="relative grid max-h-[96dvh] w-full max-w-6xl grid-cols-1 overflow-y-auto rounded-t-2xl bg-cream shadow-xl sm:max-h-[92dvh] sm:rounded-2xl lg:grid-cols-[minmax(0,1.35fr)_minmax(340px,0.65fr)] lg:overflow-hidden"
           >
             
             {/* CLOSE BUTTON */}
             <button
               ref={closeButtonRef}
               onClick={closeModal}
-              className="absolute top-4 right-4 z-30 w-11 h-11 rounded-full bg-white/95 border border-gold/15 shadow-sm flex items-center justify-center text-primary hover:text-gold active:scale-95 transition-colors duration-200"
+              className="absolute right-3 top-3 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-white text-primary shadow-sm transition-colors hover:bg-cream hover:text-primary-dark active:scale-95 sm:right-4 sm:top-4"
               aria-label="Fechar detalhes"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-                className="w-4 h-4"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="h-5 w-5" aria-hidden="true" />
             </button>
 
-            {/* LEFT SIDE: CAROUSEL VIEWER */}
-            <div className="p-4 md:p-6 bg-cream-light flex flex-col justify-center border-b md:border-b-0 md:border-r border-gold/10 min-h-[350px] md:min-h-0">
-              <div className="w-full relative aspect-[3/4] max-w-xs md:max-w-sm mx-auto bg-white rounded-2xl border border-gold/15 shadow-sm overflow-hidden flex items-center justify-center">
-                <Image
-                  src={selectedSample.images[activeImageIndex]}
-                  alt={`${selectedSample.title} - Página ${activeImageIndex + 1}`}
-                  fill
-                  className="object-cover transition-opacity duration-300"
-                  sizes="(max-width: 768px) 100vw, 400px"
-                />
+            {/* LEFT SIDE: BOOK AND ADDITIONAL PRODUCT VIEWER */}
+            <div className="flex min-h-[520px] flex-col border-b border-primary/10 bg-primary-dark p-4 text-white lg:min-h-0 lg:border-b-0 lg:border-r lg:p-6">
+              <div className="mb-5 pr-12 sm:pr-14">
+                <p className="text-sm font-semibold text-gold-light">Coleção de {selectedSample.title.split(" e ")[0]}</p>
+                <p className="mt-1 text-xs leading-relaxed text-white/70">Escolha um item para explorar cada detalhe da personalização.</p>
+              </div>
 
-                {/* Left/Right Buttons inside image */}
-                <button
-                  onClick={() => setActiveImageIndex((prev) => (prev === 0 ? selectedSample.images.length - 1 : prev - 1))}
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 hover:bg-white text-primary flex items-center justify-center border border-gold/15 transition-colors shadow-sm z-20 active:scale-95"
-                  aria-label="Anterior"
-                >
-                  ←
-                </button>
-                <button
-                  onClick={() => setActiveImageIndex((prev) => (prev === selectedSample.images.length - 1 ? 0 : prev + 1))}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/90 hover:bg-white text-primary flex items-center justify-center border border-gold/15 transition-colors shadow-sm z-20 active:scale-95"
-                  aria-label="Próximo"
-                >
-                  →
-                </button>
-
-                {/* Page indicator */}
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-primary/85 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-cream backdrop-blur-xs">
-                  {activeImageIndex + 1} / {selectedSample.images.length}
+              <div className="mb-5 max-w-full overflow-x-auto pb-1" role="tablist" aria-label="Escolher produto da história">
+                <div className="flex w-max min-w-full gap-2">
+                  {selectedCollections.map((collection) => {
+                    const isActive = activeCollection?.id === collection.id;
+                    const Icon = collectionIcons[collection.id as keyof typeof collectionIcons] ?? Images;
+                    return (
+                      <button
+                        key={collection.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        onClick={() => selectCollection(collection.id)}
+                        className={cn(
+                          "flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-colors",
+                          isActive
+                            ? "bg-gold text-primary-dark"
+                            : "bg-white/10 text-white ring-1 ring-white/15 hover:bg-white/15",
+                        )}
+                      >
+                        <Icon className="h-4 w-4" aria-hidden="true" />
+                        {collection.shortLabel} ({collection.images.length})
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
-              {/* Thumbnails Row */}
-              <div className="flex gap-1.5 justify-center mt-4 overflow-x-auto py-1 max-w-xs md:max-w-sm mx-auto scrollbar-none">
-                {selectedSample.images.map((img, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setActiveImageIndex(index)}
-                    aria-label={`Mostrar página ${index + 1}`}
-                    aria-pressed={activeImageIndex === index}
-                    className={cn(
-                      "relative w-11 h-14 rounded-md overflow-hidden border transition-all flex-shrink-0",
-                      activeImageIndex === index 
-                        ? "border-gold ring-1 ring-gold shadow-sm scale-105" 
-                        : "border-cream-deep/30 opacity-60 hover:opacity-100"
-                    )}
-                  >
-                    <Image
-                      src={img}
-                      alt={`Página ${index + 1}`}
-                      fill
-                      className="object-cover"
-                      sizes="36px"
-                    />
-                  </button>
-                ))}
+              <div
+                className="relative mx-auto flex aspect-[4/5] w-full max-w-[27rem] items-center justify-center overflow-hidden rounded-xl bg-white shadow-lg"
+                onKeyDown={(event) => {
+                  if (activeImages.length <= 1) return;
+                  if (event.key === "ArrowLeft") showPreviousImage();
+                  if (event.key === "ArrowRight") showNextImage();
+                }}
+              >
+                <Image
+                  src={activeImages[activeImageIndex]}
+                  alt={`${activeCollection?.label} de ${selectedSample.title}, exemplo ${activeImageIndex + 1} de ${activeImages.length}`}
+                  fill
+                  className="object-contain"
+                  sizes="(max-width: 768px) 100vw, 400px"
+                />
+
+                {activeImages.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={showPreviousImage}
+                      className="absolute left-2.5 top-1/2 z-20 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full bg-primary-dark/90 text-white transition-colors hover:bg-primary"
+                      aria-label="Ver imagem anterior"
+                    >
+                      <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={showNextImage}
+                      className="absolute right-2.5 top-1/2 z-20 flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full bg-primary-dark/90 text-white transition-colors hover:bg-primary"
+                      aria-label="Ver próxima imagem"
+                    >
+                      <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </>
+                )}
+
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-primary-dark/90 px-3 py-1.5 text-xs font-semibold text-white" aria-live="polite">
+                  {activeImageIndex + 1} de {activeImages.length}
+                </div>
               </div>
+
+              {activeImages.length > 1 && (
+                <div className="mx-auto mt-4 flex max-w-full gap-2 overflow-x-auto px-1 py-1">
+                  {activeImages.map((image, index) => (
+                    <button
+                      key={image}
+                      type="button"
+                      onClick={() => setActiveImageIndex(index)}
+                      aria-label={`Mostrar exemplo ${index + 1} de ${activeCollection?.label}`}
+                      aria-pressed={activeImageIndex === index}
+                      className={cn(
+                        "relative h-14 w-11 flex-none overflow-hidden rounded-md transition-opacity",
+                        activeImageIndex === index
+                          ? "ring-2 ring-gold ring-offset-2 ring-offset-primary-dark"
+                          : "opacity-55 ring-1 ring-white/20 hover:opacity-100",
+                      )}
+                    >
+                      <Image src={image} alt="" fill className="object-cover" sizes="44px" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* RIGHT SIDE: DETAILS PANEL */}
-            <div className="p-6 md:p-8 flex flex-col justify-between overflow-y-auto max-h-[50vh] md:max-h-[85vh]">
+            <div className="flex flex-col justify-between overflow-y-visible p-6 lg:max-h-[92dvh] lg:overflow-y-auto lg:p-8">
               <div>
                 {/* Header Metadata */}
-                <div className="flex items-center gap-2 mb-4">
+                <div className="mb-4 flex flex-wrap items-center gap-2 pr-10">
                   <span className="text-xl">{selectedSample.emoji}</span>
                   <span className="rounded-full border border-gold/10 bg-gold/10 px-2.5 py-1 text-xs font-bold uppercase tracking-widest text-gold-dark">
                     Tema: {getThemeLabel(selectedSample.theme)}
@@ -272,10 +362,10 @@ export default function GalleryFilter({ themes, samples }: Props) {
                 </div>
 
                 {/* Story Info */}
-                  <h3 id="gallery-dialog-title" className="font-serif text-2xl md:text-3xl text-primary font-bold leading-tight mb-1">
+                <h3 id="gallery-dialog-title" className="mb-1 text-balance font-serif text-2xl font-bold leading-tight text-primary md:text-3xl">
                   {selectedSample.bookTitle}
                 </h3>
-                <p className="font-sans text-sm text-gold-dark font-medium italic mb-6">
+                <p className="mb-6 font-sans text-sm font-medium text-gold-dark">
                   &ldquo;{selectedSample.tagline}&rdquo;
                 </p>
 
@@ -286,6 +376,19 @@ export default function GalleryFilter({ themes, samples }: Props) {
                     Sobre o livro personalizado:
                   </h4>
                   <p>{selectedSample.description}</p>
+                </div>
+
+                <div className="mb-6 rounded-xl bg-white p-4 shadow-xs">
+                  <div className="flex items-start gap-3">
+                    {activeCollection && (() => {
+                      const ActiveIcon = collectionIcons[activeCollection.id as keyof typeof collectionIcons] ?? Images;
+                      return <ActiveIcon className="mt-0.5 h-5 w-5 flex-none text-gold-dark" aria-hidden="true" />;
+                    })()}
+                    <div>
+                      <p className="text-sm font-semibold text-primary">{activeCollection?.label}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-dark/75">{activeCollection?.description}</p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Quote / Book Excerpt */}
@@ -303,13 +406,19 @@ export default function GalleryFilter({ themes, samples }: Props) {
               <div className="pt-4 border-t border-cream-deep mt-4 flex flex-col gap-2">
                 <Link
                   href={`/personalizar?theme=${selectedSample.theme}`}
-                  className="bg-primary text-cream hover:bg-primary-light transition-all duration-300 rounded-full py-3 px-6 text-xs font-semibold uppercase tracking-widest text-center shadow-md flex items-center justify-center gap-2 group"
+                  className="group flex min-h-12 items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-center text-sm font-semibold text-cream shadow-md transition-colors duration-300 hover:bg-primary-light"
                 >
-                  <span>Personalizar este tema</span>
+                  <span>Criar com este tema</span>
                   <span className="transition-transform group-hover:translate-x-1 font-bold text-gold">→</span>
                 </Link>
-                <p className="text-xs text-dark/65 text-center">
-                  Comece agora e veja a prévia do seu livro em minutos
+                <Link
+                  href="/produtos#produtos-adicionais"
+                  className="min-h-11 rounded-full px-6 py-3 text-center text-sm font-semibold text-primary ring-1 ring-primary/20 transition-colors hover:bg-white"
+                >
+                  Ver todos os produtos e preços
+                </Link>
+                <p className="text-center text-xs leading-relaxed text-dark/65">
+                  Você escolhe os adicionais depois de personalizar o livro.
                 </p>
               </div>
 

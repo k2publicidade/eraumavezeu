@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Check, ChevronDown, Copy, ImagePlus, LockKeyhole, Trash2 } from "lucide-react";
-import { UploadDropzone } from "@/lib/uploadthing-client";
+import PrivatePhotoUploader from "@/components/upload/PrivatePhotoUploader";
 import type { CartItem, ProductType } from "@/lib/cart/types";
 import {
   ART_STYLE_OPTIONS,
@@ -146,8 +147,21 @@ export default function ProductCustomizationForms({ units, onChange, showErrors 
                     <input list={`colors-${unit.key}`} value={unit.draft.favoriteColor} onChange={(e) => updateUnit(unit.key, { favoriteColor: e.target.value })} className={fieldClass} placeholder="Ex.: Azul" maxLength={40} />
                     <datalist id={`colors-${unit.key}`}>{COLOR_SUGGESTIONS.map((color) => <option key={color} value={color} />)}</datalist>
                   </Field>
-                  <Field label="Tema que mais encanta a criança" hint="Dinossauros, natureza, princesas, robôs ou uma ideia própria." error={showErrors ? errors.theme?.[0] : undefined}>
-                    <input value={unit.draft.theme} onChange={(e) => updateUnit(unit.key, { theme: e.target.value })} className={fieldClass} placeholder="Ex.: Fundo do mar e tartarugas" maxLength={180} />
+                  <Field
+                    label="Qual o tema que mais faria o(a) seu(sua) filho(a) se sentir animado(a)? Exemplo: dinossauros, robôs, animais, princesas, natureza, etc."
+                    hint={(
+                      <>
+                        <span className="block">
+                          <strong className="font-semibold text-dark/70">Atenção:</strong> Não trabalhamos com personagens registrados por outras empresas (Elsa, Mickey, Homem-Aranha etc.), pois são protegidos por direitos autorais e não podem ser reproduzidos em produtos à venda.
+                        </span>
+                        <span className="mt-1 block">
+                          Mas a magia continua: criamos personagens originais inspirados no que seu filho ama — uma princesa do gelo só dele, um herói aranha exclusivo — ou usamos os clássicos livres, como Chapeuzinho, Cinderela, dragões, fadas e piratas.
+                        </span>
+                      </>
+                    )}
+                    error={showErrors ? errors.theme?.[0] : undefined}
+                  >
+                    <input value={unit.draft.theme} onChange={(e) => updateUnit(unit.key, { theme: e.target.value })} className={fieldClass} placeholder="Ex.: Bailarina" maxLength={180} />
                   </Field>
                 </div>
 
@@ -160,7 +174,7 @@ export default function ProductCustomizationForms({ units, onChange, showErrors 
                 )}
 
                 {productNeedsArt(unit.productType) && (
-                  <ChoiceGroup label={unit.productType === "QUEBRA_CABECA" ? "Estilo da imagem" : "Estilo das ilustrações"} value={unit.draft.artStyle} options={ART_STYLE_OPTIONS} error={showErrors ? errors.artStyle?.[0] : undefined} onChange={(artStyle) => updateUnit(unit.key, { artStyle })} />
+                  <ArtStyleChoiceGroup label={unit.productType === "QUEBRA_CABECA" ? "Estilo da imagem" : "Estilo das ilustrações"} value={unit.draft.artStyle} options={ART_STYLE_OPTIONS} error={showErrors ? errors.artStyle?.[0] : undefined} onChange={(artStyle) => updateUnit(unit.key, { artStyle })} />
                 )}
 
                 {unit.productType === "LIVRO_COLORIR" && (
@@ -211,13 +225,13 @@ export default function ProductCustomizationForms({ units, onChange, showErrors 
 
                   {unit.draft.consentAcceptedAt && unit.draft.photoKeys.length < REQUIRED_PRODUCT_PHOTOS && (
                     <div className="mt-4">
-                      <UploadDropzone endpoint="childPhoto" appearance={{ container: "min-h-36 rounded-xl border-2 border-dashed border-gold/40 bg-white", label: "text-primary font-medium", button: "bg-primary text-white ut-ready:bg-primary ut-uploading:bg-primary-dark" }} config={{ mode: "auto" }} onClientUploadComplete={(files) => {
-                        const added = files.map((file) => ({ fileKey: file.serverData?.fileKey ?? file.key, url: file.serverData?.url ?? file.ufsUrl ?? file.url, name: file.serverData?.name ?? file.name }));
+                      <PrivatePhotoUploader remaining={REQUIRED_PRODUCT_PHOTOS - unit.draft.photoKeys.length} onUploaded={(files) => {
+                        const added = files.map((file) => ({ fileKey: file.fileKey, url: file.url, name: file.name }));
                         const photoUrls = [...unit.draft.photoUrls, ...added].slice(0, REQUIRED_PRODUCT_PHOTOS);
                         const photoKeys = Array.from(new Set([...unit.draft.photoKeys, ...added.map((file) => file.fileKey)])).slice(0, REQUIRED_PRODUCT_PHOTOS);
                         updateUnit(unit.key, { photoKeys, photoUrls });
                         setUploadError((current) => ({ ...current, [unit.key]: "" }));
-                      }} onUploadError={(error) => setUploadError((current) => ({ ...current, [unit.key]: error.message || "Não foi possível enviar as fotos." }))} />
+                      }} onError={(message) => setUploadError((current) => ({ ...current, [unit.key]: message }))} />
                     </div>
                   )}
                   {!unit.draft.consentAcceptedAt && <p className="mt-4 rounded-xl bg-primary/5 px-4 py-3 text-sm text-primary">Aceite o termo para liberar o envio das fotos.</p>}
@@ -239,7 +253,7 @@ export default function ProductCustomizationForms({ units, onChange, showErrors 
   );
 }
 
-function Field({ label, hint, error, children }: { label: string; hint?: string; error?: string; children: React.ReactNode }) {
+function Field({ label, hint, error, children }: { label: string; hint?: React.ReactNode; error?: string; children: React.ReactNode }) {
   return <label className="block text-sm font-medium text-primary">{label}{hint && <span className="mt-0.5 block text-xs font-normal leading-relaxed text-dark/55">{hint}</span>}{children}{error && <span className="mt-1.5 block text-sm font-normal text-red-700" role="alert">{error}</span>}</label>;
 }
 
@@ -251,6 +265,46 @@ function ChoiceGroup({ label, value, options, onChange, error }: { label: string
         {options.map((option) => <label key={option.value} className={`min-h-11 cursor-pointer rounded-xl border px-4 py-2.5 text-sm transition ${value === option.value ? "border-primary bg-primary text-white" : "border-gold/35 bg-white text-dark hover:border-primary/50"}`} title={option.description}>
           <input type="radio" className="sr-only" checked={value === option.value} onChange={() => onChange(option.value)} />{option.label}
         </label>)}
+      </div>
+      {error && <p className="mt-1.5 text-sm text-red-700" role="alert">{error}</p>}
+    </fieldset>
+  );
+}
+
+function ArtStyleChoiceGroup({ label, value, options, onChange, error }: {
+  label: string;
+  value: string;
+  options: typeof ART_STYLE_OPTIONS;
+  onChange: (value: string) => void;
+  error?: string;
+}) {
+  return (
+    <fieldset className="mt-7">
+      <legend className="text-sm font-medium text-primary">{label}</legend>
+      <p className="mt-1 text-xs leading-relaxed text-dark/55">Escolha o acabamento que mais combina com a história. As imagens abaixo são referências visuais do estilo.</p>
+      <div className="mt-3 grid gap-3 sm:grid-cols-3">
+        {options.map((option) => {
+          const selected = value === option.value;
+
+          return (
+            <label
+              key={option.value}
+              className={`group/style relative cursor-pointer overflow-hidden rounded-2xl border bg-white transition duration-200 focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2 ${selected ? "border-primary shadow-[0_8px_24px_rgba(92,45,35,0.12)] ring-1 ring-primary" : "border-gold/30 hover:-translate-y-0.5 hover:border-primary/45 hover:shadow-sm"}`}
+            >
+              <input type="radio" className="sr-only" checked={selected} onChange={() => onChange(option.value)} />
+              <span className="relative block aspect-[4/3] overflow-hidden bg-cream-light">
+                <Image src={option.image} alt={option.imageAlt} fill sizes="(max-width: 639px) 100vw, 33vw" className="object-cover transition duration-300 group-hover/style:scale-[1.02]" />
+                <span className={`absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full border-2 shadow-sm transition ${selected ? "border-primary bg-primary" : "border-white bg-white/90"}`} aria-hidden>
+                  {selected && <Check className="h-3.5 w-3.5 text-white" />}
+                </span>
+              </span>
+              <span className="block min-h-[5.25rem] p-3.5">
+                <span className="block text-sm font-semibold text-primary">{option.label}</span>
+                <span className="mt-1 block text-xs font-normal leading-relaxed text-dark/60">{option.description}</span>
+              </span>
+            </label>
+          );
+        })}
       </div>
       {error && <p className="mt-1.5 text-sm text-red-700" role="alert">{error}</p>}
     </fieldset>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UploadDropzone } from "@/lib/uploadthing-client";
+import PrivatePhotoUploader from "@/components/upload/PrivatePhotoUploader";
 import { useWizardStore } from "@/lib/wizard/store";
 import {
   CONSENT_TEXT,
@@ -126,29 +126,20 @@ export default function PhotoStep() {
         )}
 
         {canUpload && remaining > 0 && (
-          <UploadDropzone
-            endpoint="childPhoto"
-            appearance={{
-              container: "border-2 border-dashed border-gold/40 rounded-2xl bg-cream hover:border-gold/70 transition-colors",
-              label: "text-primary font-medium",
-              button:
-                "bg-primary hover:bg-primary-light ut-uploading:bg-primary-dark ut-ready:bg-primary",
-            }}
-            config={{ mode: "auto" }}
-            onClientUploadComplete={(res) => {
+          <PrivatePhotoUploader
+            remaining={remaining}
+            onUploaded={(res) => {
               setUploadError(null);
               res.forEach((f) => {
                 const p: UploadedPhoto = {
-                  fileKey: f.serverData?.fileKey ?? f.key,
-                  url: f.serverData?.url ?? f.ufsUrl ?? f.url,
-                  name: f.serverData?.name ?? f.name,
+                  fileKey: f.fileKey,
+                  url: f.url,
+                  name: f.name,
                 };
                 addPhoto(p);
               });
             }}
-            onUploadError={(err) => {
-              setUploadError(err.message || "Falha no upload");
-            }}
+            onError={(message) => setUploadError(message || null)}
           />
         )}
 

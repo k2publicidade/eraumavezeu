@@ -1,4 +1,9 @@
 import { UTApi } from "uploadthing/server";
+import {
+  decodePrivatePhotoKey,
+  deletePrivatePhotoFiles,
+  getPrivatePhotoSignedUrl,
+} from "@/lib/private-photo-storage";
 
 /**
  * Signed URLs de curta duração para as fotos do bucket privado (LGPD —
@@ -27,7 +32,12 @@ export type SignedPhoto = {
 /** Exclusão definitiva no storage — usada pelo cron de retenção LGPD. */
 export async function deletePhotoFiles(keys: string[]): Promise<void> {
   if (keys.length === 0) return;
-  await getUtApi().deleteFiles(keys);
+  const privateKeys = keys.filter((key) => decodePrivatePhotoKey(key));
+  const legacyKeys = keys.filter((key) => !decodePrivatePhotoKey(key));
+  await Promise.all([
+    deletePrivatePhotoFiles(privateKeys),
+    legacyKeys.length > 0 ? getUtApi().deleteFiles(legacyKeys) : Promise.resolve(),
+  ]);
 }
 
 export async function getSignedPhotoUrls(
@@ -36,6 +46,9 @@ export async function getSignedPhotoUrls(
   return Promise.all(
     keys.map(async (key) => {
       try {
+        if (decodePrivatePhotoKey(key)) {
+          return { key, url: await getPrivatePhotoSignedUrl(key, SIGNED_URL_TTL_SECONDS) };
+        }
         const { ufsUrl } = await getUtApi().generateSignedURL(key, {
           expiresIn: SIGNED_URL_TTL_SECONDS,
         });

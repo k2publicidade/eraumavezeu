@@ -23,7 +23,7 @@ export const customizationSnapshotSchema = z.object({
   ageRange: z.enum(slugsOf(AGE_RANGES)),
   childName: z.string().trim().min(2).max(60),
   dedication: z.string().max(300).default(""),
-  photoKeys: z.array(z.string().min(1)).min(1).max(MAX_PHOTOS),
+  photoKeys: z.array(z.string().regex(/^(?:sb_[A-Za-z0-9_-]+|[A-Za-z0-9._~-]{8,300})$/)).min(1).max(MAX_PHOTOS),
   consentAcceptedAt: z.string().datetime(),
   consentTextVersion: z.string().min(1),
 });

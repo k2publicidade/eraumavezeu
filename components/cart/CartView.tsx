@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { validateCoupon } from "@/app/actions/coupons";
+import { calculateCouponDiscount } from "@/lib/cart/coupon";
 import { useCartStore } from "@/lib/cart/store";
 import { COMBO_DISCOUNT, type CartProduct } from "@/lib/cart/types";
 
@@ -29,18 +31,55 @@ export default function CartView({ crossSellProducts }: Props) {
   const removeItem = useCartStore((s) => s.removeItem);
   const getTotals = useCartStore((s) => s.getTotals);
   const addItem = useCartStore((s) => s.addItem);
+  const appliedCoupon = useCartStore((s) => s.appliedCoupon);
+  const setAppliedCoupon = useCartStore((s) => s.setAppliedCoupon);
   const [cep, setCep] = useState("");
   const [shippingHint, setShippingHint] = useState<string | null>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [couponMessage, setCouponMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
   if (!hydrated) {
     return <div role="status" className="text-center py-20 text-dark/60">Carregando…</div>;
   }
 
   const totals = getTotals();
+  const couponBase = Math.max(0, totals.subtotal - totals.discount);
+  const couponDiscount = calculateCouponDiscount(appliedCoupon, couponBase);
+  const totalWithCoupon = Math.max(0, totals.total - couponDiscount);
   const hasMainBook = items.some((i) => i.type === "LIVRO_PRINCIPAL");
   const crossSellCandidates = crossSellProducts.filter(
     (p) => !items.some((i) => i.id === p.id),
   );
+
+  async function applyCoupon() {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    setCouponMessage(null);
+    const result = await validateCoupon(couponCode, couponBase);
+    setCouponLoading(false);
+
+    if (!result.ok) {
+      setAppliedCoupon(null);
+      setCouponMessage({ type: "error", text: result.error });
+      return;
+    }
+
+    setAppliedCoupon({
+      id: result.coupon.id,
+      code: result.coupon.code,
+      type: result.coupon.type,
+      value: result.coupon.value,
+    });
+    setCouponCode("");
+    setCouponMessage({ type: "success", text: `Cupom ${result.coupon.code} aplicado com sucesso!` });
+  }
+
+  function removeCoupon() {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponMessage(null);
+  }
 
   if (items.length === 0) {
     return (
@@ -159,13 +198,54 @@ export default function CartView({ crossSellProducts }: Props) {
               <dd>− {formatBRL(totals.discount)}</dd>
             </div>
           )}
+          {appliedCoupon && (
+            <div className="flex justify-between text-forest">
+              <dt>Cupom ({appliedCoupon.code})</dt>
+              <dd>− {formatBRL(couponDiscount)}</dd>
+            </div>
+          )}
           <div className="flex justify-between border-t border-gold/25 pt-3 mt-3 text-lg">
             <dt className="font-semibold text-primary">Total</dt>
             <dd className="font-serif text-fox font-bold">
-              {formatBRL(totals.total)}
+              {formatBRL(totalWithCoupon)}
             </dd>
           </div>
         </dl>
+
+        <div className="mt-5 border-t border-gold/25 pt-5">
+          <label htmlFor="cart-coupon" className="text-sm font-medium text-dark/60">
+            Cupom de desconto
+          </label>
+          <div className="mt-1.5 flex gap-2">
+            <input
+              id="cart-coupon"
+              type="text"
+              value={appliedCoupon ? appliedCoupon.code : couponCode}
+              onChange={(event) => setCouponCode(event.target.value.toUpperCase())}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") void applyCoupon();
+              }}
+              disabled={couponLoading || Boolean(appliedCoupon)}
+              placeholder="CÓDIGO"
+              autoComplete="off"
+              className="min-h-11 min-w-0 flex-1 rounded-lg border-2 border-gold/25 bg-cream px-3 py-2 text-sm uppercase outline-none placeholder:text-dark/45 focus:border-primary disabled:opacity-70"
+            />
+            {appliedCoupon ? (
+              <button type="button" onClick={removeCoupon} className="min-h-11 rounded-lg border-2 border-gold/30 px-3 text-sm font-semibold text-primary transition-colors hover:border-primary hover:bg-gold/10">
+                Remover
+              </button>
+            ) : (
+              <button type="button" onClick={() => void applyCoupon()} disabled={couponLoading || !couponCode.trim()} className="min-h-11 rounded-lg bg-primary px-4 text-sm font-semibold text-white transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-50">
+                {couponLoading ? "Validando…" : "Aplicar"}
+              </button>
+            )}
+          </div>
+          {couponMessage && (
+            <p role="status" aria-live="polite" className={`mt-2 text-xs font-medium ${couponMessage.type === "success" ? "text-forest" : "text-red-700"}`}>
+              {couponMessage.text}
+            </p>
+          )}
+        </div>
 
         <div className="mt-6">
           <label htmlFor="cep" className="text-sm text-dark/60 font-medium">

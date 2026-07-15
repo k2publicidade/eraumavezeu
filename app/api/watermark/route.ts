@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 import { getSignedPhotoUrls } from "@/lib/uploadthing-server";
+import { isAllowedPrivatePhotoUrl } from "@/lib/private-photo-storage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -9,22 +10,6 @@ const MAX_DIMENSION = 1200;
 const MAX_SOURCE_BYTES = 10 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 8_000;
 const WATERMARK_TEXT = "ERA UMA VEZ EU";
-
-const ALLOWED_IMAGE_HOSTS = ["utfs.io", "ufs.sh", "uploadthing.com"];
-
-function isAllowedImageUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return (
-      url.protocol === "https:" &&
-      ALLOWED_IMAGE_HOSTS.some(
-        (host) => url.hostname === host || url.hostname.endsWith(`.${host}`),
-      )
-    );
-  } catch {
-    return false;
-  }
-}
 
 /**
  * GET /api/watermark?key=<uploadthing-file-key>
@@ -37,7 +22,7 @@ function isAllowedImageUrl(value: string): boolean {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const fileKey = searchParams.get("key");
-  if (!fileKey || !/^[A-Za-z0-9._~-]{8,300}$/.test(fileKey)) {
+  if (!fileKey || !/^(?:sb_[A-Za-z0-9_-]+|[A-Za-z0-9._~-]{8,300})$/.test(fileKey)) {
     return NextResponse.json({ error: "valid key required" }, { status: 400 });
   }
 
@@ -46,7 +31,7 @@ export async function GET(req: Request) {
   if (!imageUrl) {
     return NextResponse.json({ error: "source unavailable" }, { status: 404 });
   }
-  if (!isAllowedImageUrl(imageUrl)) {
+  if (!isAllowedPrivatePhotoUrl(imageUrl)) {
     return NextResponse.json({ error: "source not allowed" }, { status: 502 });
   }
 

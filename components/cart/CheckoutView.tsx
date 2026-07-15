@@ -9,6 +9,7 @@ import type { z } from "zod";
 import { createOrder } from "@/app/actions/create-order";
 import { lookupCep } from "@/lib/cep";
 import { useCartStore } from "@/lib/cart/store";
+import { calculateCouponDiscount } from "@/lib/cart/coupon";
 import { formatBRL } from "@/lib/format";
 import { checkoutSchema } from "@/lib/validators/order";
 import { calculateShippingOptions } from "@/lib/shipping";
@@ -40,6 +41,8 @@ export default function CheckoutView({
   const items = useCartStore((s) => s.items);
   const clear = useCartStore((s) => s.clear);
   const getTotals = useCartStore((s) => s.getTotals);
+  const appliedCoupon = useCartStore((s) => s.appliedCoupon);
+  const setAppliedCoupon = useCartStore((s) => s.setAppliedCoupon);
   const totals = hydrated ? getTotals() : { subtotal: 0, discount: 0, total: 0, discountedUnits: 0 };
 
   const [serverError, setServerError] = useState<string | null>(null);
@@ -56,13 +59,8 @@ export default function CheckoutView({
   const [couponLoading, setCouponLoading] = useState(false);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [couponSuccess, setCouponSuccess] = useState<string | null>(null);
-  const [appliedCoupon, setAppliedCoupon] = useState<{
-    id: string;
-    code: string;
-    type: "PERCENTAGE" | "FIXED";
-    value: number;
-    discountAmount: number;
-  } | null>(null);
+  const couponBase = Math.max(0, totals.subtotal - totals.discount);
+  const couponDiscountAmount = calculateCouponDiscount(appliedCoupon, couponBase);
 
   const handleApplyCoupon = async () => {
     if (!couponCodeInput.trim()) return;
@@ -70,12 +68,11 @@ export default function CheckoutView({
     setCouponError(null);
     setCouponSuccess(null);
 
-    const remainingValue = Math.max(0, totals.subtotal - totals.discount);
-    const res = await validateCoupon(couponCodeInput, remainingValue);
+    const res = await validateCoupon(couponCodeInput, couponBase);
     setCouponLoading(false);
 
     if (res.ok) {
-      setAppliedCoupon(res.coupon);
+      setAppliedCoupon({ id: res.coupon.id, code: res.coupon.code, type: res.coupon.type, value: res.coupon.value });
       setCouponSuccess(`Cupom ${res.coupon.code} aplicado com sucesso!`);
     } else {
       setCouponError(res.error);
@@ -89,24 +86,6 @@ export default function CheckoutView({
     setCouponSuccess(null);
     setCouponError(null);
   };
-
-  useEffect(() => {
-    if (appliedCoupon) {
-      const remainingValue = Math.max(0, totals.subtotal - totals.discount);
-      let newDiscount = 0;
-      if (appliedCoupon.type === "PERCENTAGE") {
-        newDiscount = Math.round(remainingValue * (appliedCoupon.value / 100) * 100) / 100;
-      } else {
-        newDiscount = appliedCoupon.value;
-      }
-      newDiscount = Math.min(newDiscount, remainingValue);
-      setAppliedCoupon((prev) => {
-        if (!prev) return null;
-        if (prev.discountAmount === newDiscount) return prev;
-        return { ...prev, discountAmount: newDiscount };
-      });
-    }
-  }, [totals.subtotal, totals.discount, appliedCoupon]);
 
   const {
     register,
@@ -610,7 +589,7 @@ export default function CheckoutView({
           <div className="flex gap-2">
             <input
               type="text"
-              value={couponCodeInput}
+              value={appliedCoupon ? appliedCoupon.code : couponCodeInput}
               onChange={(e) => setCouponCodeInput(e.target.value)}
               disabled={couponLoading || !!appliedCoupon}
               placeholder="CÓDIGO"
@@ -657,7 +636,7 @@ export default function CheckoutView({
           {appliedCoupon && (
             <div className="flex justify-between text-forest font-medium">
               <dt>Cupom ({appliedCoupon.code})</dt>
-              <dd>- {formatBRL(appliedCoupon.discountAmount)}</dd>
+              <dd>- {formatBRL(couponDiscountAmount)}</dd>
             </div>
           )}
           {shippingOptions.length > 0 && (
@@ -670,7 +649,7 @@ export default function CheckoutView({
             <dt className="font-semibold text-primary">Total</dt>
             <dd className="font-serif text-fox font-bold">
               {formatBRL(
-                Math.max(0, totals.subtotal - totals.discount - (appliedCoupon?.discountAmount || 0)) +
+                Math.max(0, totals.subtotal - totals.discount - couponDiscountAmount) +
                   selectedCost
               )}
             </dd>

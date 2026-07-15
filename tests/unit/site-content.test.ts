@@ -43,6 +43,7 @@ describe("site content settings", () => {
 describe("FAQ content", () => {
   it("uses default FAQ items when database returns none", () => {
     expect(resolveFaqItems([])).toEqual(DEFAULT_FAQ_ITEMS);
+    expect(DEFAULT_FAQ_ITEMS).toHaveLength(14);
     expect(DEFAULT_FAQ_ITEMS).toContainEqual(
       expect.objectContaining({
         id: "personagens-registrados",

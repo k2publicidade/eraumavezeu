@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/admin/clientes", label: "Clientes", icon: "👥" },
   { href: "/admin/mensagens", label: "Mensagens", icon: "💬" },
   { href: "/admin/conteudo", label: "Conteúdo", icon: "✏️" },
+  { href: "/admin/paginas", label: "Páginas", icon: "▤" },
 ] as const;
 
 export default function AdminShell({ children }: { children: ReactNode }) {

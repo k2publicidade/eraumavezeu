@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useCartStore } from "@/lib/cart/store";
 import { COMBO_DISCOUNT } from "@/lib/cart/types";
 import type { CatalogProduct } from "@/lib/products";
+import { PRODUCT_SHOWCASE_MEDIA } from "@/lib/gallery-data";
 
 interface ComboSimulatorProps {
   products: CatalogProduct[];
@@ -79,20 +80,8 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
     }
   };
 
-  const getAddonImage = (type: string) => {
-    switch (type) {
-      case "EBOOK":
-        return "/produtos/ebook.png";
-      case "LIVRO_COLORIR":
-        return "/produtos/Bernardo Colorir1.png";
-      case "QUEBRA_CABECA":
-        return "/produtos/Bernardo Quebra Cabeça.png";
-      case "CARTELA_ADESIVOS":
-        return "/produtos/Bernardo Adesivo.png";
-      default:
-        return "/book_cover.png";
-    }
-  };
+  const getProductImage = (product: CatalogProduct) =>
+    PRODUCT_SHOWCASE_MEDIA[product.type][0] ?? product.images[0] ?? "/book_cover.png";
 
   const formatBRL = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -121,7 +110,13 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
           {/* Main Book (Fixed) */}
           <div className="flex items-center gap-3 p-3 rounded-xl bg-cream/35 border border-cream-deep/15 select-none opacity-85">
             <div className="relative w-10 h-14 rounded-md overflow-hidden shadow-sm flex-shrink-0">
-              <Image src="/book_cover.png" alt="Livro Capa Dura" fill className="object-cover" sizes="40px" />
+              <Image
+                src={getProductImage(mainProduct)}
+                alt={`${mainProduct.name} personalizado`}
+                fill
+                className="object-cover"
+                sizes="40px"
+              />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
@@ -165,7 +160,13 @@ export default function ComboSimulator({ products }: ComboSimulatorProps) {
                   }`}
                 >
                   <div className="relative w-10 h-10 rounded-lg overflow-hidden shadow-sm flex-shrink-0 bg-cream/10">
-                    <Image src={getAddonImage(a.type)} alt={a.name} fill className="object-cover" sizes="40px" />
+                    <Image
+                      src={getProductImage(a)}
+                      alt={`${a.name} personalizado`}
+                      fill
+                      className="object-cover"
+                      sizes="40px"
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">

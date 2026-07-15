@@ -16,9 +16,9 @@ export const COLOR_SUGGESTIONS = [
 ] as const;
 
 export const ART_STYLE_OPTIONS = [
-  { value: "REALISTA", label: "Realista", description: "Acabamento próximo de uma fotografia" },
-  { value: "DESENHO", label: "Desenho", description: "Ilustração clássica e artística" },
-  { value: "DIGITAL", label: "Animação digital", description: "Visual tridimensional e contemporâneo" },
+  { value: "REALISTA", label: "Realista", description: "Acabamento próximo de uma fotografia", image: "/child_reading.png", imageAlt: "Exemplo de estilo realista, próximo de uma fotografia" },
+  { value: "DESENHO", label: "Desenho", description: "Ilustração clássica e artística", image: "/book_cover.png", imageAlt: "Exemplo de ilustração em desenho clássico e artístico" },
+  { value: "DIGITAL", label: "Animação digital", description: "Visual tridimensional e contemporâneo", image: "/gallery/Bernardo/Bernardo1.png", imageAlt: "Exemplo de ilustração digital com acabamento tridimensional" },
 ] as const;
 
 export const LINE_STYLE_OPTIONS = [

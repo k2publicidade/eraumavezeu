@@ -5,11 +5,20 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { applyComboDiscount, type Totals } from "./discount";
 import type { CartItem, CartProduct } from "./types";
 
+export type AppliedCoupon = {
+  id: string;
+  code: string;
+  type: "PERCENTAGE" | "FIXED";
+  value: number;
+};
+
 type CartState = {
   items: CartItem[];
+  appliedCoupon: AppliedCoupon | null;
   addItem: (product: CartProduct, quantity?: number) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  setAppliedCoupon: (coupon: AppliedCoupon | null) => void;
   clear: () => void;
   getTotals: () => Totals;
 };
@@ -18,6 +27,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      appliedCoupon: null,
 
       addItem: (product, quantity = 1) =>
         set((s) => {
@@ -47,7 +57,9 @@ export const useCartStore = create<CartState>()(
                 ),
         })),
 
-      clear: () => set({ items: [] }),
+      setAppliedCoupon: (appliedCoupon) => set({ appliedCoupon }),
+
+      clear: () => set({ items: [], appliedCoupon: null }),
 
       getTotals: () => applyComboDiscount(get().items),
     }),
@@ -55,7 +67,7 @@ export const useCartStore = create<CartState>()(
       name: "eraumavezeu-cart",
       version: 1,
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ items: state.items }),
+      partialize: (state) => ({ items: state.items, appliedCoupon: state.appliedCoupon }),
     },
   ),
 );

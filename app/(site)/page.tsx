@@ -291,21 +291,21 @@ export default async function HomePage() {
                 className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-2 rounded-full animate-fade-up"
                 style={{ animationDelay: "100ms", animationFillMode: "both" }}
               >
-                <span className="text-xs text-primary font-bold uppercase tracking-wider">✦ 100% PERSONALIZADO</span>
+                <span className="text-xs text-primary font-bold uppercase tracking-wider">✦ {settings.heroEyebrow}</span>
               </div>
               
               <h1 
                 className="font-serif text-5xl md:text-6xl text-primary leading-[1.08] tracking-tight animate-fade-up"
                 style={{ animationDelay: "250ms", animationFillMode: "both" }}
               >
-                Transforme a criança que você ama no herói da <span className="font-[Georgia,serif] italic text-gold font-normal">própria</span> história
+                {settings.heroTitlePrefix} <span className="font-[Georgia,serif] italic text-gold font-normal">{settings.heroTitleHighlight}</span>
               </h1>
               
               <p 
                 className="text-base md:text-lg text-dark/70 leading-relaxed font-sans animate-fade-up"
                 style={{ animationDelay: "400ms", animationFillMode: "both" }}
               >
-                Um livro personalizado e ilustrado que transforma momentos especiais em memórias para toda a vida. Feito sob medida com tecnologia de ponta e carinho humano.
+                {settings.heroDescription}
               </p>
               
               <div 
@@ -316,14 +316,14 @@ export default async function HomePage() {
                   href={settings.primaryCtaHref}
                   className="bg-primary text-cream hover:bg-primary-light hover:scale-105 active:scale-95 text-center px-8 py-4.5 rounded-full font-bold uppercase tracking-wide text-xs shadow-lg transition-all duration-300 flex items-center justify-center gap-2"
                 >
-                  <span>CRIAR MEU LIVRO</span>
+                  <span>{settings.primaryCtaLabel}</span>
                   <span className="text-gold">→</span>
                 </Link>
                 <Link
-                  href="#como-funciona"
+                  href={settings.secondaryCtaHref}
                   className="bg-white border border-primary/20 text-primary hover:bg-cream-light text-center px-8 py-4.5 rounded-full font-bold uppercase tracking-wide text-xs transition-all duration-300"
                 >
-                  COMO FUNCIONA
+                  {settings.secondaryCtaLabel}
                 </Link>
               </div>
 
@@ -345,21 +345,21 @@ export default async function HomePage() {
                 className="inline-flex items-center gap-2 bg-gold/10 border border-gold/30 px-4 py-1.5 rounded-full animate-fade-up mx-auto"
                 style={{ animationDelay: "50ms", animationFillMode: "both" }}
               >
-                <span className="text-xs text-primary font-bold uppercase tracking-wider">✦ 100% Personalizado</span>
+                <span className="text-xs text-primary font-bold uppercase tracking-wider">✦ {settings.heroEyebrow}</span>
               </div>
 
               <h1 
                 className="font-serif text-3xl sm:text-4xl text-primary leading-tight px-2 font-semibold animate-fade-up"
                 style={{ animationDelay: "150ms", animationFillMode: "both" }}
               >
-                Transforme quem você ama no herói da <span className="font-[Georgia,serif] italic text-gold font-normal">própria</span> história
+                {settings.heroTitlePrefix} <span className="font-[Georgia,serif] italic text-gold font-normal">{settings.heroTitleHighlight}</span>
               </h1>
               
               <p 
                 className="text-sm sm:text-base text-dark/70 leading-relaxed font-sans px-4 animate-fade-up"
                 style={{ animationDelay: "250ms", animationFillMode: "both" }}
               >
-                Um livro infantil ilustrado feito sob medida. O rosto da criança em todas as aventuras com ilustrações ricas em detalhes geradas por IA e acabamento premium em capa dura.
+                {settings.heroDescription}
               </p>
               
               {/* Centered Mobile Scroll Video Card */}
@@ -380,13 +380,13 @@ export default async function HomePage() {
                   href={settings.primaryCtaHref}
                   className="w-full sm:w-auto bg-primary text-cream hover:bg-primary-light hover:scale-105 active:scale-95 text-center px-8 py-4 rounded-full font-bold uppercase tracking-wide text-xs shadow-lg transition-all duration-300"
                 >
-                  Criar meu livro
+                  {settings.primaryCtaLabel}
                 </Link>
                 <Link
-                  href="#como-funciona"
+                  href={settings.secondaryCtaHref}
                   className="w-full sm:w-auto bg-white border border-primary/20 text-primary hover:bg-cream-light text-center px-8 py-4 rounded-full font-bold uppercase tracking-wide text-xs transition-all duration-300"
                 >
-                  Como funciona
+                  {settings.secondaryCtaLabel}
                 </Link>
               </div>
 

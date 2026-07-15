@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 
 const PAGES = [
@@ -29,9 +29,17 @@ const PAGES = [
   "/livro/Era Uma Vez - Bernardo_Página_23.jpg",
 ];
 
-export default function InteractiveBook() {
+export default function InteractiveBook({
+  onOpenChange,
+}: {
+  onOpenChange?: (open: boolean) => void;
+}) {
   const [currentSpread, setCurrentSpread] = useState(0);
   const totalSheets = 11; // 11 sheets + 1 stationary page on right = 23 pages
+
+  useEffect(() => {
+    onOpenChange?.(currentSpread > 0);
+  }, [currentSpread, onOpenChange]);
 
   const nextPage = useCallback(() => {
     if (currentSpread < 11) {

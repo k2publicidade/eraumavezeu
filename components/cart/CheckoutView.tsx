@@ -117,7 +117,7 @@ export default function CheckoutView({
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      buyer: { name: "", email: "", phone: "", whatsappOptIn: false },
+      buyer: { name: "", email: "", cpf: "", phone: "", whatsappOptIn: false },
       address: {
         zipCode: "",
         street: "",
@@ -344,6 +344,28 @@ export default function CheckoutView({
             <legend className="font-serif text-xl text-primary md:col-span-2">
               Endereço de entrega
             </legend>
+            <label className="block">
+              <span className="text-sm font-medium text-primary">CPF do comprador</span>
+              <input
+                {...register("buyer.cpf")}
+                className="input-field mt-1"
+                inputMode="numeric"
+                autoComplete="off"
+                placeholder="000.000.000-00"
+                maxLength={14}
+                aria-invalid={!!errors.buyer?.cpf}
+                aria-describedby={errors.buyer?.cpf ? "buyer-cpf-error" : "buyer-cpf-help"}
+              />
+              {errors.buyer?.cpf ? (
+                <span id="buyer-cpf-error" className="mt-1 block text-xs text-red-700">
+                  Informe um CPF válido.
+                </span>
+              ) : (
+                <span id="buyer-cpf-help" className="mt-1 block text-xs text-dark/50">
+                  Necessário para emissão e identificação do envio.
+                </span>
+              )}
+            </label>
             <label className="block">
               <span className="text-sm font-medium text-primary">
                 CEP{cepLoading && <span className="ml-2 text-xs text-dark/50">buscando…</span>}

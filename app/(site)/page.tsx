@@ -1,11 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { getSiteSettings } from "@/lib/site-content";
 import { getActiveProducts } from "@/lib/products";
 import MagicStars from "@/components/effects/MagicStars";
 import ScrollRevealTrigger from "@/components/effects/ScrollRevealTrigger";
-import InteractiveBook from "@/components/site/InteractiveBook";
+import FeaturedBookShowcase from "@/components/site/FeaturedBookShowcase";
 import FloatingMagicElements from "@/components/effects/FloatingMagicElements";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import HeroScrollVideo from "@/components/site/HeroScrollVideo";
@@ -463,69 +462,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)] gap-14 lg:gap-10 xl:gap-16 items-center max-w-7xl mx-auto">
             {/* Real child to story bridge + interactive book */}
-            <div className="relative isolate mx-auto w-full max-w-[740px] overflow-visible">
-              <div
-                aria-hidden="true"
-                className="absolute left-[5%] right-[12%] bottom-24 h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent"
-              />
-
-              <div className="relative sm:grid sm:grid-cols-[170px_minmax(0,1fr)] lg:grid-cols-[180px_minmax(0,1fr)] xl:grid-cols-[220px_minmax(0,1fr)] sm:items-center">
-                <figure className="absolute left-0 top-[170px] z-20 w-32 sm:relative sm:left-auto sm:top-auto sm:w-auto sm:-mr-10 lg:-mr-12 xl:-mr-10 sm:mt-10 sm:self-center">
-                  <figcaption className="absolute left-1 top-0 -translate-y-full flex items-center gap-2 whitespace-nowrap rounded-sm bg-cream/95 px-2 py-1 text-xs font-semibold text-primary sm:bg-transparent sm:px-0 sm:py-0 sm:text-primary/75">
-                    <span className="h-px w-5 bg-gold" aria-hidden="true" />
-                    Bernardo, na vida real
-                  </figcaption>
-                  <Image
-                    src="/be.png"
-                    alt="Bernardo sorrindo e segurando o livro personalizado Aventura com Dinossauros"
-                    width={400}
-                    height={667}
-                    sizes="(max-width: 639px) 128px, (max-width: 1023px) 170px, (max-width: 1279px) 180px, 220px"
-                    className="h-auto w-full drop-shadow-[0_14px_12px_rgba(27,42,74,0.12)]"
-                  />
-                </figure>
-
-                <div className="relative z-10 min-w-0">
-                  <InteractiveBook />
-                </div>
-              </div>
-
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 150 80"
-                fill="none"
-                className="pointer-events-none absolute left-[24%] sm:left-[25%] lg:left-[24%] xl:left-[27%] top-[36%] sm:top-[34%] z-30 h-14 w-[24%] sm:h-16 sm:w-[23%] lg:w-[22%]"
-              >
-                <path
-                  d="M8 64C42 18 88 14 137 39"
-                  stroke="#FAF7F2"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  opacity="0.92"
-                />
-                <path
-                  d="M8 64C42 18 88 14 137 39"
-                  stroke="#D4A843"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M125 25L140 40L120 44"
-                  stroke="#FAF7F2"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  opacity="0.92"
-                />
-                <path
-                  d="M125 25L140 40L120 44"
-                  stroke="#D4A843"
-                  strokeWidth="3"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
+            <FeaturedBookShowcase />
 
             {/* Description details */}
             <div className="space-y-6 max-w-lg">

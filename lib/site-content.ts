@@ -195,6 +195,14 @@ export const DEFAULT_FAQ_ITEMS: FaqItem[] = [
     sortOrder: 130,
     active: true,
   },
+  {
+    id: "personagens-registrados",
+    question: "Vocês usam personagens de filmes e desenhos animados?",
+    answer:
+      "Não trabalhamos com personagens registrados por outras empresas (Elsa, Mickey, Homem-Aranha etc.), pois são protegidos por direitos autorais e não podem ser reproduzidos em produtos à venda. Mas a magia continua: criamos personagens originais inspirados no que seu filho ama — uma princesa do gelo só dele, um herói aranha exclusivo — ou usamos os clássicos livres, como Chapeuzinho, Cinderela, dragões, fadas e piratas.",
+    sortOrder: 140,
+    active: true,
+  },
 ];
 
 export function resolveSiteSettings(records: SiteSettingRecord[]): SiteSettings {

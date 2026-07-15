@@ -111,6 +111,7 @@ model Order {
   guestEmail      String?
   guestName       String?
   guestPhone      String?
+  guestCpf        String?
   status          OrderStatus   @default(AGUARDANDO_PAGAMENTO)
   shippingMethod  String?
   shippingCost    Decimal       @default(0) @db.Decimal(10, 2)

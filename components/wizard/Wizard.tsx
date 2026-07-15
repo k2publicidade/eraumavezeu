@@ -88,6 +88,19 @@ export default function Wizard() {
             title="Qual o tema da história?"
             subtitle="Escolha o universo onde a aventura vai acontecer."
           >
+            <div className="mb-6 rounded-2xl border border-gold/35 bg-gold/10 px-5 py-4 text-sm leading-relaxed text-dark/75" role="note">
+              <p className="font-semibold text-primary">Atenção sobre personagens protegidos</p>
+              <p className="mt-2">
+                Não trabalhamos com personagens registrados por outras empresas (Elsa, Mickey,
+                Homem-Aranha etc.), pois são protegidos por direitos autorais e não podem ser
+                reproduzidos em produtos à venda.
+              </p>
+              <p className="mt-2">
+                Mas a magia continua: criamos personagens originais inspirados no que seu filho
+                ama — uma princesa do gelo só dele, um herói aranha exclusivo — ou usamos os
+                clássicos livres, como Chapeuzinho, Cinderela, dragões, fadas e piratas.
+              </p>
+            </div>
             <ChoiceGrid
               options={THEMES}
               value={state.theme}

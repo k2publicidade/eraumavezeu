@@ -37,10 +37,30 @@ export const checkoutItemSchema = z.object({
 
 const onlyDigits = (s: string) => s.replace(/\D/g, "");
 
+function isValidCpf(value: string) {
+  const cpf = onlyDigits(value);
+  if (!/^\d{11}$/.test(cpf) || /^(\d)\1{10}$/.test(cpf)) return false;
+
+  const digit = (length: number) => {
+    const sum = cpf
+      .slice(0, length)
+      .split("")
+      .reduce((total, current, index) => total + Number(current) * (length + 1 - index), 0);
+    const remainder = (sum * 10) % 11;
+    return remainder === 10 ? 0 : remainder;
+  };
+
+  return digit(9) === Number(cpf[9]) && digit(10) === Number(cpf[10]);
+}
+
 export const checkoutSchema = z.object({
   buyer: z.object({
     name: z.string().trim().min(3).max(120),
     email: z.string().trim().email().max(160),
+    cpf: z
+      .string()
+      .transform(onlyDigits)
+      .refine(isValidCpf, "CPF inválido"),
     phone: z
       .string()
       .transform(onlyDigits)

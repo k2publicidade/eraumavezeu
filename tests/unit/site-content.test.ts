@@ -43,6 +43,12 @@ describe("site content settings", () => {
 describe("FAQ content", () => {
   it("uses default FAQ items when database returns none", () => {
     expect(resolveFaqItems([])).toEqual(DEFAULT_FAQ_ITEMS);
+    expect(DEFAULT_FAQ_ITEMS).toContainEqual(
+      expect.objectContaining({
+        id: "personagens-registrados",
+        question: "Vocês usam personagens de filmes e desenhos animados?",
+      }),
+    );
   });
 
   it("sorts active FAQ items and hides inactive entries", () => {

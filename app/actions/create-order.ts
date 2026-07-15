@@ -129,6 +129,7 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
           guestName: buyer.name,
           guestEmail: buyer.email,
           guestPhone: buyer.phone,
+          guestCpf: buyer.cpf,
           whatsappOptIn: buyer.whatsappOptIn,
           subtotal: draft.totals.subtotal,
           discount: draft.totals.discount,

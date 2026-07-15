@@ -29,6 +29,7 @@ const validPayload = {
   buyer: {
     name: "Mariana Souza",
     email: "mariana@email.com",
+    cpf: "529.982.247-25",
     phone: "(11) 99999-9999",
     whatsappOptIn: true,
   },
@@ -54,6 +55,7 @@ describe("checkoutSchema", () => {
   it("aceita payload válido normalizando telefone, CEP e UF", () => {
     const parsed = checkoutSchema.parse(validPayload);
     expect(parsed.buyer.phone).toBe("11999999999");
+    expect(parsed.buyer.cpf).toBe("52998224725");
     expect(parsed.address.zipCode).toBe("01310100");
     expect(parsed.address.state).toBe("SP");
   });
@@ -70,6 +72,14 @@ describe("checkoutSchema", () => {
     const bad = {
       ...validPayload,
       buyer: { ...validPayload.buyer, phone: "9999-9999" },
+    };
+    expect(checkoutSchema.safeParse(bad).success).toBe(false);
+  });
+
+  it("rejeita CPF inválido", () => {
+    const bad = {
+      ...validPayload,
+      buyer: { ...validPayload.buyer, cpf: "111.111.111-11" },
     };
     expect(checkoutSchema.safeParse(bad).success).toBe(false);
   });

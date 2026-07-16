@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { formatBRL } from "@/lib/format";
 import { orderCodeOf } from "@/lib/orders/build-order";
@@ -15,11 +16,11 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
     },
   });
 
-  if (!order || order.nfeStatus !== "EMITIDA") {
+  if (!order || order.nfeStatus !== "EMITIDA" || !order.shippingAddress) {
     notFound();
   }
 
-  const addr = order.shippingAddress!;
+  const addr = order.shippingAddress;
   const key = order.nfeKey || "";
   const formattedKey = key.replace(/(.{4})/g, "$1 ").trim(); // space every 4 digits
   
@@ -39,7 +40,12 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
           <p className="text-xs text-dark/60">Esta página está formatada para impressão A4. Pressione Ctrl+P para imprimir.</p>
         </div>
         <div className="flex gap-2">
-          <LinkButton href={`/admin/envios`} label="Voltar à Central" />
+          <Link
+            href="/admin/envios"
+            className="bg-white border border-gold/30 hover:bg-gold/5 text-primary text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition"
+          >
+            Voltar à Central
+          </Link>
           <button
             onClick={() => window.print()}
             className="bg-primary hover:bg-primary-dark text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition"
@@ -372,14 +378,3 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
   );
 }
 
-// Simple internal helper for Link buttons to avoid client rendering issues
-function LinkButton({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      className="bg-white border border-gold/30 hover:bg-gold/5 text-primary text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition"
-    >
-      {label}
-    </a>
-  );
-}

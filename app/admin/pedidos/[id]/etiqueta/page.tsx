@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { orderCodeOf } from "@/lib/orders/build-order";
 import { getSiteSettings } from "@/lib/site-content";
@@ -30,12 +31,12 @@ export default async function EtiquetaPage({ params }: { params: { id: string } 
           <p className="text-[10px] text-dark/60">Layout térmico padrão (10x15cm).</p>
         </div>
         <div className="flex gap-1.5">
-          <a
+          <Link
             href="/admin/envios"
             className="bg-white border border-gold/30 hover:bg-gold/5 text-primary text-[10px] font-semibold px-2.5 py-1.5 rounded-lg transition"
           >
             Voltar
-          </a>
+          </Link>
           <button
             onClick={() => window.print()}
             className="bg-primary hover:bg-primary-dark text-white text-[10px] font-semibold px-3 py-1.5 rounded-lg shadow-sm transition"

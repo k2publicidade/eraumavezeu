@@ -214,9 +214,9 @@ export default function CheckoutView({
     return (
       <div className="card-premium p-10 text-center max-w-xl mx-auto">
         <h1 className="font-serif text-3xl text-primary">Carrinho vazio</h1>
-        <p className="mt-3 text-dark/65">Personalize um livro antes de finalizar.</p>
-        <Link href="/personalizar" className="btn-primary-lg mt-6 inline-flex">
-          Criar meu livro
+        <p className="mt-3 text-dark/65">Adicione produtos ao carrinho antes de finalizar.</p>
+        <Link href="/produtos" className="btn-primary-lg mt-6 inline-flex">
+          Ver produtos
         </Link>
       </div>
     );

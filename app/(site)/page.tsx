@@ -683,26 +683,17 @@ export default async function HomePage() {
                     )}
                   </div>
 
-                  {/* Add To Cart or Customize CTA Button */}
-                  {p.type === "LIVRO_PRINCIPAL" ? (
-                    <Link
-                      href="/personalizar"
-                      className="block min-h-11 w-full rounded-full bg-primary px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-cream shadow-sm transition-all duration-300 hover:bg-primary-light active:scale-[0.98]"
-                    >
-                      Personalizar Livro
-                    </Link>
-                  ) : (
-                    <AddToCartButton
-                      product={{
-                        id: p.id,
-                        slug: p.slug,
-                        name: p.name,
-                        type: p.type,
-                        price: p.price,
-                      }}
-                      className="block min-h-11 w-full rounded-full bg-primary px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-cream shadow-sm transition-all duration-300 hover:bg-primary-light active:scale-[0.98]"
-                    />
-                  )}
+                  {/* Add To Cart Button */}
+                  <AddToCartButton
+                    product={{
+                      id: p.id,
+                      slug: p.slug,
+                      name: p.name,
+                      type: p.type,
+                      price: p.price,
+                    }}
+                    className="block min-h-11 w-full rounded-full bg-primary px-3 py-3 text-center text-xs font-bold uppercase tracking-wider text-cream shadow-sm transition-all duration-300 hover:bg-primary-light active:scale-[0.98]"
+                  />
                 </div>
               </div>
             ))}

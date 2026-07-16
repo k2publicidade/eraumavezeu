@@ -162,12 +162,16 @@ export default async function ProdutosPage() {
                     </span>
                   </div>
                   
-                  <Link
-                    href="/personalizar"
+                  <AddToCartButton
+                    product={{
+                      id: mainProduct.id,
+                      slug: mainProduct.slug,
+                      name: mainProduct.name,
+                      type: mainProduct.type,
+                      price: mainProduct.price,
+                    }}
                     className="w-full sm:w-auto bg-primary text-cream hover:bg-primary-light active:scale-95 text-center px-8 py-3.5 rounded-full font-bold uppercase tracking-wider text-[11px] shadow-premium hover:shadow-xl transition-all duration-300"
-                  >
-                    Personalizar este livro →
-                  </Link>
+                  />
                 </div>
               </div>
             </div>

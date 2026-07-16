@@ -348,6 +348,14 @@ export default async function AdminOrderDetailPage({
               orderId={order.id}
               currentStatus={order.status}
               trackingCode={order.trackingCode}
+              nfeStatus={order.nfeStatus}
+              nfeKey={order.nfeKey}
+              nfeNumber={order.nfeNumber}
+              nfeSeries={order.nfeSeries}
+              nfeXml={order.nfeXml}
+              shippingLabelStatus={order.shippingLabelStatus}
+              shippingLabelId={order.shippingLabelId}
+              shippingLabelUrl={order.shippingLabelUrl}
             />
           </div>
         </aside>

@@ -5,6 +5,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: "📊" },
   { href: "/admin/pedidos", label: "Pedidos", icon: "🧾" },
   { href: "/admin/producao", label: "Produção", icon: "🎨" },
+  { href: "/admin/envios", label: "Envios & NF-e", icon: "🚚" },
   { href: "/admin/produtos", label: "Produtos", icon: "📚" },
   { href: "/admin/cupons", label: "Cupons", icon: "🎫" },
   { href: "/admin/clientes", label: "Clientes", icon: "👥" },

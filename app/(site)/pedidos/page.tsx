@@ -47,8 +47,8 @@ export default async function MeusPedidosPage() {
         {orders.length === 0 ? (
           <div className="card-premium mt-8 p-10 text-center">
             <p className="text-dark/65">Você ainda não tem pedidos.</p>
-            <Link href="/personalizar" className="btn-primary-lg mt-6 inline-flex">
-              Criar meu livro
+            <Link href="/produtos" className="btn-primary-lg mt-6 inline-flex">
+              Ver produtos
             </Link>
           </div>
         ) : (

@@ -86,13 +86,13 @@ export default function CartView({ crossSellProducts }: Props) {
       <div className="bg-cream-light rounded-2xl p-10 text-center border border-gold/25 shadow-sm">
         <h2 className="font-serif text-2xl text-primary">Seu carrinho está vazio</h2>
         <p className="mt-2 text-dark/55">
-          Comece personalizando o livro principal.
+          Adicione um de nossos produtos mágicos para começar.
         </p>
         <Link
-          href="/personalizar"
+          href="/produtos"
           className="btn-primary-lg mt-6 inline-flex"
         >
-          Criar meu livro
+          Ver produtos
         </Link>
       </div>
     );

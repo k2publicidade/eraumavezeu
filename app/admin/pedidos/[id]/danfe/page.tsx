@@ -3,7 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { formatBRL } from "@/lib/format";
 import { orderCodeOf } from "@/lib/orders/build-order";
-import { UF_IBGE_CODES } from "@/lib/nfe/nfe-generator";
+import PrintButton from "@/components/admin/PrintButton";
 
 export const dynamic = "force-dynamic";
 
@@ -48,20 +48,6 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
 
   return (
     <div className="min-h-screen bg-white p-4 font-sans text-dark antialiased md:p-8 select-text">
-      {/* Script to trigger print on load if query param ?print=true is present */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            if (typeof window !== 'undefined' && window.location.search.includes('print=true')) {
-              window.addEventListener('load', () => {
-                setTimeout(() => {
-                  window.print();
-                }, 500);
-              });
-            }
-          `,
-        }}
-      />
       {/* Print Controls (hidden on print) */}
       <div className="mb-6 flex items-center justify-between border-b border-gold/25 pb-4 print:hidden bg-cream-light p-4 rounded-2xl">
         <div>
@@ -75,12 +61,7 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
           >
             Voltar à Central
           </Link>
-          <button
-            onClick={() => window.print()}
-            className="bg-primary hover:bg-primary-dark text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm transition"
-          >
-            🖨️ Imprimir DANFE
-          </button>
+          <PrintButton label="🖨️ Imprimir DANFE" />
         </div>
       </div>
 

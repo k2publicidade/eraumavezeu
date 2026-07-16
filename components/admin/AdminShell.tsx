@@ -23,7 +23,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
           <Link href="/admin" className="mt-2 block font-serif text-2xl font-semibold text-cream">
             Era Uma Vez, <span className="text-gold italic font-normal">Eu</span>
           </Link>
-          <p className="mt-2 text-xs text-cream/60 leading-normal">Gestão de vendas, production e conteúdo.</p>
+          <p className="mt-2 text-xs text-cream/60 leading-normal">Gestão de vendas, produção e conteúdo.</p>
         </div>
 
         <nav className="flex-1 space-y-1.5 px-4 py-6" aria-label="Navegação administrativa">

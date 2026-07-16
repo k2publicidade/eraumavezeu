@@ -3,6 +3,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { orderCodeOf } from "@/lib/orders/build-order";
 import { getSiteSettings } from "@/lib/site-content";
+import PrintButton from "@/components/admin/PrintButton";
 
 export const dynamic = "force-dynamic";
 
@@ -24,21 +25,6 @@ export default async function EtiquetaPage({ params }: { params: { id: string } 
 
   return (
     <div className="min-h-screen bg-cream-light py-8 px-4 flex flex-col items-center print:bg-white print:p-0 select-text">
-      {/* Script to trigger print on load if query param ?print=true is present */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            if (typeof window !== 'undefined' && window.location.search.includes('print=true')) {
-              window.addEventListener('load', () => {
-                setTimeout(() => {
-                  window.print();
-                }, 500);
-              });
-            }
-          `,
-        }}
-      />
-
       {/* Print Controls (hidden on print) */}
       <div className="mb-6 w-full max-w-[396px] flex items-center justify-between border-b border-gold/25 pb-4 print:hidden bg-white p-4 rounded-2xl shadow-sm">
         <div>
@@ -52,12 +38,10 @@ export default async function EtiquetaPage({ params }: { params: { id: string } 
           >
             Voltar
           </Link>
-          <button
-            onClick={() => window.print()}
+          <PrintButton
+            label="🖨️ Imprimir"
             className="bg-primary hover:bg-primary-dark text-white text-[10px] font-semibold px-3 py-1.5 rounded-lg shadow-sm transition"
-          >
-            🖨️ Imprimir
-          </button>
+          />
         </div>
       </div>
 
@@ -106,7 +90,7 @@ export default async function EtiquetaPage({ params }: { params: { id: string } 
             {addr.complement && ` — ${(addr.complement || "").toUpperCase()}`}
           </p>
           <p className="font-medium">{(addr.district || "").toUpperCase()}</p>
-          <p className="font-bold text-sm mt-1">{addr.zipCode} — ${(addr.city || "").toUpperCase()} / ${(addr.state || "").toUpperCase()}</p>
+          <p className="font-bold text-sm mt-1">{addr.zipCode} — {(addr.city || "").toUpperCase()} / {(addr.state || "").toUpperCase()}</p>
           {order.guestPhone && <p className="text-[9px] mt-0.5 font-semibold text-dark/70">FONE: {order.guestPhone}</p>}
         </div>
 

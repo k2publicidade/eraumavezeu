@@ -48,7 +48,7 @@ export type UploadedPhoto = {
 };
 
 export type WizardState = {
-  step: number; // 1..7
+  step: number; // 1..6
   theme: Theme | null;
   genre: Genre | null;
   artStyle: ArtStyle | null;
@@ -72,7 +72,6 @@ export const WIZARD_STEPS = [
   { n: 4, key: "color", title: "Cor favorita" },
   { n: 5, key: "age", title: "Faixa etária" },
   { n: 6, key: "photos", title: "Fotos + nome" },
-  { n: 7, key: "dedication", title: "Dedicatória" },
 ] as const;
 
 export const MAX_PHOTOS = 4;

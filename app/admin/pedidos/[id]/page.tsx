@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CopyButton from "@/components/admin/CopyButton";
 import OrderAdminActions from "@/components/admin/OrderAdminActions";
+import AdminPhotoGallery from "@/components/admin/AdminPhotoGallery";
 import { db } from "@/lib/db";
 import { formatBRL } from "@/lib/format";
 import { orderCodeOf } from "@/lib/orders/build-order";
@@ -203,14 +204,10 @@ export default async function AdminOrderDetailPage({
                         </div>
                       )}
                       <div className="mt-5">
-                        <p className="text-xs font-medium text-dark/55">Fotos de referência ({customization.photoKeys.length})</p>
-                        <div className="mt-2 flex flex-wrap gap-3">
-                          {customizationPhotos.map((photo, photoIndex) => photo.url ? (
-                            <Image key={photo.key} src={`/api/watermark?key=${encodeURIComponent(photo.key)}`} alt={`Foto ${photoIndex + 1} de ${customization.childName}, com marca d'água`} width={144} height={144} unoptimized className="h-36 w-36 rounded-xl border border-gold/30 object-cover" />
-                          ) : (
-                            <div key={photo.key} className="flex h-36 w-36 items-center justify-center rounded-xl border border-dashed border-gold/40 bg-cream p-3 text-center text-xs text-dark/50">Foto indisponível</div>
-                          ))}
-                        </div>
+                        <AdminPhotoGallery
+                          photos={customizationPhotos}
+                          childName={customization.childName}
+                        />
                       </div>
                       {customization.aiPrompt && (
                         <details className="mt-5 overflow-hidden rounded-xl bg-primary/5">
@@ -273,32 +270,10 @@ export default async function AdminOrderDetailPage({
               )}
 
               <div className="mt-4">
-                <h3 className="text-sm text-dark/55">
-                  Fotos ({custom.photoKeys.length}) — marca d’água aplicada (LGPD)
-                </h3>
-                <div className="mt-2 flex flex-wrap gap-3">
-                  {photos.map((photo) =>
-                    photo.url ? (
-                      <Image
-                        key={photo.key}
-                        src={`/api/watermark?key=${encodeURIComponent(photo.key)}`}
-                        alt="Foto enviada pelo cliente (com marca d'água)"
-                        width={160}
-                        height={160}
-                        unoptimized
-                        className="h-40 w-40 rounded-xl border border-gold/30 object-cover"
-                      />
-                    ) : (
-                      <div
-                        key={photo.key}
-                        className="flex h-40 w-40 items-center justify-center rounded-xl border border-dashed border-gold/40 bg-cream p-2 text-center text-xs text-dark/50"
-                      >
-                        Foto indisponível
-                        <br />({photo.key.slice(0, 8)}…)
-                      </div>
-                    ),
-                  )}
-                </div>
+                <AdminPhotoGallery
+                  photos={photos}
+                  childName={custom.childName}
+                />
               </div>
 
               {custom.aiPrompt && (

@@ -12,7 +12,7 @@ const Wizard = dynamic(() => import("@/components/wizard/Wizard"), {
 export const metadata: Metadata = {
   title: "Personalizar livro",
   description:
-    "Monte em 7 passos o livro personalizado — tema, estilo, fotos da criança e dedicatória.",
+    "Monte em 6 passos o livro personalizado — tema, estilo e fotos da criança.",
   robots: {
     index: false,
     follow: false,
@@ -30,7 +30,7 @@ export default function PersonalizarPage() {
             Vamos criar o livro
           </h1>
           <p className="text-center text-dark/60 mb-10">
-            7 passos simples. Você pode fechar e continuar depois de onde parou.
+            6 passos simples. Você pode fechar e continuar depois de onde parou.
           </p>
           <Suspense fallback={<div className="text-center py-20 text-dark/60">Carregando wizard…</div>}>
             <Wizard />

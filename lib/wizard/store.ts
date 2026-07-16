@@ -50,8 +50,8 @@ export const useWizardStore = create<WizardState & WizardActions>()(
     (set, get) => ({
       ...INITIAL,
 
-      setStep: (n) => set({ step: Math.min(Math.max(n, 1), 7) }),
-      next: () => set({ step: Math.min(get().step + 1, 7) }),
+      setStep: (n) => set({ step: Math.min(Math.max(n, 1), 6) }),
+      next: () => set({ step: Math.min(get().step + 1, 6) }),
       prev: () => set({ step: Math.max(get().step - 1, 1) }),
 
       setTheme: (v) => set({ theme: v }),

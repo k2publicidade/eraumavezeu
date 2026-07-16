@@ -59,6 +59,32 @@ export default function Wizard() {
 
   const canNext = computeCanNext(state);
 
+  const promptPreview = (() => {
+    if (
+      !state.theme ||
+      !state.genre ||
+      !state.artStyle ||
+      !state.favoriteColor ||
+      !state.ageRange ||
+      !state.childName.trim()
+    )
+      return null;
+    try {
+      return gerarPromptIA({
+        theme: state.theme,
+        genre: state.genre,
+        artStyle: state.artStyle,
+        favoriteColor: state.favoriteColor,
+        ageRange: state.ageRange,
+        childName: state.childName,
+        dedication: state.dedication,
+        photoCount: state.photos.length,
+      });
+    } catch {
+      return null;
+    }
+  })();
+
   return (
     <div className="mx-auto w-full max-w-2xl">
       <WizardProgress current={state.step} />
@@ -153,12 +179,40 @@ export default function Wizard() {
           </StepShell>
         )}
 
-        {state.step === 7 && (
+        {state.step === 6 && (
           <StepShell
-            title="Dedicatória e revisão"
-            subtitle="A dedicatória é impressa na primeira página em caligrafia."
+            title="Nome e fotos da criança"
+            subtitle="As fotos servem apenas como referência para as ilustrações."
           >
-            <DedicationReview />
+            <PhotoStep />
+
+            <div className="mt-8 space-y-6">
+              <details className="bg-cream rounded-2xl border border-gold/25 overflow-hidden">
+                <summary className="cursor-pointer px-6 py-4 font-medium text-primary hover:bg-gold/10 transition-colors duration-200">
+                  Ver resumo da personalização
+                </summary>
+                <div className="px-6 pb-5 text-sm text-dark/75 space-y-2 border-t border-gold/15 pt-4">
+                  <p>Nome: <strong className="text-primary">{state.childName || "(vazio)"}</strong></p>
+                  <p>Tema: {state.theme ?? "—"}</p>
+                  <p>Gênero: {state.genre ?? "—"}</p>
+                  <p>Estilo: {state.artStyle ?? "—"}</p>
+                  <p>Cor: {state.favoriteColor ?? "—"}</p>
+                  <p>Faixa etária: {state.ageRange ?? "—"}</p>
+                  <p>Fotos: {state.photos.length}/4</p>
+                </div>
+              </details>
+
+              {promptPreview && (
+                <details className="bg-primary text-cream/90 rounded-2xl overflow-hidden">
+                  <summary className="cursor-pointer px-6 py-4 font-medium hover:bg-primary-light transition-colors duration-200">
+                    Prévia do prompt IA (equipe)
+                  </summary>
+                  <pre className="px-6 pb-5 text-xs whitespace-pre-wrap font-mono border-t border-cream/10 pt-4">
+                    {promptPreview}
+                  </pre>
+                </details>
+              )}
+            </div>
           </StepShell>
         )}
 
@@ -172,7 +226,7 @@ export default function Wizard() {
             ← Voltar
           </button>
 
-          {state.step < 7 ? (
+          {state.step < 6 ? (
             <button
               type="button"
               onClick={() => state.next()}
@@ -208,102 +262,11 @@ function StepShell({
   );
 }
 
-function DedicationReview() {
-  const state = useWizardStore();
-  const promptPreview = (() => {
-    if (
-      !state.theme ||
-      !state.genre ||
-      !state.artStyle ||
-      !state.favoriteColor ||
-      !state.ageRange ||
-      !state.childName.trim()
-    )
-      return null;
-    try {
-      return gerarPromptIA({
-        theme: state.theme,
-        genre: state.genre,
-        artStyle: state.artStyle,
-        favoriteColor: state.favoriteColor,
-        ageRange: state.ageRange,
-        childName: state.childName,
-        dedication: state.dedication,
-        photoCount: state.photos.length,
-      });
-    } catch {
-      return null;
-    }
-  })();
-
-  return (
-    <div className="space-y-6">
-      <div>
-        <label
-          htmlFor="dedication"
-          className="block font-medium text-primary mb-2"
-        >
-          Dedicatória{" "}
-          <span className="font-normal text-dark/50 text-sm">(opcional, máx. 300 caracteres)</span>
-        </label>
-        <textarea
-          id="dedication"
-          value={state.dedication}
-          onChange={(e) => state.setDedication(e.target.value.slice(0, 300))}
-          rows={4}
-          placeholder="Para a minha filha Sofia, que transforma todo dia em aventura…"
-          className="input-field font-script text-lg placeholder:font-sans placeholder:text-sm"
-        />
-        <p className="text-xs text-dark/45 mt-1 text-right">
-          {state.dedication.length}/300
-        </p>
-      </div>
-
-      {state.dedication && (
-        <div className="bg-cream rounded-2xl p-6 border border-gold/30 shadow-xs">
-          <p className="text-xs text-dark/50 mb-3 uppercase tracking-wide font-medium">
-            Preview da página de rosto
-          </p>
-          <p className="font-script text-2xl text-primary leading-snug">
-            {state.dedication}
-          </p>
-        </div>
-      )}
-
-      <details className="bg-cream rounded-2xl border border-gold/25 overflow-hidden">
-        <summary className="cursor-pointer px-6 py-4 font-medium text-primary hover:bg-gold/10 transition-colors duration-200">
-          Ver resumo da personalização
-        </summary>
-        <div className="px-6 pb-5 text-sm text-dark/75 space-y-2 border-t border-gold/15 pt-4">
-          <p>Nome: <strong className="text-primary">{state.childName || "(vazio)"}</strong></p>
-          <p>Tema: {state.theme ?? "—"}</p>
-          <p>Gênero: {state.genre ?? "—"}</p>
-          <p>Estilo: {state.artStyle ?? "—"}</p>
-          <p>Cor: {state.favoriteColor ?? "—"}</p>
-          <p>Faixa etária: {state.ageRange ?? "—"}</p>
-          <p>Fotos: {state.photos.length}/4</p>
-        </div>
-      </details>
-
-      {promptPreview && (
-        <details className="bg-primary text-cream/90 rounded-2xl overflow-hidden">
-          <summary className="cursor-pointer px-6 py-4 font-medium hover:bg-primary-light transition-colors duration-200">
-            Prévia do prompt IA (equipe)
-          </summary>
-          <pre className="px-6 pb-5 text-xs whitespace-pre-wrap font-mono border-t border-cream/10 pt-4">
-            {promptPreview}
-          </pre>
-        </details>
-      )}
-    </div>
-  );
-}
-
 function FinishButton() {
   const router = useRouter();
   const state = useWizardStore();
   const addItem = useCartStore((s) => s.addItem);
-  const complete = computeCanNext({ ...state, step: 7 });
+  const complete = computeCanNext({ ...state, step: 6 });
 
   return (
     <button
@@ -363,12 +326,6 @@ function computeCanNext(s: {
     case 5:
       return s.ageRange !== null;
     case 6:
-      return (
-        s.childName.trim().length >= 2 &&
-        s.consentAcceptedAt !== null &&
-        s.photos.length >= 1
-      );
-    case 7:
       return (
         s.theme !== null &&
         s.genre !== null &&

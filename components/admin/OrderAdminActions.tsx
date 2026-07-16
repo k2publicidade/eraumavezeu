@@ -227,14 +227,24 @@ export default function OrderAdminActions({
               <p className="mt-1 font-mono text-[10px] break-all select-all text-dark/60">Chave: {nfeKey}</p>
             </div>
             <div className="flex flex-col gap-1.5">
-              <a
-                href={`/admin/pedidos/${orderId}/danfe`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-ghost text-center text-xs py-2 border border-gold/30 hover:bg-gold/10 flex justify-center items-center gap-1.5"
-              >
-                🖨️ Visualizar DANFE
-              </a>
+              <div className="grid grid-cols-2 gap-2">
+                <a
+                  href={`/admin/pedidos/${orderId}/danfe`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost text-center text-xs py-2 border border-gold/30 hover:bg-gold/10 flex justify-center items-center gap-1.5"
+                >
+                  🖨️ Ver DANFE
+                </a>
+                <a
+                  href={`/admin/pedidos/${orderId}/danfe?print=true`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-ghost text-center text-xs py-2 border border-gold/30 hover:bg-gold/10 flex justify-center items-center gap-1.5"
+                >
+                  📄 Exportar PDF
+                </a>
+              </div>
               {nfeXml && (
                 <button
                   type="button"
@@ -303,14 +313,24 @@ export default function OrderAdminActions({
               {trackingCode && <p className="mt-0.5 text-dark/70">Rastreio: <span className="font-mono font-semibold">{trackingCode}</span></p>}
             </div>
             
-            <a
-              href={shippingLabelUrl || "#"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary text-center text-xs py-2.5 flex justify-center items-center gap-1.5"
-            >
-              🏷️ Imprimir Etiqueta
-            </a>
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href={shippingLabelUrl || "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary text-center text-xs py-2.5 flex justify-center items-center gap-1.5"
+              >
+                🏷️ Ver Etiqueta
+              </a>
+              <a
+                href={shippingLabelUrl ? `${shippingLabelUrl}?print=true` : "#"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary text-center text-xs py-2.5 flex justify-center items-center gap-1.5"
+              >
+                📄 Exportar PDF
+              </a>
+            </div>
           </div>
         ) : (
           <div className="mt-2 space-y-2">

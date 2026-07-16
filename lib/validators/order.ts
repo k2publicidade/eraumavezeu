@@ -16,7 +16,7 @@ function slugsOf<T extends readonly { slug: string }[]>(list: T) {
 }
 
 export const customizationSnapshotSchema = z.object({
-  theme: z.enum(slugsOf(THEMES)),
+  theme: z.string().trim().min(2).max(100),
   genre: z.enum(slugsOf(GENRES)),
   artStyle: z.enum(slugsOf(ART_STYLES)),
   favoriteColor: z.enum(slugsOf(COLORS)),

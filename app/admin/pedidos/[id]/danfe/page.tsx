@@ -24,15 +24,44 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
   const key = order.nfeKey || "";
   const formattedKey = key.replace(/(.{4})/g, "$1 ").trim(); // space every 4 digits
   
-  const issueDateStr = order.nfeIssuedAt 
-    ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date(order.nfeIssuedAt))
-    : new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date());
+  const getIssueDate = () => {
+    try {
+      if (order.nfeIssuedAt) {
+        const d = new Date(order.nfeIssuedAt);
+        if (!isNaN(d.getTime())) {
+          return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(d);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short" }).format(new Date());
+  };
+  const issueDateStr = getIssueDate();
+  const dateMatch = issueDateStr.match(/\d{2}\/\d{2}\/\d{4}/);
+  const timeMatch = issueDateStr.match(/\d{2}:\d{2}/);
+  const datePart = dateMatch ? dateMatch[0] : issueDateStr.replace(",", "");
+  const timePart = timeMatch ? timeMatch[0] : "00:00";
 
   const totalProducts = order.items.reduce((acc, it) => acc + (it.quantity * Number(it.price)), 0);
   const totalDiscount = Number(order.discount) + Number(order.couponDiscount);
 
   return (
     <div className="min-h-screen bg-white p-4 font-sans text-dark antialiased md:p-8 select-text">
+      {/* Script to trigger print on load if query param ?print=true is present */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            if (typeof window !== 'undefined' && window.location.search.includes('print=true')) {
+              window.addEventListener('load', () => {
+                setTimeout(() => {
+                  window.print();
+                }, 500);
+              });
+            }
+          `,
+        }}
+      />
       {/* Print Controls (hidden on print) */}
       <div className="mb-6 flex items-center justify-between border-b border-gold/25 pb-4 print:hidden bg-cream-light p-4 rounded-2xl">
         <div>
@@ -154,7 +183,7 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
             </div>
             <div className="col-span-2 p-1">
               <span className="text-[7px] text-dark/60 block">DATA DA EMISSÃO</span>
-              <span className="font-semibold">{issueDateStr.split(" ")[0]}</span>
+              <span className="font-semibold">{datePart}</span>
             </div>
           </div>
           <div className="grid grid-cols-12 divide-x divide-black border-b border-black">
@@ -172,7 +201,7 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
             </div>
             <div className="col-span-1 p-1">
               <span className="text-[7px] text-dark/60 block">DATA SAÍDA</span>
-              <span className="font-semibold">{issueDateStr.split(" ")[0]}</span>
+              <span className="font-semibold">{datePart}</span>
             </div>
           </div>
           <div className="grid grid-cols-12 divide-x divide-black">
@@ -186,7 +215,7 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
             </div>
             <div className="col-span-1 p-1">
               <span className="text-[7px] text-dark/60 block">UF</span>
-              <span className="font-semibold">{addr.state.toUpperCase()}</span>
+              <span className="font-semibold">{(addr.state || "").toUpperCase()}</span>
             </div>
             <div className="col-span-2 p-1">
               <span className="text-[7px] text-dark/60 block">INSCRIÇÃO ESTADUAL</span>
@@ -194,7 +223,7 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
             </div>
             <div className="col-span-2 p-1">
               <span className="text-[7px] text-dark/60 block">HORA DA SAÍDA</span>
-              <span className="font-semibold">{issueDateStr.split(" ")[1] || "00:00"}</span>
+              <span className="font-semibold">{timePart}</span>
             </div>
           </div>
         </div>
@@ -208,7 +237,7 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
           </div>
           <div>
             <span className="text-[7px] text-dark/60 block text-left">VENCIMENTO</span>
-            <span className="font-semibold">{issueDateStr.split(" ")[0]}</span>
+            <span className="font-semibold">{datePart}</span>
           </div>
           <div>
             <span className="text-[7px] text-dark/60 block text-left">VALOR ORIGINAL</span>
@@ -335,7 +364,7 @@ export default async function DanfePage({ params }: { params: { id: string } }) 
             <tbody className="divide-y divide-black/30">
               {order.items.map((it, idx) => {
                 const itemNum = idx + 1;
-                const isOutState = addr.state.toUpperCase() !== "RJ";
+                const isOutState = (addr.state || "").toUpperCase() !== "RJ";
                 const cfop = isOutState ? "6102" : "5102";
                 
                 return (

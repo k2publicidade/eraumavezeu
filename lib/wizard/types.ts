@@ -35,7 +35,7 @@ export const AGE_RANGES = [
   { slug: "7-10", label: "7 a 10 anos" },
 ] as const;
 
-export type Theme = (typeof THEMES)[number]["slug"];
+export type Theme = string;
 export type Genre = (typeof GENRES)[number]["slug"];
 export type ArtStyle = (typeof ART_STYLES)[number]["slug"];
 export type Color = (typeof COLORS)[number]["slug"];

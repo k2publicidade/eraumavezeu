@@ -22,6 +22,14 @@ export type PromptInput = {
   photoCount: number;
 };
 
+function labelOfTheme(
+  list: typeof THEMES,
+  slug: string,
+): string {
+  const found = list.find((x) => x.slug === slug);
+  return found ? found.label : slug;
+}
+
 function labelOf<T extends { slug: string; label: string }>(
   list: readonly T[],
   slug: string,
@@ -39,7 +47,7 @@ function labelOf<T extends { slug: string; label: string }>(
  * Outputs sempre em PT-BR porque os ilustradores brasileiros leem o prompt.
  */
 export function gerarPromptIA(input: PromptInput): string {
-  const theme = labelOf(THEMES, input.theme);
+  const theme = labelOfTheme(THEMES, input.theme);
   const genre = labelOf(GENRES, input.genre);
   const style = labelOf(ART_STYLES, input.artStyle);
   const color = labelOf(COLORS, input.favoriteColor);

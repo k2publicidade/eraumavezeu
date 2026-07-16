@@ -17,13 +17,13 @@ const NAV_ITEMS = [
 export default function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-cream">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-cream-deep/25 bg-primary text-cream lg:flex lg:flex-col">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-72 border-r border-cream-deep/25 bg-primary text-cream lg:flex lg:flex-col print:hidden">
         <div className="border-b border-white/5 px-6 py-6">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-gold">Painel Administrativo</p>
           <Link href="/admin" className="mt-2 block font-serif text-2xl font-semibold text-cream">
             Era Uma Vez, <span className="text-gold italic font-normal">Eu</span>
           </Link>
-          <p className="mt-2 text-xs text-cream/60 leading-normal">Gestão de vendas, produção e conteúdo.</p>
+          <p className="mt-2 text-xs text-cream/60 leading-normal">Gestão de vendas, production e conteúdo.</p>
         </div>
 
         <nav className="flex-1 space-y-1.5 px-4 py-6" aria-label="Navegação administrativa">
@@ -46,7 +46,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      <header className="sticky top-0 z-20 border-b border-cream-deep/30 bg-cream/90 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-20 border-b border-cream-deep/30 bg-cream/90 backdrop-blur lg:hidden print:hidden">
         <div className="px-4 py-4">
           <Link href="/admin" className="font-serif text-xl font-semibold text-primary">
             Era Uma Vez, <span className="text-gold font-normal italic">Eu</span>
@@ -65,7 +65,7 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="lg:pl-72">
+      <main className="lg:pl-72 print:pl-0">
         <div className="mx-auto max-w-7xl px-6 py-8 sm:px-8 lg:px-10 lg:py-10">{children}</div>
       </main>
     </div>

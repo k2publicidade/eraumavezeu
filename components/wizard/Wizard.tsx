@@ -27,14 +27,17 @@ export default function Wizard() {
   const state = useWizardStore();
   const searchParams = useSearchParams();
 
+  const isCustomActive = state.theme === "" || (state.theme !== null && !THEMES.some((t) => t.slug === state.theme));
+
   // Pre-select theme if passed via query parameter (e.g. ?theme=dinossauros)
   useEffect(() => {
     if (!hydrated) return;
     const themeParam = searchParams.get("theme");
     if (themeParam) {
-      const validTheme = THEMES.find((t) => t.slug === themeParam);
-      if (validTheme) {
-        state.setTheme(validTheme.slug);
+      const trimmed = themeParam.trim();
+      if (trimmed) {
+        const found = THEMES.find((t) => t.slug.toLowerCase() === trimmed.toLowerCase());
+        state.setTheme(found ? found.slug : trimmed);
         // Advance to step 2 if we are currently on the theme step
         if (state.step === 1) {
           state.setStep(2);
@@ -109,10 +112,36 @@ export default function Wizard() {
               </p>
             </div>
             <ChoiceGrid
-              options={THEMES}
-              value={state.theme}
-              onChange={(v) => state.setTheme(v)}
+              options={[...THEMES, { slug: "outro", label: "Outro" }]}
+              value={isCustomActive ? "outro" : state.theme}
+              onChange={(v) => {
+                if (v === "outro") {
+                  state.setTheme("");
+                } else {
+                  state.setTheme(v);
+                }
+              }}
             />
+
+            {isCustomActive && (
+              <div className="mt-6 space-y-2 animate-fade-in">
+                <label
+                  htmlFor="custom-theme"
+                  className="block text-xs font-semibold text-primary/80 uppercase tracking-wider"
+                >
+                  Digite o tema personalizado
+                </label>
+                <input
+                  id="custom-theme"
+                  type="text"
+                  value={state.theme ?? ""}
+                  onChange={(e) => state.setTheme(e.target.value)}
+                  placeholder="Ex: Astronauta, Fundo do Mar, Dinossauros Espaciais..."
+                  className="w-full min-h-11 rounded-xl border border-gold/35 bg-white px-3.5 py-2.5 text-sm text-dark outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                  maxLength={100}
+                />
+              </div>
+            )}
           </StepShell>
         )}
 
@@ -316,7 +345,7 @@ function computeCanNext(s: {
 }): boolean {
   switch (s.step) {
     case 1:
-      return s.theme !== null;
+      return s.theme !== null && s.theme.trim().length >= 2;
     case 2:
       return s.genre !== null;
     case 3:
@@ -328,6 +357,7 @@ function computeCanNext(s: {
     case 6:
       return (
         s.theme !== null &&
+        s.theme.trim().length >= 2 &&
         s.genre !== null &&
         s.artStyle !== null &&
         s.favoriteColor !== null &&

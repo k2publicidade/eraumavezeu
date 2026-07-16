@@ -119,9 +119,9 @@ describe("customizationSnapshotSchema", () => {
     expect(customizationSnapshotSchema.safeParse(validCustomization).success).toBe(true);
   });
 
-  it("rejeita tema fora do catálogo do wizard (sem drift client/server)", () => {
-    const bad = { ...validCustomization, theme: "tema-inventado" };
-    expect(customizationSnapshotSchema.safeParse(bad).success).toBe(false);
+  it("aceita tema fora do catálogo do wizard (como tema-inventado)", () => {
+    const ok = { ...validCustomization, theme: "tema-inventado" };
+    expect(customizationSnapshotSchema.safeParse(ok).success).toBe(true);
   });
 
   it("exige ao menos 1 foto e limita a MAX_PHOTOS", () => {

@@ -19,11 +19,26 @@ export default async function EtiquetaPage({ params }: { params: { id: string } 
   }
 
   const addr = order.shippingAddress;
-  const isSedex = order.shippingMethod?.toUpperCase() === "SEDEX";
+  const isSedex = (order.shippingMethod || "").toUpperCase() === "SEDEX";
   const settings = await getSiteSettings();
 
   return (
     <div className="min-h-screen bg-cream-light py-8 px-4 flex flex-col items-center print:bg-white print:p-0 select-text">
+      {/* Script to trigger print on load if query param ?print=true is present */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            if (typeof window !== 'undefined' && window.location.search.includes('print=true')) {
+              window.addEventListener('load', () => {
+                setTimeout(() => {
+                  window.print();
+                }, 500);
+              });
+            }
+          `,
+        }}
+      />
+
       {/* Print Controls (hidden on print) */}
       <div className="mb-6 w-full max-w-[396px] flex items-center justify-between border-b border-gold/25 pb-4 print:hidden bg-white p-4 rounded-2xl shadow-sm">
         <div>
@@ -85,20 +100,20 @@ export default async function EtiquetaPage({ params }: { params: { id: string } 
         {/* Recipient Details */}
         <div className="py-2 border-b-[2px] border-black mb-2 text-xs">
           <span className="text-[7px] font-bold text-dark/70 block uppercase">DESTINATÁRIO:</span>
-          <p className="font-bold text-sm text-dark mt-0.5 leading-none">{addr.name.toUpperCase()}</p>
+          <p className="font-bold text-sm text-dark mt-0.5 leading-none">{(addr.name || "").toUpperCase()}</p>
           <p className="mt-1 font-medium leading-tight">
-            {addr.street.toUpperCase()}, {addr.number}
-            {addr.complement && ` — ${addr.complement.toUpperCase()}`}
+            {(addr.street || "").toUpperCase()}, {addr.number}
+            {addr.complement && ` — ${(addr.complement || "").toUpperCase()}`}
           </p>
-          <p className="font-medium">{addr.district.toUpperCase()}</p>
-          <p className="font-bold text-sm mt-1">{addr.zipCode} — {addr.city.toUpperCase()} / {addr.state.toUpperCase()}</p>
+          <p className="font-medium">{(addr.district || "").toUpperCase()}</p>
+          <p className="font-bold text-sm mt-1">{addr.zipCode} — ${(addr.city || "").toUpperCase()} / ${(addr.state || "").toUpperCase()}</p>
           {order.guestPhone && <p className="text-[9px] mt-0.5 font-semibold text-dark/70">FONE: {order.guestPhone}</p>}
         </div>
 
         {/* Sender Details */}
         <div className="py-1 text-[9px] border-b border-black/40 mb-2 leading-snug">
           <span className="text-[6px] font-bold text-dark/60 block uppercase">REMETENTE:</span>
-          <p className="font-semibold text-dark/95 leading-none">{settings.siteName.toUpperCase()} / ERA UMA VEZ EU</p>
+          <p className="font-semibold text-dark/95 leading-none">{(settings.siteName || "").toUpperCase()} / ERA UMA VEZ EU</p>
           <p className="text-dark/80">AVENIDA RIO BRANCO, 156 - SALA 2602 - CENTRO</p>
           <p className="font-semibold text-dark/90">20040-003 — RIO DE JANEIRO / RJ</p>
         </div>

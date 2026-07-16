@@ -55,10 +55,10 @@ describe("gerarPromptIA", () => {
     );
   });
 
-  it("throws on unknown slug", () => {
+  it("throws on unknown genre slug", () => {
     expect(() =>
       // @ts-expect-error exercising runtime validation
-      gerarPromptIA({ ...BASE, theme: "alienigenas" }),
+      gerarPromptIA({ ...BASE, genre: "comedia-romantica" }),
     ).toThrow(/Unknown slug/);
   });
 

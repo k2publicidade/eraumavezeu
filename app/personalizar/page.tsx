@@ -1,39 +1,44 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import dynamic from "next/dynamic";
 import Header from "@/components/site/Header";
 import WhatsAppFloatingButton from "@/components/site/WhatsAppFloatingButton";
 import SkipLink from "@/components/site/SkipLink";
-
-const Wizard = dynamic(() => import("@/components/wizard/Wizard"), {
-  ssr: false,
-});
+import WizardRedirect from "@/components/wizard/WizardRedirect";
+import { getActiveProducts, FALLBACK_PRODUCTS } from "@/lib/products";
 
 export const metadata: Metadata = {
-  title: "Personalizar livro",
+  title: "Criar meu livro",
   description:
-    "Monte em 6 passos o livro personalizado — tema, estilo e fotos da criança.",
+    "Adicione o livro ao carrinho e personalize seus detalhes no checkout.",
   robots: {
     index: false,
     follow: false,
   },
 };
 
-export default function PersonalizarPage() {
+export default async function PersonalizarPage() {
+  const products = await getActiveProducts();
+  const mainProduct = products.find((p) => p.type === "LIVRO_PRINCIPAL") || FALLBACK_PRODUCTS[0];
+
   return (
     <>
       <SkipLink />
       <Header />
       <main id="conteudo-principal" tabIndex={-1} className="min-h-screen bg-light py-10 md:py-16 px-4">
         <div className="container mx-auto">
-          <h1 className="font-serif text-3xl md:text-5xl text-center text-dark mb-2">
-            Vamos criar o livro
-          </h1>
-          <p className="text-center text-dark/60 mb-10">
-            6 passos simples. Você pode fechar e continuar depois de onde parou.
-          </p>
-          <Suspense fallback={<div className="text-center py-20 text-dark/60">Carregando wizard…</div>}>
-            <Wizard />
+          <Suspense fallback={
+            <div className="flex flex-col items-center justify-center min-h-[50vh] text-center space-y-4">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent align-[-0.125em]" />
+              <p className="text-dark/70 font-medium">Carregando...</p>
+            </div>
+          }>
+            <WizardRedirect product={{
+              id: mainProduct.id,
+              slug: mainProduct.slug,
+              name: mainProduct.name,
+              type: mainProduct.type,
+              price: mainProduct.price,
+            }} />
           </Suspense>
         </div>
       </main>

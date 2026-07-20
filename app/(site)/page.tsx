@@ -481,7 +481,7 @@ export default async function HomePage() {
 
               <div className="pt-4 flex items-center gap-4">
                 <Link
-                  href={settings.primaryCtaHref}
+                  href="/galeria"
                   className="bg-primary text-cream hover:bg-primary-light hover:scale-105 active:scale-95 px-8 py-3.5 rounded-full font-bold uppercase tracking-wider text-xs flex items-center gap-2 shadow-md transition-all duration-300"
                 >
                   <span>Ver todos os temas</span>

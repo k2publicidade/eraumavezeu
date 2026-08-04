@@ -1,5 +1,4 @@
 import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
-import crypto from "crypto";
 import type { PaymentGateway, OrderWithDetails, PaymentResponse, WebhookResult } from "./types";
 import { orderCodeOf } from "@/lib/orders/build-order";
 import { getSiteUrl } from "@/lib/site-url";
@@ -9,6 +8,7 @@ import {
   MercadoPagoProductionConfigurationError,
   selectMercadoPagoCheckoutUrl,
 } from "./mercadopago-environment";
+import { verifyMercadoPagoWebhookSignature } from "./mercadopago-webhook-signature";
 
 const accessToken = process.env.MP_ACCESS_TOKEN || "";
 
@@ -202,7 +202,12 @@ export class MercadoPagoGateway implements PaymentGateway {
     }
 
     // Verifica a assinatura
-    const signatureVerified = this.verifySignature(req.headers, dataId);
+    const signatureVerified = verifyMercadoPagoWebhookSignature({
+      secret: process.env.MP_WEBHOOK_SECRET || "",
+      dataId,
+      xSignature: req.headers.get("x-signature"),
+      xRequestId: req.headers.get("x-request-id"),
+    });
     if (!signatureVerified) {
       console.error(`Assinatura inválida no webhook para o pagamento ${dataId}`);
       return { success: false, error: "Assinatura inválida" };
@@ -249,49 +254,4 @@ export class MercadoPagoGateway implements PaymentGateway {
     }
   }
 
-  private verifySignature(headers: Headers, dataId: string): boolean {
-    const secret = process.env.MP_WEBHOOK_SECRET;
-    if (!secret) {
-      console.warn("MP_WEBHOOK_SECRET não está configurado. Pulando verificação em ambiente de desenvolvimento.");
-      return process.env.NODE_ENV !== "production";
-    }
-
-    const xSignature = headers.get("x-signature");
-    const xRequestId = headers.get("x-request-id");
-
-    if (!xSignature) {
-      return false;
-    }
-
-    const requestId = xRequestId || "";
-    const parts = xSignature.split(",");
-    let ts = "";
-    let v1 = "";
-
-    for (const part of parts) {
-      const [key, value] = part.split("=");
-      if (key === "ts") ts = value;
-      if (key === "v1") v1 = value;
-    }
-
-    if (!ts || !v1) {
-      return false;
-    }
-
-    const manifest = `id:${dataId.toLowerCase()};request-id:${requestId};ts:${ts};`;
-
-    try {
-      const hmac = crypto.createHmac("sha256", secret);
-      hmac.update(manifest);
-      const calculatedHash = hmac.digest("hex");
-
-      return crypto.timingSafeEqual(
-        Buffer.from(calculatedHash, "utf-8"),
-        Buffer.from(v1, "utf-8")
-      );
-    } catch (err) {
-      console.error("Erro ao computar assinatura HMAC-SHA256:", err);
-      return false;
-    }
-  }
 }

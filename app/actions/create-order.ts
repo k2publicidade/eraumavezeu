@@ -5,7 +5,10 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { notifyOrderCreated } from "@/lib/notifications/order-created";
 import { buildOrderDraft, orderCodeOf, type DbProduct } from "@/lib/orders/build-order";
-import { checkoutSchema } from "@/lib/validators/order";
+import {
+  checkoutSchema,
+  checkoutValidationErrorMessage,
+} from "@/lib/validators/order";
 import type { ProductType } from "@/lib/cart/types";
 import { getPaymentGateway } from "@/lib/payments/gateway-registry";
 import { calculateShippingOptions } from "@/lib/shipping";
@@ -18,7 +21,7 @@ export type CreateOrderResult =
 export async function createOrder(input: unknown): Promise<CreateOrderResult> {
   const parsed = checkoutSchema.safeParse(input);
   if (!parsed.success) {
-    return { ok: false, error: "Dados inválidos — revise o formulário." };
+    return { ok: false, error: checkoutValidationErrorMessage(parsed.error) };
   }
   const { buyer, address, items, shippingMethod, shippingCost, paymentGateway, couponCode } = parsed.data;
 

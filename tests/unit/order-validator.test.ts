@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   checkoutSchema,
+  checkoutValidationErrorMessage,
   customizationSnapshotSchema,
 } from "@/lib/validators/order";
+import { PRODUCT_FORM_VERSION } from "@/lib/product-customization";
 import {
   AGE_RANGES,
   ART_STYLES,
@@ -23,6 +25,24 @@ const validCustomization = {
   photoKeys: ["uploadthing-key-1"],
   consentAcceptedAt: new Date().toISOString(),
   consentTextVersion: "v1",
+};
+
+const validProductCustomization = {
+  productType: "LIVRO_PRINCIPAL" as const,
+  childName: "Alice",
+  childAge: 7,
+  childGender: "MENINA" as const,
+  favoriteColor: "Azul",
+  theme: "Dinossauros",
+  storyGenre: "Aventura",
+  artStyle: "DESENHO",
+  lineStyle: "",
+  dedication: "Para a Alice, com amor.",
+  notes: "Sem observações adicionais.",
+  photoKeys: ["foto-1", "foto-2", "foto-3", "foto-4"],
+  consentAcceptedAt: new Date().toISOString(),
+  consentTextVersion: PRODUCT_FORM_VERSION,
+  confidentialityAcceptedAt: new Date().toISOString(),
 };
 
 const validPayload = {
@@ -46,7 +66,7 @@ const validPayload = {
     {
       slug: "livro-principal-capa-dura",
       quantity: 1,
-      customization: validCustomization,
+      customizations: [validProductCustomization],
     },
   ],
 };
@@ -111,6 +131,53 @@ describe("checkoutSchema", () => {
       items: [{ slug: "quebra-cabeca", quantity: 1 }],
     };
     expect(checkoutSchema.safeParse(payload).success).toBe(true);
+  });
+
+  it("ignora o snapshot legado incompleto quando a ficha nova está presente", () => {
+    const payload = {
+      ...validPayload,
+      items: [{
+        slug: "livro-principal-capa-dura",
+        quantity: 1,
+        customization: {
+          theme: "dinossauros",
+          genre: "",
+          artStyle: "",
+          favoriteColor: "",
+          ageRange: "",
+          childName: "Alice",
+          dedication: "",
+          photoKeys: [],
+          consentAcceptedAt: "",
+          consentTextVersion: "",
+        },
+        customizations: [validProductCustomization],
+      }],
+    };
+
+    const parsed = checkoutSchema.safeParse(payload);
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.items[0]).not.toHaveProperty("customization");
+    }
+  });
+
+  it("retorna uma mensagem acionável quando a ficha atual é inválida", () => {
+    const parsed = checkoutSchema.safeParse({
+      ...validPayload,
+      items: [{
+        ...validPayload.items[0],
+        customizations: [{ ...validProductCustomization, photoKeys: [] }],
+      }],
+    });
+
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      expect(checkoutValidationErrorMessage(parsed.error)).toBe(
+        "Personalização incompleta — revise as fichas de todos os produtos.",
+      );
+    }
   });
 });
 

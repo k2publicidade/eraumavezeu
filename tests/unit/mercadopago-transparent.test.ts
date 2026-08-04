@@ -115,8 +115,33 @@ describe("checkout transparente Mercado Pago", () => {
     expect(transparentPaymentInputSchema.safeParse(cardInput).success).toBe(true);
     expect(transparentPaymentInputSchema.safeParse({
       ...cardInput,
-      deviceId: "<script>alert(1)</script>",
+      deviceId: "device-id\r\nInjected-Header: value",
     }).success).toBe(false);
+  });
+
+  it("aceita variações opcionais enviadas pelo Payment Brick", () => {
+    const parsed = transparentPaymentInputSchema.safeParse({
+      selectedPaymentMethod: "credit_card",
+      deviceId: "device/session+with=provider-format",
+      formData: {
+        payment_method_id: "master",
+        token: "card-token-generated-by-mercado-pago",
+        issuer_id: null,
+        installments: "2",
+        transaction_amount: "249.90",
+        payer: {
+          email: "",
+          identification: { type: "cpf", number: 12345678909 },
+        },
+      },
+    });
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      const body = buildMercadoPagoPaymentBody(order, parsed.data);
+      expect(body.installments).toBe(2);
+      expect(body.payer?.identification).toEqual({ type: "CPF", number: "12345678909" });
+    }
   });
 
   it("rejeita cartão sem token seguro", () => {

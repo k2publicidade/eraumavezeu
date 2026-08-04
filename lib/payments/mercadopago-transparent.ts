@@ -8,23 +8,28 @@ import { assertMercadoPagoEnvironment, assertMercadoPagoLiveMode, MercadoPagoPro
 import { mpPayment } from "./mercadopago";
 
 const cardPaymentTypes = ["creditCard", "debitCard", "prepaidCard"] as const;
+const cardPaymentAliases = ["credit_card", "debit_card", "prepaid_card"] as const;
+const cardPaymentSelections = [...cardPaymentTypes, ...cardPaymentAliases] as const;
 
 export const transparentPaymentInputSchema = z.object({
-  selectedPaymentMethod: z.enum(["bank_transfer", ...cardPaymentTypes]),
-  deviceId: z.string().trim().min(8).max(256).regex(/^[A-Za-z0-9._:-]+$/).optional(),
+  selectedPaymentMethod: z.enum(["bank_transfer", ...cardPaymentSelections]),
+  deviceId: z.string().trim().min(1).max(256).refine(
+    (value) => !/[\r\n]/.test(value),
+    "Invalid device identifier",
+  ).optional(),
   formData: z.object({
     payment_method_id: z.string().trim().min(1).max(50),
-    token: z.string().trim().min(10).max(512).optional(),
-    issuer_id: z.union([z.string(), z.number()]).optional(),
-    installments: z.coerce.number().int().min(1).max(12).optional(),
-    transaction_amount: z.number().positive().optional(),
+    token: z.string().trim().min(10).max(512).nullish(),
+    issuer_id: z.union([z.string(), z.number()]).nullish(),
+    installments: z.coerce.number().int().min(1).max(12).nullish(),
+    transaction_amount: z.coerce.number().positive().nullish(),
     payer: z.object({
-      email: z.string().trim().email().max(254).optional(),
+      email: z.string().trim().max(254).nullish(),
       identification: z.object({
-        type: z.enum(["CPF", "CNPJ"]),
-        number: z.string().trim().max(24),
-      }).optional(),
-    }).passthrough().optional(),
+        type: z.string().trim().max(20).nullish(),
+        number: z.union([z.string().trim().max(32), z.number()]).nullish(),
+      }).passthrough().nullish(),
+    }).passthrough().nullish(),
   }).passthrough(),
 });
 
@@ -110,7 +115,9 @@ export function buildMercadoPagoPaymentBody(
   input: TransparentPaymentInput,
 ): PaymentCreateRequest {
   const isPix = input.formData.payment_method_id === "pix";
-  const isCard = cardPaymentTypes.includes(input.selectedPaymentMethod as (typeof cardPaymentTypes)[number]);
+  const isCard = cardPaymentSelections.includes(
+    input.selectedPaymentMethod as (typeof cardPaymentSelections)[number],
+  );
 
   if (isPix && input.selectedPaymentMethod !== "bank_transfer") {
     throw new Error("INVALID_PAYMENT_METHOD");
@@ -125,15 +132,19 @@ export function buildMercadoPagoPaymentBody(
   const { firstName, lastName } = splitName(order.guestName);
   const orderDocument = (order.guestCpf || "").replace(/\D/g, "");
   const submittedIdentification = input.formData.payer?.identification;
-  const submittedDocument = (submittedIdentification?.number || "").replace(/\D/g, "");
+  const submittedType = (submittedIdentification?.type || "").toUpperCase();
+  const submittedDocument = String(submittedIdentification?.number ?? "").replace(/\D/g, "");
   const identification = !isPix && submittedIdentification &&
-    ((submittedIdentification.type === "CPF" && submittedDocument.length === 11) ||
-      (submittedIdentification.type === "CNPJ" && submittedDocument.length === 14))
-    ? { type: submittedIdentification.type, number: submittedDocument }
+    ((submittedType === "CPF" && submittedDocument.length === 11) ||
+      (submittedType === "CNPJ" && submittedDocument.length === 14))
+    ? { type: submittedType, number: submittedDocument }
     : orderDocument.length === 11
       ? { type: "CPF", number: orderDocument }
       : undefined;
-  const issuer = Number(input.formData.issuer_id);
+  const issuer = input.formData.issuer_id === null || input.formData.issuer_id === undefined ||
+    input.formData.issuer_id === ""
+    ? Number.NaN
+    : Number(input.formData.issuer_id);
   const webhookBase = process.env.VERCEL_PROJECT_PRODUCTION_URL || getSiteUrl();
   const normalizedWebhookBase = webhookBase.startsWith("http")
     ? webhookBase.replace(/\/+$/, "")
@@ -149,7 +160,7 @@ export function buildMercadoPagoPaymentBody(
     notification_url: notificationUrl,
     statement_descriptor: "ERAUMAVEZEU",
     payment_method_id: input.formData.payment_method_id,
-    token: isPix ? undefined : input.formData.token,
+    token: isPix ? undefined : input.formData.token || undefined,
     installments: isPix ? 1 : input.formData.installments || 1,
     issuer_id: !isPix && Number.isFinite(issuer) ? issuer : undefined,
     three_d_secure_mode: isPix ? undefined : "optional",

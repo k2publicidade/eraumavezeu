@@ -42,7 +42,16 @@ export async function POST(req: NextRequest) {
   }).safeParse(payload);
 
   if (!envelope.success) {
-    return NextResponse.json({ error: "Dados de pagamento inválidos." }, { status: 400 });
+    console.warn("[Mercado Pago] Invalid transparent payment payload.", {
+      issues: envelope.error.issues.slice(0, 8).map((issue) => ({
+        path: issue.path.join("."),
+        code: issue.code,
+      })),
+    });
+    return NextResponse.json({
+      error: "O Mercado Pago não conseguiu validar os dados do cartão. Revise os campos e tente novamente.",
+      code: "INVALID_PAYMENT_PAYLOAD",
+    }, { status: 400 });
   }
 
   const { orderId, ...paymentInput } = envelope.data;

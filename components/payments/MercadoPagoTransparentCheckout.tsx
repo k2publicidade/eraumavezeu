@@ -2,11 +2,18 @@
 
 import { useEffect, useMemo, useState, type ComponentProps } from "react";
 import { useRouter } from "next/navigation";
-import { Payment, initMercadoPago } from "@mercadopago/sdk-react";
+import Script from "next/script";
+import { Payment, StatusScreen, initMercadoPago } from "@mercadopago/sdk-react";
 import { CheckCircle2, CreditCard, LoaderCircle, LockKeyhole, QrCode, ShieldCheck } from "lucide-react";
 import { PixCopyButton } from "./PixCopyButton";
 
 type PaymentSubmission = Parameters<NonNullable<ComponentProps<typeof Payment>["onSubmit"]>>[0];
+const securityScriptProps = {
+  src: "https://www.mercadopago.com/v2/security.js",
+  strategy: "afterInteractive" as const,
+  view: "checkout",
+  output: "deviceId",
+} as ComponentProps<typeof Script> & { view: string; output: string };
 
 type PaymentResponse = {
   paymentId?: string;
@@ -15,9 +22,38 @@ type PaymentResponse = {
   paymentMethod?: string;
   pixQrCode?: string;
   pixQrCodeBase64?: string;
+  threeDsInfo?: {
+    externalResourceUrl: string;
+    creq: string;
+  };
   error?: string;
   code?: string;
 };
+
+function mercadoPagoDeviceId() {
+  const inputValue = document.getElementById("deviceId") as HTMLInputElement | null;
+  const globalValue = (window as typeof window & { MP_DEVICE_SESSION_ID?: unknown }).MP_DEVICE_SESSION_ID;
+  const value = inputValue?.value || (typeof globalValue === "string" ? globalValue : "");
+  return /^[A-Za-z0-9._:-]{8,256}$/.test(value) ? value : undefined;
+}
+
+function cardRejectionMessage(statusDetail?: string) {
+  const messages: Record<string, string> = {
+    cc_rejected_bad_filled_card_number: "Confira o número do cartão e tente novamente.",
+    cc_rejected_bad_filled_date: "Confira a validade do cartão e tente novamente.",
+    cc_rejected_bad_filled_security_code: "Confira o código de segurança e tente novamente.",
+    cc_rejected_bad_filled_other: "Confira os dados do titular e tente novamente.",
+    cc_rejected_insufficient_amount: "O cartão não possui limite disponível para esta compra.",
+    cc_rejected_call_for_authorize: "Autorize a compra com o banco emissor do cartão e tente novamente.",
+    cc_rejected_card_disabled: "O cartão está desabilitado. Entre em contato com o banco emissor.",
+    cc_rejected_duplicated_payment: "Uma tentativa igual já foi processada. Aguarde alguns instantes antes de tentar novamente.",
+    cc_rejected_high_risk: "O Mercado Pago não autorizou esta tentativa por segurança. Tente outro cartão ou use PIX.",
+    cc_rejected_max_attempts: "O limite de tentativas com este cartão foi atingido. Use outro cartão ou PIX.",
+  };
+  return statusDetail && messages[statusDetail]
+    ? messages[statusDetail]
+    : "Pagamento recusado pelo banco ou pelo Mercado Pago. Confira os dados, tente outro cartão ou use PIX.";
+}
 
 interface MercadoPagoTransparentCheckoutProps {
   publicKey: string;
@@ -117,10 +153,11 @@ export function MercadoPagoTransparentCheckout({
     setSubmitting(true);
     setError(null);
     try {
+      const deviceId = mercadoPagoDeviceId();
       const response = await fetch("/api/payments/mercadopago", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId, ...submission }),
+        body: JSON.stringify({ orderId, ...submission, deviceId }),
       });
       const data = await response.json() as PaymentResponse;
       if (response.status === 409 && data.status === "approved") {
@@ -135,7 +172,7 @@ export function MercadoPagoTransparentCheckout({
         return;
       }
       if (data.status === "rejected") {
-        setError("Pagamento recusado. Confira os dados ou escolha outra forma de pagamento.");
+        setError(cardRejectionMessage(data.statusDetail));
       }
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Não foi possível processar o pagamento.");
@@ -147,9 +184,13 @@ export function MercadoPagoTransparentCheckout({
 
   const pixPending = result?.status === "pending" && result.paymentMethod === "pix" && result.pixQrCode;
   const cardPending = result?.status === "pending" && result.paymentMethod !== "pix";
+  const cardChallenge = cardPending && result?.statusDetail === "pending_challenge" &&
+    result.paymentId && result.threeDsInfo;
 
   return (
     <div className="text-left">
+      <Script {...securityScriptProps} />
+      <input id="deviceId" type="hidden" aria-hidden="true" />
       <div className="mb-6 grid gap-3 sm:grid-cols-3">
         <div className="flex items-center gap-3 rounded-2xl border border-gold/20 bg-white/60 px-4 py-3">
           <QrCode className="h-5 w-5 text-forest" aria-hidden="true" />
@@ -202,7 +243,29 @@ export function MercadoPagoTransparentCheckout({
         </div>
       )}
 
-      {cardPending && (
+      {cardChallenge && (
+        <div className="rounded-3xl border border-gold/25 bg-[#fffdf9] p-3 sm:p-5">
+          <StatusScreen
+            initialization={{
+              paymentId: result.paymentId!,
+              additionalInfo: {
+                externalResourceURL: result.threeDsInfo!.externalResourceUrl,
+                creq: result.threeDsInfo!.creq,
+              },
+            }}
+            customization={{
+              visual: {
+                hideStatusDetails: false,
+                hideTransactionDate: true,
+              },
+            }}
+            locale="pt-BR"
+            onError={() => setError("Não foi possível abrir a confirmação de segurança do banco. Tente novamente.")}
+          />
+        </div>
+      )}
+
+      {cardPending && !cardChallenge && (
         <div className="rounded-3xl border border-gold/25 bg-cream-warm/50 p-6 text-center">
           <LoaderCircle className="mx-auto h-8 w-8 animate-spin text-primary" aria-hidden="true" />
           <h3 className="mt-3 font-semibold text-primary">Pagamento em análise</h3>
@@ -226,9 +289,9 @@ export function MercadoPagoTransparentCheckout({
               onReady={() => setBrickReady(true)}
               onSubmit={handleSubmit}
               onError={(brickError) => {
-                if (brickError.type === "critical") {
-                  setError("Não foi possível carregar uma das opções de pagamento. Tente novamente.");
-                }
+                setError(brickError.type === "critical"
+                  ? "Não foi possível carregar uma das opções de pagamento. Atualize a página e tente novamente."
+                  : "Confira os dados do cartão destacados no formulário e tente novamente.");
               }}
             />
           </div>

@@ -44,12 +44,17 @@ const pixInput: TransparentPaymentInput = {
 
 const cardInput: TransparentPaymentInput = {
   selectedPaymentMethod: "creditCard",
+  deviceId: "device-session-123456",
   formData: {
     payment_method_id: "visa",
     token: "card-token-generated-by-mercado-pago",
     issuer_id: "310",
     installments: 3,
     transaction_amount: 1,
+    payer: {
+      email: "titular@example.com",
+      identification: { type: "CPF", number: "123.456.789-09" },
+    },
   },
 };
 
@@ -102,6 +107,16 @@ describe("checkout transparente Mercado Pago", () => {
     expect(body.installments).toBe(3);
     expect(body.issuer_id).toBe(310);
     expect(body.transaction_amount).toBe(249.9);
+    expect(body.three_d_secure_mode).toBe("optional");
+    expect(body.payer?.identification).toEqual({ type: "CPF", number: "12345678909" });
+  });
+
+  it("valida o identificador do dispositivo usado pelo antifraude", () => {
+    expect(transparentPaymentInputSchema.safeParse(cardInput).success).toBe(true);
+    expect(transparentPaymentInputSchema.safeParse({
+      ...cardInput,
+      deviceId: "<script>alert(1)</script>",
+    }).success).toBe(false);
   });
 
   it("rejeita cartão sem token seguro", () => {

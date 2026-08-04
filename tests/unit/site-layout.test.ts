@@ -56,3 +56,16 @@ describe("Footer component source", () => {
     expect(footer).toContain("/privacidade");
   });
 });
+
+describe("Home page navigation", () => {
+  it("links the themes CTA directly to the gallery", () => {
+    const homePage = readFileSync(
+      path.join(repoRoot, "app/(site)/page.tsx"),
+      "utf8",
+    );
+
+    expect(homePage).toMatch(
+      /href="\/galeria"[\s\S]*?<span>Ver todos os temas<\/span>/,
+    );
+  });
+});

@@ -3,11 +3,18 @@ import crypto from "crypto";
 import type { PaymentGateway, OrderWithDetails, PaymentResponse, WebhookResult } from "./types";
 import { orderCodeOf } from "@/lib/orders/build-order";
 import { getSiteUrl } from "@/lib/site-url";
+import {
+  assertMercadoPagoEnvironment,
+  assertMercadoPagoLiveMode,
+  MercadoPagoProductionConfigurationError,
+  selectMercadoPagoCheckoutUrl,
+} from "./mercadopago-environment";
 
 const accessToken = process.env.MP_ACCESS_TOKEN || "";
 
 export const mpConfig = new MercadoPagoConfig({
-  accessToken: accessToken,
+  accessToken,
+  options: { timeout: 10_000 },
 });
 
 export const mpPreference = new Preference(mpConfig);
@@ -19,6 +26,16 @@ export class MercadoPagoGateway implements PaymentGateway {
   async createPayment(order: OrderWithDetails): Promise<PaymentResponse> {
     if (!accessToken) {
       return { success: false, error: "Token de acesso do Mercado Pago não configurado." };
+    }
+
+    try {
+      assertMercadoPagoEnvironment();
+    } catch {
+      console.error("[Mercado Pago] Production blocked: invalid environment.");
+      return {
+        success: false,
+        error: "Pagamento temporariamente indisponível por configuração.",
+      };
     }
 
     const baseUrl = getSiteUrl();
@@ -71,7 +88,12 @@ export class MercadoPagoGateway implements PaymentGateway {
             notification_url: notificationUrl,
             external_reference: order.id,
           },
+          requestOptions: {
+            idempotencyKey: `pix-${order.id}`,
+          },
         });
+
+        assertMercadoPagoLiveMode(pixResponse.live_mode);
 
         if (pixResponse && pixResponse.id) {
           const transData = (pixResponse as any).point_of_interaction?.transaction_data || (pixResponse as any).point_of_integration?.transaction_data;
@@ -81,7 +103,10 @@ export class MercadoPagoGateway implements PaymentGateway {
           }
         }
       } catch (pixErr) {
-        console.error("Erro ao criar pagamento Pix no Mercado Pago:", pixErr);
+        if (pixErr instanceof MercadoPagoProductionConfigurationError) {
+          throw pixErr;
+        }
+        console.error("[Mercado Pago] Failed to create PIX payment.");
       }
 
       // 2. Criar a Preferência (Checkout Pro) para Cartão/Boleto
@@ -97,11 +122,25 @@ export class MercadoPagoGateway implements PaymentGateway {
           external_reference: order.id,
           notification_url: notificationUrl,
         },
+        requestOptions: {
+          idempotencyKey: `checkout-${order.id}`,
+        },
       });
 
-      const paymentUrl = process.env.NODE_ENV === "production"
-        ? preferenceResponse.init_point
-        : preferenceResponse.sandbox_init_point || preferenceResponse.init_point;
+      if (process.env.NODE_ENV === "production") {
+        const preferenceVerification = await mpPreference.search({
+          options: { external_reference: order.id, limit: 20 },
+        });
+        const createdPreference = preferenceVerification.elements?.find(
+          (preference) => preference.id === preferenceResponse.id,
+        );
+        assertMercadoPagoLiveMode(createdPreference?.live_mode);
+      }
+
+      const paymentUrl = selectMercadoPagoCheckoutUrl({
+        initPoint: preferenceResponse.init_point,
+        sandboxInitPoint: preferenceResponse.sandbox_init_point,
+      });
 
       return {
         success: true,
@@ -110,8 +149,13 @@ export class MercadoPagoGateway implements PaymentGateway {
         pixQrCode,
         pixQrCodeBase64,
       };
-    } catch (err: any) {
-      console.error("Erro ao criar preferência no Mercado Pago:", err);
+    } catch (err: unknown) {
+      const configurationError = err instanceof MercadoPagoProductionConfigurationError;
+      console.error(
+        configurationError
+          ? "[Mercado Pago] Production blocked: API returned test mode."
+          : "[Mercado Pago] Failed to create payment.",
+      );
       
       const isHttpLocalhost = baseUrl.startsWith("http://localhost") || baseUrl.startsWith("http://127.0.0.1");
       if (isHttpLocalhost) {
@@ -126,7 +170,9 @@ export class MercadoPagoGateway implements PaymentGateway {
       
       return { 
         success: false, 
-        error: isHttpLocalhost 
+        error: configurationError
+          ? "Pagamento temporariamente indisponível por configuração."
+          : isHttpLocalhost
           ? "Configuração local inválida (Mercado Pago exige HTTPS nas URLs de retorno). Configure um túnel HTTPS." 
           : "Falha ao gerar link de pagamento no Mercado Pago." 
       };

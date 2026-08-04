@@ -11,12 +11,20 @@ const cardPaymentTypes = ["creditCard", "debitCard", "prepaidCard"] as const;
 
 export const transparentPaymentInputSchema = z.object({
   selectedPaymentMethod: z.enum(["bank_transfer", ...cardPaymentTypes]),
+  deviceId: z.string().trim().min(8).max(256).regex(/^[A-Za-z0-9._:-]+$/).optional(),
   formData: z.object({
     payment_method_id: z.string().trim().min(1).max(50),
     token: z.string().trim().min(10).max(512).optional(),
     issuer_id: z.union([z.string(), z.number()]).optional(),
     installments: z.coerce.number().int().min(1).max(12).optional(),
     transaction_amount: z.number().positive().optional(),
+    payer: z.object({
+      email: z.string().trim().email().max(254).optional(),
+      identification: z.object({
+        type: z.enum(["CPF", "CNPJ"]),
+        number: z.string().trim().max(24),
+      }).optional(),
+    }).passthrough().optional(),
   }).passthrough(),
 });
 
@@ -115,7 +123,16 @@ export function buildMercadoPagoPaymentBody(
   if (!Number.isFinite(amount) || amount <= 0) throw new Error("INVALID_ORDER_AMOUNT");
 
   const { firstName, lastName } = splitName(order.guestName);
-  const cpf = (order.guestCpf || "").replace(/\D/g, "");
+  const orderDocument = (order.guestCpf || "").replace(/\D/g, "");
+  const submittedIdentification = input.formData.payer?.identification;
+  const submittedDocument = (submittedIdentification?.number || "").replace(/\D/g, "");
+  const identification = !isPix && submittedIdentification &&
+    ((submittedIdentification.type === "CPF" && submittedDocument.length === 11) ||
+      (submittedIdentification.type === "CNPJ" && submittedDocument.length === 14))
+    ? { type: submittedIdentification.type, number: submittedDocument }
+    : orderDocument.length === 11
+      ? { type: "CPF", number: orderDocument }
+      : undefined;
   const issuer = Number(input.formData.issuer_id);
   const webhookBase = process.env.VERCEL_PROJECT_PRODUCTION_URL || getSiteUrl();
   const normalizedWebhookBase = webhookBase.startsWith("http")
@@ -135,12 +152,13 @@ export function buildMercadoPagoPaymentBody(
     token: isPix ? undefined : input.formData.token,
     installments: isPix ? 1 : input.formData.installments || 1,
     issuer_id: !isPix && Number.isFinite(issuer) ? issuer : undefined,
+    three_d_secure_mode: isPix ? undefined : "optional",
     payer: {
-      entity_type: "individual",
+      entity_type: identification?.type === "CNPJ" ? "association" : "individual",
       email: order.guestEmail || "atendimento@eraumavezeu.com.br",
       first_name: firstName,
       last_name: lastName,
-      identification: cpf.length === 11 ? { type: "CPF", number: cpf } : undefined,
+      identification,
       address: order.shippingAddress ? {
         zip_code: order.shippingAddress.zipCode,
         street_name: order.shippingAddress.street,
@@ -235,7 +253,10 @@ export async function createTransparentMercadoPagoPayment(
   const body = buildMercadoPagoPaymentBody(order, input);
   const payment = await mpPayment.create({
     body,
-    requestOptions: { idempotencyKey: paymentIdempotencyKey(order.id, input) },
+    requestOptions: {
+      idempotencyKey: paymentIdempotencyKey(order.id, input),
+      meliSessionId: input.formData.payment_method_id === "pix" ? undefined : input.deviceId,
+    },
   });
   assertMercadoPagoLiveMode(payment.live_mode);
 
@@ -247,5 +268,11 @@ export async function createTransparentMercadoPagoPayment(
     paymentMethod: payment.payment_method_id || input.formData.payment_method_id,
     pixQrCode: transactionData?.qr_code,
     pixQrCodeBase64: transactionData?.qr_code_base64,
+    threeDsInfo: payment.three_ds_info?.external_resource_url && payment.three_ds_info?.creq
+      ? {
+          externalResourceUrl: payment.three_ds_info.external_resource_url,
+          creq: payment.three_ds_info.creq,
+        }
+      : undefined,
   };
 }

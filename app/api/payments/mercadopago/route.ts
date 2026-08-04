@@ -121,6 +121,7 @@ export async function POST(req: NextRequest) {
       paymentMethod: payment.paymentMethod,
       pixQrCode: payment.pixQrCode,
       pixQrCodeBase64: payment.pixQrCodeBase64,
+      threeDsInfo: payment.threeDsInfo,
     });
   } catch (error) {
     if (error instanceof MercadoPagoProductionConfigurationError) {

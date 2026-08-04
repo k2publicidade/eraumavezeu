@@ -101,6 +101,7 @@ export function buildMercadoPagoPaymentBody(
     installments: isPix ? 1 : input.formData.installments || 1,
     issuer_id: !isPix && Number.isFinite(issuer) ? issuer : undefined,
     payer: {
+      entity_type: "individual",
       email: order.guestEmail || "atendimento@eraumavezeu.com.br",
       first_name: firstName,
       last_name: lastName,
@@ -119,7 +120,6 @@ export function buildMercadoPagoPaymentBody(
         id: item.productId,
         title: item.product.name,
         quantity: item.quantity,
-        currency_id: "BRL",
         unit_price: Number(item.price),
       })),
       payer: {
@@ -127,17 +127,45 @@ export function buildMercadoPagoPaymentBody(
         last_name: lastName,
       },
       shipments: order.shippingAddress ? {
-        cost: Number(order.shippingCost),
         receiver_address: {
           zip_code: order.shippingAddress.zipCode,
           street_name: order.shippingAddress.street,
           street_number: order.shippingAddress.number,
           city_name: order.shippingAddress.city,
           state_name: order.shippingAddress.state,
-          country_name: "Brasil",
         },
       } : undefined,
     },
+  };
+}
+
+export function mercadoPagoErrorDiagnostic(error: unknown) {
+  if (!(error instanceof Error)) return { name: "UnknownPaymentError" };
+
+  const sdkError = error as Error & {
+    status?: unknown;
+    cause?: unknown;
+  };
+  const causes = Array.isArray(sdkError.cause)
+    ? sdkError.cause.slice(0, 5).map((cause) => {
+        if (!cause || typeof cause !== "object") return { code: "unknown" };
+        const entry = cause as { code?: unknown; description?: unknown };
+        return {
+          code: typeof entry.code === "string" || typeof entry.code === "number"
+            ? String(entry.code).slice(0, 80)
+            : "unknown",
+          description: typeof entry.description === "string"
+            ? entry.description.slice(0, 240)
+            : undefined,
+        };
+      })
+    : undefined;
+
+  return {
+    name: error.name.slice(0, 80),
+    message: error.message.slice(0, 300),
+    status: typeof sdkError.status === "number" ? sdkError.status : undefined,
+    causes,
   };
 }
 

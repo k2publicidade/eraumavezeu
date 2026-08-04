@@ -31,7 +31,6 @@ export const customizationSnapshotSchema = z.object({
 export const checkoutItemSchema = z.object({
   slug: z.string().min(1),
   quantity: z.number().int().min(1).max(10),
-  customization: customizationSnapshotSchema.optional(),
   customizations: z.array(productCustomizationSchema).max(10).default([]),
 });
 
@@ -89,6 +88,22 @@ export const checkoutSchema = z.object({
   paymentGateway: z.enum(["MERCADOPAGO", "SIMULADO"]).default("MERCADOPAGO"),
   couponCode: z.string().trim().max(30).optional(),
 });
+
+export function checkoutValidationErrorMessage(error: z.ZodError): string {
+  const section = error.issues[0]?.path[0];
+
+  if (section === "buyer") return "Revise os dados pessoais informados.";
+  if (section === "address") return "Revise o endereço de entrega informado.";
+  if (section === "items") {
+    return "Personalização incompleta — revise as fichas de todos os produtos.";
+  }
+  if (section === "shippingMethod" || section === "shippingCost") {
+    return "Revise a opção de frete selecionada.";
+  }
+  if (section === "paymentGateway") return "Revise a forma de pagamento selecionada.";
+
+  return "Dados inválidos — revise o formulário.";
+}
 
 export type CheckoutPayload = z.infer<typeof checkoutSchema>;
 export type CustomizationPayload = z.infer<typeof customizationSnapshotSchema>;

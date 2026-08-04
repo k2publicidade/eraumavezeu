@@ -183,7 +183,6 @@ export default function CheckoutView({
       items: items.map((it) => ({
         slug: it.slug,
         quantity: it.quantity,
-        customization: it.customization,
         customizations: customizationUnits
           .filter((unit) => unit.itemId === it.id)
           .sort((a, b) => a.unitIndex - b.unitIndex)

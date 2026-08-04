@@ -195,11 +195,7 @@ export default function CheckoutView({
     });
     if (res.ok) {
       clear();
-      if (res.paymentUrl) {
-        window.location.href = res.paymentUrl;
-      } else {
-        router.push(`/pedido/${res.orderId}`);
-      }
+      router.push(`/pedido/${res.orderId}`);
     } else {
       setServerError(res.error);
     }

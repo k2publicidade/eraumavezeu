@@ -43,6 +43,41 @@ export function mapMercadoPagoPaymentState(status?: string): TransparentPaymentS
   return { paymentStatus: "PENDENTE", orderStatus: "AGUARDANDO_PAGAMENTO" };
 }
 
+export function transparentPaymentPersistenceState(
+  current: {
+    paymentId?: string | null;
+    paymentMethod?: string | null;
+    paymentStatus: string;
+    status: string;
+    pixQrCode?: string | null;
+    pixQrCodeBase64?: string | null;
+  },
+  payment: {
+    id: string;
+    paymentMethod: string;
+    pixQrCode?: string;
+    pixQrCodeBase64?: string;
+  },
+  mapped: TransparentPaymentState,
+) {
+  const statusChanged =
+    current.paymentStatus !== mapped.paymentStatus ||
+    current.status !== mapped.orderStatus;
+  const paymentChanged =
+    current.paymentId !== payment.id ||
+    current.paymentMethod !== payment.paymentMethod;
+  const pixChanged =
+    Boolean(payment.pixQrCode && current.pixQrCode !== payment.pixQrCode) ||
+    Boolean(payment.pixQrCodeBase64 && current.pixQrCodeBase64 !== payment.pixQrCodeBase64);
+
+  return {
+    statusChanged,
+    paymentChanged,
+    pixChanged,
+    needsUpdate: statusChanged || paymentChanged || pixChanged,
+  };
+}
+
 export function paymentIdempotencyKey(orderId: string, input: TransparentPaymentInput): string {
   if (input.formData.payment_method_id === "pix") return `transparent-pix-${orderId}`;
 

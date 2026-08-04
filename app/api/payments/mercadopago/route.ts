@@ -8,6 +8,7 @@ import {
   createTransparentMercadoPagoPayment,
   mapMercadoPagoPaymentState,
   mercadoPagoErrorDiagnostic,
+  transparentPaymentPersistenceState,
   transparentPaymentInputSchema,
 } from "@/lib/payments/mercadopago-transparent";
 
@@ -69,11 +70,8 @@ export async function POST(req: NextRequest) {
       if (current.paymentStatus === "APROVADO") {
         return { order: current, becameConfirmed: false };
       }
-      if (
-        current.paymentId === payment.id &&
-        current.paymentStatus === mapped.paymentStatus &&
-        current.status === mapped.orderStatus
-      ) {
+      const persistence = transparentPaymentPersistenceState(current, payment, mapped);
+      if (!persistence.needsUpdate) {
         return { order: current, becameConfirmed: false };
       }
 
@@ -84,16 +82,16 @@ export async function POST(req: NextRequest) {
           paymentMethod: payment.paymentMethod,
           paymentStatus: mapped.paymentStatus,
           status: mapped.orderStatus,
-          pixQrCode: payment.pixQrCode || null,
-          pixQrCodeBase64: payment.pixQrCodeBase64 || null,
-          statusHistory: {
+          pixQrCode: payment.pixQrCode || current.pixQrCode,
+          pixQrCodeBase64: payment.pixQrCodeBase64 || current.pixQrCodeBase64,
+          statusHistory: persistence.statusChanged ? {
             create: {
               fromStatus: current.status,
               toStatus: mapped.orderStatus,
               changedBy: "checkout_mercadopago",
               note: `Pagamento transparente Mercado Pago: ${payment.status} (ID ${payment.id})`,
             },
-          },
+          } : undefined,
         },
       });
       return {

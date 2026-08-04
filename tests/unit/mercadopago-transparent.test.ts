@@ -5,6 +5,7 @@ import {
   mapMercadoPagoPaymentState,
   mercadoPagoErrorDiagnostic,
   paymentIdempotencyKey,
+  transparentPaymentPersistenceState,
   transparentPaymentInputSchema,
   type TransparentPaymentInput,
 } from "@/lib/payments/mercadopago-transparent";
@@ -120,6 +121,29 @@ describe("checkout transparente Mercado Pago", () => {
         formData: { ...cardInput.formData, token: "another-secure-card-token" },
       }),
     );
+  });
+
+  it("recupera o QR Code quando o webhook grava o status antes do checkout", () => {
+    const persistence = transparentPaymentPersistenceState({
+      paymentId: "171064691331",
+      paymentMethod: "pix",
+      paymentStatus: "PENDENTE",
+      status: "AGUARDANDO_PAGAMENTO",
+      pixQrCode: null,
+      pixQrCodeBase64: null,
+    }, {
+      id: "171064691331",
+      paymentMethod: "pix",
+      pixQrCode: "000201-pix-copy-paste",
+      pixQrCodeBase64: "base64-qr-code",
+    }, mapMercadoPagoPaymentState("pending"));
+
+    expect(persistence).toEqual({
+      statusChanged: false,
+      paymentChanged: false,
+      pixChanged: true,
+      needsUpdate: true,
+    });
   });
 
   it("mapeia estados do gateway para pedido e pagamento", () => {

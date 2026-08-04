@@ -7,6 +7,7 @@ import { MercadoPagoProductionConfigurationError } from "@/lib/payments/mercadop
 import {
   createTransparentMercadoPagoPayment,
   mapMercadoPagoPaymentState,
+  mercadoPagoErrorDiagnostic,
   transparentPaymentInputSchema,
 } from "@/lib/payments/mercadopago-transparent";
 
@@ -131,7 +132,10 @@ export async function POST(req: NextRequest) {
       }, { status: 503 });
     }
 
-    console.error("[Mercado Pago] Transparent payment failed.");
+    console.error(
+      "[Mercado Pago] Transparent payment failed.",
+      mercadoPagoErrorDiagnostic(error),
+    );
     return NextResponse.json({
       error: "Não foi possível processar o pagamento. Confira os dados e tente novamente.",
     }, { status: 502 });

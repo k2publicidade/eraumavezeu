@@ -3,6 +3,7 @@ import type { OrderWithDetails } from "@/lib/payments/types";
 import {
   buildMercadoPagoPaymentBody,
   mapMercadoPagoPaymentState,
+  mercadoPagoErrorDiagnostic,
   paymentIdempotencyKey,
   transparentPaymentInputSchema,
   type TransparentPaymentInput,
@@ -66,9 +67,31 @@ describe("checkout transparente Mercado Pago", () => {
     expect(body.transaction_amount).toBe(249.9);
     expect(body.external_reference).toBe(order.id);
     expect(body.payer?.email).toBe("cliente@example.com");
+    expect(body.payer?.entity_type).toBe("individual");
     expect(body.payer?.identification).toEqual({ type: "CPF", number: "52998224725" });
     expect(body.payment_method_id).toBe("pix");
     expect(body.token).toBeUndefined();
+    expect(body.additional_info?.items?.[0]).not.toHaveProperty("currency_id");
+    expect(body.additional_info?.shipments).not.toHaveProperty("cost");
+    expect(body.additional_info?.shipments?.receiver_address).not.toHaveProperty("country_name");
+  });
+
+  it("registra erros do gateway sem serializar o payload do pagamento", () => {
+    const error = Object.assign(new Error("The payment method was rejected"), {
+      status: 400,
+      cause: [{ code: 13253, description: "Invalid payer data" }],
+      request: { token: "sensitive-card-token" },
+    });
+
+    const diagnostic = mercadoPagoErrorDiagnostic(error);
+
+    expect(diagnostic).toEqual({
+      name: "Error",
+      message: "The payment method was rejected",
+      status: 400,
+      causes: [{ code: "13253", description: "Invalid payer data" }],
+    });
+    expect(JSON.stringify(diagnostic)).not.toContain("sensitive-card-token");
   });
 
   it("envia somente o token do cartão e respeita o parcelamento validado", () => {

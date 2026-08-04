@@ -73,6 +73,7 @@ export function MercadoPagoTransparentCheckout({
   const initialization = useMemo(() => ({
     amount,
     payer: {
+      entityType: "individual" as const,
       email: payer.email,
       firstName: payer.firstName,
       lastName: payer.lastName,

@@ -10,12 +10,11 @@ import {
   checkoutValidationErrorMessage,
 } from "@/lib/validators/order";
 import type { ProductType } from "@/lib/cart/types";
-import { getPaymentGateway } from "@/lib/payments/gateway-registry";
 import { calculateShippingOptions } from "@/lib/shipping";
 import { buildProductionBrief } from "@/lib/product-customization";
 
 export type CreateOrderResult =
-  | { ok: true; orderId: string; orderCode: string; paymentUrl?: string }
+  | { ok: true; orderId: string; orderCode: string }
   | { ok: false; error: string };
 
 export async function createOrder(input: unknown): Promise<CreateOrderResult> {
@@ -232,37 +231,10 @@ export async function createOrder(input: unknown): Promise<CreateOrderResult> {
       total: finalTotal,
     }).catch((err) => console.error("notifyOrderCreated failed", err));
 
-    // Processamento do pagamento pelo Gateway escolhido
-    let paymentUrl: string | undefined = undefined;
-    try {
-      const fullOrder = await db.order.findUnique({
-        where: { id: order.id },
-        include: {
-          items: { include: { product: true } },
-          shippingAddress: true,
-        },
-      });
-
-      if (fullOrder) {
-        const gateway = getPaymentGateway(paymentGateway);
-        const paymentRes = await gateway.createPayment(fullOrder);
-        if (paymentRes.success) {
-          paymentUrl = paymentRes.paymentUrl;
-          await db.order.update({
-            where: { id: order.id },
-            data: {
-              paymentUrl: paymentRes.paymentUrl || null,
-              pixQrCode: paymentRes.pixQrCode || null,
-              pixQrCodeBase64: paymentRes.pixQrCodeBase64 || null,
-            },
-          });
-        }
-      }
-    } catch (paymentErr) {
-      console.error(`Erro ao gerar link de pagamento (${paymentGateway}):`, paymentErr);
-    }
-
-    return { ok: true, orderId: order.id, orderCode: orderCodeOf(order.id), paymentUrl };
+    // O pagamento é iniciado pelo comprador na página do pedido usando Checkout
+    // Transparente. Isso evita criar PIX sem consentimento e mantém cartão/PIX
+    // dentro do site, com o total revalidado no servidor.
+    return { ok: true, orderId: order.id, orderCode: orderCodeOf(order.id) };
   } catch (err) {
     console.error("createOrder failed", err);
     return { ok: false, error: "Não foi possível criar o pedido. Tente novamente." };
